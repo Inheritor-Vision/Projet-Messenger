@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;messenger/messenger.di&apos; to &apos;Connexion.di&apos;" description="Rename resource &apos;messenger.di&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="messenger.di" name="Connexion.di" stamp="1573829868226" updateReferences="true"/>
+</session>

@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Rename resource &apos;messenger/messenger.di&apos; to &apos;CreationCompte.di&apos;" description="Rename resource &apos;messenger.di&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="messenger.di" name="CreationCompte.di" stamp="1572886781421" updateReferences="true"/>&#x0A;<refactoring comment="Rename resource &apos;messenger/model.di&apos; to &apos;EnvoyerMessage.di&apos;" description="Rename resource &apos;model.di&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="model.di" name="EnvoyerMessage.di" stamp="1572886839476" updateReferences="true"/>
+</session>
