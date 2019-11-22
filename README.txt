@@ -1,8 +1,7 @@
 email: cedric.lefebvre@laas.fr
+email: yangui@insa-toulouse.fr
 
 Le user case s'ouvre avec draw.io (open from other source : git)
-
-/!\ La déconnexion: l'utilisateur  notifie tous les agents connectés par un paquet, nous avons oublié de modifier le diagramme de séquence FermerApp pour éviter de passer par le serveur lorsque l'appli est sur le réseau interne.  /!\
 
 Informations et hypothèses faites sur l'architecture:  
 
