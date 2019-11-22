@@ -1,5 +1,7 @@
 email: cedric.lefebvre@laas.fr
 
+Le user case s'ouvre avec draw.io (open from other source : git)
+
 /!\ La déconnexion: l'utilisateur  notifie tous les agents connectés par un paquet, nous avons oublié de modifier le diagramme de séquence FermerApp pour éviter de passer par le serveur lorsque l'appli est sur le réseau interne.  /!\
 
 Informations et hypothèses faites sur l'architecture:  
@@ -16,4 +18,8 @@ Informations et hypothèses faites sur l'architecture:
  -La connexion interne et externe se différencie par l'interposition de serveur
  
  -En réseau externe, le serveur s'enterpose entre l'emetteur et le receveur (Ceci n'apparait PAS dans les diagrammes)
+
+Fermer App:
+
+-Le Self-Message SupprimeCacheAEnvoyerCommun évite lors de la déconnexion d'envoyer au serveur une conversation qui a déja été envoyé par un autre agent qui s'est déja déconnecté.
  
