@@ -4,13 +4,6 @@
     <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
   </packageImport>
   <packagedElement xmi:type="uml:Interaction" xmi:id="_iNytYf8kEem4t9_U-m_Mng" name="EnvoyerMessage">
-    <ownedComment xmi:type="uml:Comment" xmi:id="_xICacAe8Eeq9IdQAEsoi3A">
-      <body>A FAIRE:&#xD;
--Finir connexion&#xD;
--Cas mec interne ou externe&#xD;
--Envoyer Connexion Broadcast&#xD;
-</body>
-    </ownedComment>
     <ownedRule xmi:type="uml:TimeConstraint" xmi:id="_3UK7oAezEeq9IdQAEsoi3A" name="TimerStart" constrainedElement="_ZJ29UAesEeq9IdQAEsoi3A">
       <specification xmi:type="uml:TimeInterval" xmi:id="_3UMJwAezEeq9IdQAEsoi3A"/>
     </ownedRule>
@@ -33,8 +26,8 @@
     <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_XK8R0AnWEeqngJhJSq_Vcw" name="Message47SendEvent" covered="_HCWrwAe0Eeq9IdQAEsoi3A" message="_XKyg0AnWEeqngJhJSq_Vcw"/>
     <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_NyetognWEeqngJhJSq_Vcw" name="Message44ReceiveEvent" covered="_HCWrwAe0Eeq9IdQAEsoi3A" message="_NyetoAnWEeqngJhJSq_Vcw"/>
     <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_XK8R0QnWEeqngJhJSq_Vcw" name="Message47ReceiveEvent" covered="_srJdEP8kEem4t9_U-m_Mng" message="_XKyg0AnWEeqngJhJSq_Vcw"/>
-    <fragment xmi:type="uml:CombinedFragment" xmi:id="_f9oE4AnVEeqngJhJSq_Vcw" name="CombinedFragment43" covered="_vEU68P8kEem4t9_U-m_Mng _UPLu4AezEeq9IdQAEsoi3A _rpDG4P8kEem4t9_U-m_Mng _uDeh8P8kEem4t9_U-m_Mng _srJdEP8kEem4t9_U-m_Mng _HCWrwAe0Eeq9IdQAEsoi3A" interactionOperator="alt">
-      <operand xmi:type="uml:InteractionOperand" xmi:id="_f9oE4QnVEeqngJhJSq_Vcw" name="InteractionOperand0" visibility="protected" covered="_vEU68P8kEem4t9_U-m_Mng _UPLu4AezEeq9IdQAEsoi3A _rpDG4P8kEem4t9_U-m_Mng _uDeh8P8kEem4t9_U-m_Mng _srJdEP8kEem4t9_U-m_Mng _HCWrwAe0Eeq9IdQAEsoi3A">
+    <fragment xmi:type="uml:CombinedFragment" xmi:id="_f9oE4AnVEeqngJhJSq_Vcw" name="CombinedFragment43" covered="_rpDG4P8kEem4t9_U-m_Mng _HCWrwAe0Eeq9IdQAEsoi3A _UPLu4AezEeq9IdQAEsoi3A _vEU68P8kEem4t9_U-m_Mng _uDeh8P8kEem4t9_U-m_Mng _srJdEP8kEem4t9_U-m_Mng" interactionOperator="alt">
+      <operand xmi:type="uml:InteractionOperand" xmi:id="_f9oE4QnVEeqngJhJSq_Vcw" name="InteractionOperand0" visibility="protected" covered="_rpDG4P8kEem4t9_U-m_Mng _HCWrwAe0Eeq9IdQAEsoi3A _UPLu4AezEeq9IdQAEsoi3A _vEU68P8kEem4t9_U-m_Mng _uDeh8P8kEem4t9_U-m_Mng _srJdEP8kEem4t9_U-m_Mng">
         <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_ZsIcMQnWEeqngJhJSq_Vcw" name="Message50SendEvent" covered="_srJdEP8kEem4t9_U-m_Mng" message="_ZsIcMAnWEeqngJhJSq_Vcw"/>
         <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_ZsIcMgnWEeqngJhJSq_Vcw" name="Message50ReceiveEvent" covered="_rpDG4P8kEem4t9_U-m_Mng" message="_ZsIcMAnWEeqngJhJSq_Vcw"/>
         <guard xmi:type="uml:InteractionConstraint" xmi:id="_f9oE4gnVEeqngJhJSq_Vcw" name="guard">
@@ -42,7 +35,7 @@
           <specification xmi:type="uml:LiteralString" xmi:id="_uLVgwAnVEeqngJhJSq_Vcw" name="Refuse" value="Refusé&#xD;&#xA;"/>
         </guard>
       </operand>
-      <operand xmi:type="uml:InteractionOperand" xmi:id="_oZ6UsAnVEeqngJhJSq_Vcw" name="InteractionOperand2" covered="_vEU68P8kEem4t9_U-m_Mng _UPLu4AezEeq9IdQAEsoi3A _rpDG4P8kEem4t9_U-m_Mng _uDeh8P8kEem4t9_U-m_Mng _srJdEP8kEem4t9_U-m_Mng _HCWrwAe0Eeq9IdQAEsoi3A">
+      <operand xmi:type="uml:InteractionOperand" xmi:id="_oZ6UsAnVEeqngJhJSq_Vcw" name="InteractionOperand2" covered="_rpDG4P8kEem4t9_U-m_Mng _HCWrwAe0Eeq9IdQAEsoi3A _UPLu4AezEeq9IdQAEsoi3A _vEU68P8kEem4t9_U-m_Mng _uDeh8P8kEem4t9_U-m_Mng _srJdEP8kEem4t9_U-m_Mng">
         <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_foRqgQnWEeqngJhJSq_Vcw" name="Message51SendEvent" covered="_srJdEP8kEem4t9_U-m_Mng" message="_foRqgAnWEeqngJhJSq_Vcw"/>
         <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_foRqggnWEeqngJhJSq_Vcw" name="Message51ReceiveEvent" covered="_rpDG4P8kEem4t9_U-m_Mng" message="_foRqgAnWEeqngJhJSq_Vcw"/>
         <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="_k4iqQQnWEeqngJhJSq_Vcw" name="Message52SendEvent" covered="_srJdEP8kEem4t9_U-m_Mng" message="_k4iqQAnWEeqngJhJSq_Vcw"/>

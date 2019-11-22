@@ -289,8 +289,8 @@
     <styles xsi:type="notation:FontStyle" xmi:id="_hecE0Qe7Eeq9IdQAEsoi3A"/>
     <element href="Connexion%20Externe.uml#_heST0Ae7Eeq9IdQAEsoi3A"/>
     <bendpoints xsi:type="notation:RelativeBendpoints" xmi:id="_hecE0ge7Eeq9IdQAEsoi3A" points="[0, 0, 200, 0]$[-200, 0, 0, 0]"/>
-    <sourceAnchor xsi:type="notation:IdentityAnchor" xmi:id="_heyDEAe7Eeq9IdQAEsoi3A" id="(0.5,0.9289520426287744)"/>
-    <targetAnchor xsi:type="notation:IdentityAnchor" xmi:id="_hezRMAe7Eeq9IdQAEsoi3A" id="(0.5,0.9289520426287744)"/>
+    <sourceAnchor xsi:type="notation:IdentityAnchor" xmi:id="_heyDEAe7Eeq9IdQAEsoi3A" id="(0.5,0.8934280639431617)"/>
+    <targetAnchor xsi:type="notation:IdentityAnchor" xmi:id="_hezRMAe7Eeq9IdQAEsoi3A" id="(0.5,0.8934280639431617)"/>
   </edges>
   <edges xsi:type="notation:Connector" xmi:id="_U55JsAe8Eeq9IdQAEsoi3A" type="Message_AsynchEdge" source="_Vu-7cAe4Eeq9IdQAEsoi3A" target="_WJCaMAe4Eeq9IdQAEsoi3A">
     <children xsi:type="notation:DecorationNode" xmi:id="_U55Jswe8Eeq9IdQAEsoi3A" type="Message_AsynchNameLabel">
