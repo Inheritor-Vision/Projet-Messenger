@@ -14,9 +14,11 @@ Informations et hypothèses faites sur l'architecture:
 -La liste des utilisateurs est récupéré à la connexion, lorsque l'application signifie qu'elle est connectée au réseau interne. Elle    recoit en retour un paquet de tous les utilisateurs connectés afin de pouvoir créer la liste. 
  Nous pensons plus efficace, qu'au lieu d'avoir une réponse de toutes les personnes connectées, il serait plus simple de récupéré cette liste auprès d'une des applications déja connecté (Ceci n'apparait PAS dans les diagrammes)
  
- -La connexion interne et externe se différencie par l'interposition de serveur
+-La connexion interne et externe se différencie par l'interposition d'un serveur
  
- -En réseau externe, le serveur s'enterpose entre l'emetteur et le receveur (Ceci n'apparait PAS dans les diagrammes)
+-En réseau externe, le serveur s'enterpose entre l'emetteur et le receveur (Ceci n'apparait pas dans le diagramme EnvoyerMessage)
+
+
 
 Fermer App:
 
