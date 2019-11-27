@@ -63,9 +63,9 @@
 												"$ref": "AAAAAAFukkis7t6qqDM="
 											},
 											"font": "Arial;13;0",
-											"left": 75.97900390625,
+											"left": 71.58642578125,
 											"top": 10,
-											"width": 115.9052734375,
+											"width": 102.791015625,
 											"height": 13,
 											"text": "SequenceDiagram1"
 										},
@@ -78,7 +78,7 @@
 											"font": "Arial;13;1",
 											"left": 10,
 											"top": 10,
-											"width": 60.97900390625,
+											"width": 56.58642578125,
 											"height": 13,
 											"text": "interaction"
 										}
@@ -143,7 +143,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 70.97900390625,
-											"top": 21,
+											"top": 13,
 											"width": 151.2998046875,
 											"height": 13,
 											"text": "FermerAppReseauInterne"
@@ -156,14 +156,14 @@
 											},
 											"font": "Arial;13;1",
 											"left": 5,
-											"top": 21,
+											"top": 13,
 											"width": 60.97900390625,
 											"height": 13,
 											"text": "interaction"
 										}
 									],
 									"font": "Arial;13;0",
-									"top": 16,
+									"top": 8,
 									"width": 1145,
 									"height": 595,
 									"nameLabel": {
@@ -1879,17 +1879,17 @@
 												"$ref": "AAAAAAFukmYCxuC8AB4="
 											},
 											"font": "Arial;13;0",
-											"left": 208,
-											"top": 459,
-											"width": 118.5107421875,
+											"left": 257,
+											"top": 488,
+											"width": 161.890625,
 											"height": 13,
-											"alpha": 1.5707963267948966,
-											"distance": 10,
+											"alpha": 1.2341205463836662,
+											"distance": 84.75848040166836,
 											"hostEdge": {
 												"$ref": "AAAAAAFukmYCxuC9NFc="
 											},
 											"edgePosition": 1,
-											"text": "10 : SupprimeCache"
+											"text": "10 : sauvegardeCacheLocal"
 										},
 										{
 											"_type": "EdgeLabelView",
@@ -2221,7 +2221,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFuklrNut63QQc="
 							},
-							"name": "SupprimeCache",
+							"name": "sauvegardeCacheLocal",
 							"source": {
 								"$ref": "AAAAAAFuklupg97os6s="
 							},
@@ -2328,7 +2328,8 @@
 					"_parent": {
 						"$ref": "AAAAAAFuklrNut62W1s="
 					},
-					"name": "Role1"
+					"name": "Role1",
+					"type": ""
 				},
 				{
 					"_type": "UMLAttribute",
@@ -2336,7 +2337,8 @@
 					"_parent": {
 						"$ref": "AAAAAAFuklrNut62W1s="
 					},
-					"name": "Role2"
+					"name": "Role2",
+					"type": ""
 				},
 				{
 					"_type": "UMLAttribute",
@@ -2344,7 +2346,8 @@
 					"_parent": {
 						"$ref": "AAAAAAFuklrNut62W1s="
 					},
-					"name": "Role3"
+					"name": "Role3",
+					"type": ""
 				},
 				{
 					"_type": "UMLAttribute",
@@ -2352,7 +2355,8 @@
 					"_parent": {
 						"$ref": "AAAAAAFuklrNut62W1s="
 					},
-					"name": "Role4"
+					"name": "Role4",
+					"type": ""
 				},
 				{
 					"_type": "UMLAttribute",
@@ -2360,7 +2364,8 @@
 					"_parent": {
 						"$ref": "AAAAAAFuklrNut62W1s="
 					},
-					"name": "Role5"
+					"name": "Role5",
+					"type": ""
 				},
 				{
 					"_type": "UMLAttribute",
@@ -2368,7 +2373,8 @@
 					"_parent": {
 						"$ref": "AAAAAAFuklrNut62W1s="
 					},
-					"name": "Role6"
+					"name": "Role6",
+					"type": ""
 				}
 			]
 		}

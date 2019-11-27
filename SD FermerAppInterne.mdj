@@ -387,14 +387,14 @@
 											"left": 228,
 											"top": 80,
 											"width": 1,
-											"height": 439
+											"height": 451
 										}
 									],
 									"font": "Arial;13;0",
 									"left": 192,
 									"top": 40,
 									"width": 72.736328125,
-									"height": 479,
+									"height": 491,
 									"nameCompartment": {
 										"$ref": "AAAAAAFuklupg97q6w8="
 									},
@@ -1879,17 +1879,17 @@
 												"$ref": "AAAAAAFukmYCxuC8AB4="
 											},
 											"font": "Arial;13;0",
-											"left": 208,
-											"top": 459,
-											"width": 118.5107421875,
+											"left": 239,
+											"top": 504,
+											"width": 185.0087890625,
 											"height": 13,
-											"alpha": 1.5707963267948966,
-											"distance": 10,
+											"alpha": 1.0343599285533542,
+											"distance": 86.09297300012354,
 											"hostEdge": {
 												"$ref": "AAAAAAFukmYCxuC9NFc="
 											},
 											"edgePosition": 1,
-											"text": "10 : SupprimeCache"
+											"text": "10 : sauvegardeHistoriqueLocal"
 										},
 										{
 											"_type": "EdgeLabelView",
@@ -2220,7 +2220,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFuklrNut63QQc="
 							},
-							"name": "SupprimeCache",
+							"name": "sauvegardeHistoriqueLocal",
 							"source": {
 								"$ref": "AAAAAAFuklupg97os6s="
 							},
