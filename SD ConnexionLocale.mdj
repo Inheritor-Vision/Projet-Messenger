@@ -71,7 +71,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFurF89y23yUyY="
 							},
-							"name": "ConnexionInterne",
+							"name": "ConnexionLocale",
 							"ownedViews": [
 								{
 									"_type": "UMLFrameView",
@@ -92,9 +92,9 @@
 											"font": "Arial;13;0",
 											"left": 78.97900390625,
 											"top": 13,
-											"width": 103.62890625,
+											"width": 101.46435546875,
 											"height": 13,
-											"text": "ConnexionInterne"
+											"text": "ConnexionLocale"
 										},
 										{
 											"_type": "LabelView",
@@ -2059,7 +2059,8 @@
 					"_parent": {
 						"$ref": "AAAAAAFurF89ym3xCqI="
 					},
-					"name": "Role1"
+					"name": "Role1",
+					"type": ""
 				},
 				{
 					"_type": "UMLAttribute",
@@ -2076,7 +2077,8 @@
 					"_parent": {
 						"$ref": "AAAAAAFurF89ym3xCqI="
 					},
-					"name": "Role3"
+					"name": "Role3",
+					"type": ""
 				},
 				{
 					"_type": "UMLAttribute",
@@ -2084,7 +2086,8 @@
 					"_parent": {
 						"$ref": "AAAAAAFurF89ym3xCqI="
 					},
-					"name": "Role4"
+					"name": "Role4",
+					"type": ""
 				},
 				{
 					"_type": "UMLAttribute",
@@ -2092,7 +2095,8 @@
 					"_parent": {
 						"$ref": "AAAAAAFurF89ym3xCqI="
 					},
-					"name": "Role5"
+					"name": "Role5",
+					"type": ""
 				}
 			]
 		}
