@@ -10,10 +10,10 @@ public class Controller {
 	
 	//private ... socket;
 	
-	private Conversation conversation;
+	//private Conversation conversation;
 	
 	public Controller() {
-		
+		this.userInterface = new UserInterface();
 		
 	}
 	
@@ -23,7 +23,9 @@ public class Controller {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-
+		Controller co = new Controller();
+		co.userInterface.launchGUI();
+		
 	}
 
 }
