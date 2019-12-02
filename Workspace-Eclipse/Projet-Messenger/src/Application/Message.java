@@ -2,14 +2,12 @@ package Application;
 import java.sql.Timestamp;
 
 public class Message {
-	Address source;
-	Address destinataire;
+	Boolean isEnvoyeur;
 	String msg;
 	Timestamp date;
 	
-	protected Message(Address dest, Address src, String msgs) {
-		this.source = src;
-		this.destinataire = dest;
+	protected Message(Boolean isSender , String msgs) {
+		this.isEnvoyeur = isSender;
 		this.msg = msgs;
 		this.date = new Timestamp(System.currentTimeMillis());
 	}
@@ -18,14 +16,11 @@ public class Message {
 		return msg;
 	}
 	
-	protected Address getSource() {
-		return source;
-	}
-	protected Address getDestinataire() {
-		return destinataire;
-	}
-	
 	protected Timestamp getTimestamp() {
 		return date;
+	}
+
+	public Boolean getIsEnvoyeur() {
+		return isEnvoyeur;
 	}
 }
