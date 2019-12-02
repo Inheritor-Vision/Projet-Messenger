@@ -11,7 +11,7 @@ public interface NetworkSocketInterface {
  
  public void sendMessage(Message msg);
  
- public void getMessage(Controller cont);
+ public void startReceiverThread(Controller cont);
  
  public ArrayList<Conversation> getHistorique();
  
