@@ -20,7 +20,7 @@ public class Message {
 		return date;
 	}
 
-	public Boolean getIsEnvoyeur() {
+	protected Boolean getIsEnvoyeur() {
 		return isEnvoyeur;
 	}
 }
