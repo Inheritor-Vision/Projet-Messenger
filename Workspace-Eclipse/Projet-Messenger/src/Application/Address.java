@@ -21,22 +21,22 @@ protected void setIP(String iP) {
 }
 
 
-public String getPseudo() {
+protected String getPseudo() {
 	return Pseudo;
 }
 
 
-public void setPseudo(String pseudo) {
+protected void setPseudo(String pseudo) {
 	Pseudo = pseudo;
 }
 
 
-public String getUsername() {
+protected String getUsername() {
 	return Username;
 }
 
 
-public void setUsername(String username) {
+protected void setUsername(String username) {
 	Username = username;
 }
 
