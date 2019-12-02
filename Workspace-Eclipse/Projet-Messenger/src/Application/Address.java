@@ -2,11 +2,13 @@ package Application;
 
 public class Address {
  private String IP;
- private String NickName;
+ private String Pseudo;
+ private String Username;
  
-protected Address(String ip, String nickname) {
+protected Address(String ip, String pseudo, String un) {
 	IP = ip;
-	NickName = nickname;
+	setPseudo(pseudo);
+	setUsername(un);
 }
  
 
@@ -18,11 +20,25 @@ protected void setIP(String iP) {
 	IP = iP;
 }
 
-protected String getNickName() {
-	return NickName;
+
+public String getPseudo() {
+	return Pseudo;
 }
 
-protected void setNickName(String nickName) {
-	NickName = nickName;
+
+public void setPseudo(String pseudo) {
+	Pseudo = pseudo;
 }
+
+
+public String getUsername() {
+	return Username;
+}
+
+
+public void setUsername(String username) {
+	Username = username;
+}
+
+
 }
