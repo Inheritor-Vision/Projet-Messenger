@@ -1,20 +1,16 @@
 package Application;
 
 import java.util.ArrayList;
-import java.net.InetAddress;
-
-import sun.net.InetAddressCachePolicy;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.io.IOException;
 import java.lang.Thread;
 
 public class InternalSocket implements NetworkSocketInterface {
-	ArrayList<Address> connectedUserList;
+	ArrayList<Address> connectedUserList; // Need to be synchronized
 	protected static final int PORT_RCV = 6666;
 	protected static final int PORT_SEND = 6667;
 	protected static final int MAX_CHAR = 256;
@@ -34,12 +30,20 @@ public class InternalSocket implements NetworkSocketInterface {
 	public void sendConnected(Account loggedAccount) {
 		// TODO Auto-generated method stub
 		InetAddress otherIP;
-		for (int i = 0; i < connectedUserList.size(); i++) {
-		
-			otherIP = new InetAddre
-			String message = InternalSocket.CONNECTED.toString() + "\n" + loggedAccount.getUsername() + "\n" + loggedAccount.getPseudo() + "\n";
-			DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),otherIP, InternalSocket.PORT_RCV);
+		synchronized (connectedUserList) {
+			for (int i = 0; i < connectedUserList.size(); i++) {
+				
+				otherIP = connectedUserList.get(i).getIP();
+				String message = InternalSocket.CONNECTED.toString() + "\n" + loggedAccount.getUsername() + "\n" + loggedAccount.getPseudo() + "\n";
+				DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),otherIP, InternalSocket.PORT_RCV);
+				try {
+					Socket.send(outPacket);
+				} catch( IOException e) {
+					System.out.println("Error Sending in send connected");
+				}
+			}
 		}
+		
 		
 	}
 
