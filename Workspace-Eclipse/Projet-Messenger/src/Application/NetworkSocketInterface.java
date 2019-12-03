@@ -3,13 +3,15 @@ import java.util.ArrayList;
 
 public interface NetworkSocketInterface {
 	
- public void sendConnected();
+ public void sendConnected(Account loggedAccount);
+ 
+ public void sendDisconnected(Account loggedAccount);
  
  public void isServerUp();
  
  public ArrayList<Address> getUserList();
  
- public void sendMessage(Message msg);
+ public void sendMessage(Message msg, String Username);
  
  public void startReceiverThread(Controller cont);
  

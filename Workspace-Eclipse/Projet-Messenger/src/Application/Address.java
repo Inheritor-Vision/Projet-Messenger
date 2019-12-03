@@ -1,22 +1,24 @@
 package Application;
 
+import java.net.InetAddress;
+
 public class Address {
- private String IP;
+ private InetAddress IP;
  private String Pseudo;
  private String Username;
  
-protected Address(String ip, String pseudo, String un) {
+protected Address(InetAddress ip, String pseudo, String un) {
 	IP = ip;
 	setPseudo(pseudo);
 	setUsername(un);
 }
  
 
-protected String getIP() {
+protected InetAddress getIP() {
 	return IP;
 }
 
-protected void setIP(String iP) {
+protected void setIP(InetAddress iP) {
 	IP = iP;
 }
 
