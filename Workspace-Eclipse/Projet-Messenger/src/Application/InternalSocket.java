@@ -32,7 +32,7 @@ public class InternalSocket implements NetworkSocketInterface {
 	public void sendConnected() {
 		// TODO Auto-generated method stub
 		
-		DatagramPacket outPacket = new DatagramPacket()
+		//DatagramPacket outPacket = new DatagramPacket()
 	}
 
 	@Override
