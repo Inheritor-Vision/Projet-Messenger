@@ -1,9 +1,14 @@
 package Application;
 
 import java.util.ArrayList;
+import java.net.InetAddress;
+
+import sun.net.InetAddressCachePolicy;
+
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.io.IOException;
 import java.lang.Thread;
@@ -18,10 +23,7 @@ public class InternalSocket implements NetworkSocketInterface {
 	protected static final String  MESSAGE =  "Message";
 	DatagramSocket Socket;
 	
-	public enum MessageType {
-		CONNECTED,
-		
-	}
+	
 	
 	public InternalSocket() throws SocketException{
 		System.out.println("InternalSocket: starting . . .");
@@ -31,8 +33,14 @@ public class InternalSocket implements NetworkSocketInterface {
 	@Override
 	public void sendConnected(Account loggedAccount) {
 		// TODO Auto-generated method stub
-		String message = InternalSocket.CONNECTED.toString() + "\n"
-		DatagramPacket outPacket = new DatagramPacket()
+		InetAddress otherIP;
+		for (int i = 0; i < connectedUserList.size(); i++) {
+		
+			otherIP = new InetAddre
+			String message = InternalSocket.CONNECTED.toString() + "\n" + loggedAccount.getUsername() + "\n" + loggedAccount.getPseudo() + "\n";
+			DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),otherIP, InternalSocket.PORT_RCV);
+		}
+		
 	}
 
 	@Override
