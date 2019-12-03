@@ -6,33 +6,35 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.Socket;
 import java.net.SocketException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.Thread;
 import java.sql.Timestamp;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class InternalSocket implements NetworkSocketInterface {
 	ArrayList<Address> connectedUserList; // Need to be synchronized
 	protected static final int UDP_PORT_RCV = 6666;
 	protected static final int UDP_PORT_SEND = 6667;
+	protected static final int TCP_PORT_RCV= 6668;
+	protected static final int TCP_PORT_SEND = 6669;
 	protected static final int MAX_CHAR = 256;
 	protected static final String  CONNECTED =  "Connected";
 	protected static final String  DISCONNECTED =  "Disconnected";
 	protected static final String  MESSAGE =  "Message";
 	protected final String UsernameLogged;
-	DatagramSocket Socket;
+	DatagramSocket UDP_SEND_Socket;
 	
 	
 	
 	public InternalSocket(String UsernameLoggedAccount_) throws SocketException{
 		this.UsernameLogged = UsernameLoggedAccount_;
-		System.out.println("InternalSocket: starting . . .");
-		this.Socket = new DatagramSocket(InternalSocket.UDP_PORT_SEND);
-		
+		System.out.println("InternalSocket: starting UDP AND TCP SENDER SOCKET . . .");
+		this.UDP_SEND_Socket = new DatagramSocket(InternalSocket.UDP_PORT_SEND);
 		
 	}
 	
@@ -59,7 +61,7 @@ public class InternalSocket implements NetworkSocketInterface {
 	public void sendConnected(Account loggedAccount) {
 
 		try {
-			this.Socket.setBroadcast(true);
+			this.UDP_SEND_Socket.setBroadcast(true);
 			
 		} catch (SocketException e) {
 			System.out.println("InternalSocket: Error sendConnected");
@@ -68,7 +70,7 @@ public class InternalSocket implements NetworkSocketInterface {
 		String message = InternalSocket.CONNECTED.toString() + "\n" + loggedAccount.getUsername() + "\n" + loggedAccount.getPseudo() + "\n" + (new Timestamp(System.currentTimeMillis())).toString();;
 		try {
 			DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),listAllBroadcastAddresses().get(0), InternalSocket.UDP_PORT_RCV);
-			this.Socket.send(outPacket);
+			this.UDP_SEND_Socket.send(outPacket);
 		} catch ( IOException e) {
 			System.out.println("InternalSocket: Error dans sendConnected");
 			e.printStackTrace();
@@ -107,11 +109,15 @@ public class InternalSocket implements NetworkSocketInterface {
 			}
 		}
 		String message = InternalSocket.MESSAGE.toString() + "\n" +  UsernameLogged + "\n" + Username + "\n" + msg.getTimestamp().toString() + "\n" + msg.getMsg();;
-		DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),res.getIP(), InternalSocket.UDP_PORT_RCV);
+		InetAddress addrRcv = res.getIP();
 		try {
-			Socket.send(outPacket);
-		} catch( IOException e) {
-			System.out.println("Error Sending in sendMessage");
+			Socket TCP_SEND_Socket = new Socket(addrRcv, InternalSocket.TCP_PORT_RCV);
+			PrintWriter out = new PrintWriter(TCP_SEND_Socket.getOutputStream());
+			out.println(message);
+			TCP_SEND_Socket.close();
+		} catch (IOException e) {
+			System.out.println("InternalSocket: Error Send message création Socket");
+			e.printStackTrace();
 		}
 		
 	}
@@ -139,7 +145,8 @@ public class InternalSocket implements NetworkSocketInterface {
 		String message = InternalSocket.DISCONNECTED.toString() + "\n" + loggedAccount.getUsername() + "\n" + loggedAccount.getPseudo() + "\n" + (new Timestamp(System.currentTimeMillis())).toString();;
 		try {
 			DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),listAllBroadcastAddresses().get(0), InternalSocket.UDP_PORT_RCV);
-			this.Socket.send(outPacket);
+			this.UDP_SEND_Socket.send(outPacket);
+			this.UDP_SEND_Socket.close();
 		} catch ( IOException e) {
 			System.out.println("InternalSocket: Error dans sendConnected");
 			e.printStackTrace();
@@ -163,10 +170,10 @@ public class InternalSocket implements NetworkSocketInterface {
 
 }
 
-class ThreadReceiver extends Thread {
+class UDPThreadReceiver extends Thread {
 	DatagramSocket receiver;
 	
-	public ThreadReceiver() throws SocketException {
+	public UDPThreadReceiver() throws SocketException {
 		System.out.println("ThreadReceiver: starting . . .");
 		receiver = new DatagramSocket(InternalSocket.UDP_PORT_RCV);
 		
