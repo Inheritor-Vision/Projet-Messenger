@@ -29,9 +29,9 @@ public class InternalSocket implements NetworkSocketInterface {
 	}
 
 	@Override
-	public void sendConnected() {
+	public void sendConnected(Account loggedAccount) {
 		// TODO Auto-generated method stub
-		
+		String message = InternalSocket.CONNECTED.toString() + "\n"
 		DatagramPacket outPacket = new DatagramPacket()
 	}
 

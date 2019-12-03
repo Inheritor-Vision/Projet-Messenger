@@ -3,7 +3,7 @@ import java.util.ArrayList;
 
 public interface NetworkSocketInterface {
 	
- public void sendConnected();
+ public void sendConnected(Account loggedAccount);
  
  public void isServerUp();
  
