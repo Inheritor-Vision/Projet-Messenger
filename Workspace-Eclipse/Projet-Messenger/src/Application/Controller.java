@@ -8,17 +8,20 @@ public class Controller {
 	
 	private UserInterface userInterface;
 	
-	//private ... socket;
+	private InternalSocket socket;
 	
 	//private Conversation conversation;
 	
 	public Controller() {
 		this.userInterface = new UserInterface();
+		this.userInterface.co = this;
 		
 	}
 	
 	
-	
+	public InternalSocket getSocket() {
+		return socket;
+	}
 	
 
 	public static void main(String[] args) {
@@ -26,5 +29,11 @@ public class Controller {
 		Controller co = new Controller();
 		
 	}
+
+
+
+
+
+	
 
 }
