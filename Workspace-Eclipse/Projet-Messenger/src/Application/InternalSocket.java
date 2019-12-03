@@ -1,13 +1,14 @@
 package Application;
 
 import java.util.ArrayList;
-
+import java.util.Iterator;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.io.IOException;
 import java.lang.Thread;
+import java.sql.Timestamp;
 
 public class InternalSocket implements NetworkSocketInterface {
 	ArrayList<Address> connectedUserList; // Need to be synchronized
@@ -17,13 +18,16 @@ public class InternalSocket implements NetworkSocketInterface {
 	protected static final String  CONNECTED =  "Connected";
 	protected static final String  DISCONNECTED =  "Disconnected";
 	protected static final String  MESSAGE =  "Message";
+	protected final String UsernameLogged;
 	DatagramSocket Socket;
 	
 	
 	
-	public InternalSocket() throws SocketException{
+	public InternalSocket(String UsernameLoggedAccount_) throws SocketException{
+		this.UsernameLogged = UsernameLoggedAccount_;
 		System.out.println("InternalSocket: starting . . .");
-		Socket = new DatagramSocket(InternalSocket.PORT_SEND);
+		this.Socket = new DatagramSocket(InternalSocket.PORT_SEND);
+		
 	}
 
 	@Override
@@ -34,7 +38,7 @@ public class InternalSocket implements NetworkSocketInterface {
 			for (int i = 0; i < connectedUserList.size(); i++) {
 				
 				otherIP = connectedUserList.get(i).getIP();
-				String message = InternalSocket.CONNECTED.toString() + "\n" + loggedAccount.getUsername() + "\n" + loggedAccount.getPseudo() + "\n";
+				String message = InternalSocket.CONNECTED.toString() + "\n" + loggedAccount.getUsername() + "\n" + loggedAccount.getPseudo() + "\n" + (new Timestamp(System.currentTimeMillis())).toString();;
 				DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),otherIP, InternalSocket.PORT_RCV);
 				try {
 					Socket.send(outPacket);
@@ -50,7 +54,7 @@ public class InternalSocket implements NetworkSocketInterface {
 	@Override
 	public void isServerUp() {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
@@ -60,9 +64,28 @@ public class InternalSocket implements NetworkSocketInterface {
 	}
 
 	@Override
-	public void sendMessage(Message msg) {
+	public void sendMessage(Message msg, String Username) {
 		// TODO Auto-generated method stub
+		Address res = null;
+		Boolean fin = false;
+		synchronized (connectedUserList) {
+			Iterator<Address> iter = connectedUserList.iterator();
 
+			while (iter.hasNext() && !fin) {
+			 res = iter.next();
+			 if(res.getUsername().equals(Username)) {
+				 fin = true;
+			 }
+			}
+		}
+		String message = InternalSocket.MESSAGE.toString() + "\n" +  UsernameLogged + "\n" + Username + "\n" + msg.getTimestamp().toString() + "\n" + msg.getMsg();;
+		DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),res.getIP(), InternalSocket.PORT_RCV);
+		try {
+			Socket.send(outPacket);
+		} catch( IOException e) {
+			System.out.println("Error Sending in sendMessage");
+		}
+		
 	}
 
 	@Override
@@ -81,6 +104,25 @@ public class InternalSocket implements NetworkSocketInterface {
 	public void sendHistorique(ArrayList<Conversation> lh) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void sendDisconnected(Account loggedAccount) {
+		// TODO Auto-generated method stub
+		InetAddress otherIP;
+		synchronized (connectedUserList) {
+			for (int i = 0; i < connectedUserList.size(); i++) {
+				
+				otherIP = connectedUserList.get(i).getIP();
+				String message = InternalSocket.DISCONNECTED.toString() + "\n" + loggedAccount.getUsername() + "\n" + loggedAccount.getPseudo() + "\n" + (new Timestamp(System.currentTimeMillis())).toString();;
+				DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),otherIP, InternalSocket.PORT_RCV);
+				try {
+					Socket.send(outPacket);
+				} catch( IOException e) {
+					System.out.println("Error Sending in send connected");
+				}
+			}
+		}
 	}
 
 }
