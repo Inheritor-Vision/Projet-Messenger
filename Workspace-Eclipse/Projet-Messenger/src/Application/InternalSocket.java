@@ -38,6 +38,7 @@ public class InternalSocket implements NetworkSocketInterface {
 	
 	public InternalSocket(String UsernameLoggedAccount_){
 		this.UsernameLogged = UsernameLoggedAccount_;
+		this.connectedUserList = new ArrayList<Address>();
 		System.out.println("InternalSocket: starting UDP AND TCP SENDER SOCKET . . .");
 		try {
 			this.UDP_SEND_Socket = new DatagramSocket(InternalSocket.UDP_PORT_SEND);
@@ -77,7 +78,7 @@ public class InternalSocket implements NetworkSocketInterface {
 			System.out.println("InternalSocket: Error sendConnected");
 			e.printStackTrace();
 		}
-		String message = InternalSocket.CONNECTED.toString() + "\n" + loggedAccount.getUsername() + "\n" + loggedAccount.getPseudo() + "\n" + (new Timestamp(System.currentTimeMillis())).toString();;
+		String message = InternalSocket.CONNECTED.toString() + "bbbb\nbbbb" + loggedAccount.getUsername() + "\n" + loggedAccount.getPseudo() + "\n" + (new Timestamp(System.currentTimeMillis())).toString();;
 		try {
 			DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),listAllBroadcastAddresses().get(0), InternalSocket.UDP_PORT_RCV);
 			this.UDP_SEND_Socket.send(outPacket);
@@ -119,11 +120,13 @@ public class InternalSocket implements NetworkSocketInterface {
 			 }
 			}
 		}
-		String message = InternalSocket.MESSAGE.toString() + "\n" +  UsernameLogged + "\n" + Username + "\n" + msg.getTimestamp().toString() + "\n" + msg.getMsg();;
+		System.out.println("InternalSocket: addr find " + res.getIP());
+		String message = InternalSocket.MESSAGE.toString() + "\n" +  UsernameLogged + "\n" + Username + "\n" + msg.getTimestamp().toString() + "\n" + msg.getMsg() + "\n" + InternalSocket.END_MESSAGE;
+		System.out.println("InternalSocket: msg : " + message);
 		InetAddress addrRcv = res.getIP();
 		try {
 			Socket TCP_SEND_Socket = new Socket(addrRcv, InternalSocket.TCP_PORT_RCV);
-			PrintWriter out = new PrintWriter(TCP_SEND_Socket.getOutputStream());
+			PrintWriter out = new PrintWriter(TCP_SEND_Socket.getOutputStream(),true);
 			out.println(message);
 			TCP_SEND_Socket.close();
 		} catch (IOException e) {
