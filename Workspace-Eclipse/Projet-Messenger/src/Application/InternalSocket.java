@@ -6,10 +6,14 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.lang.Thread;
 import java.sql.Timestamp;
 import java.util.Enumeration;
@@ -26,15 +30,21 @@ public class InternalSocket implements NetworkSocketInterface {
 	protected static final String  CONNECTED =  "Connected";
 	protected static final String  DISCONNECTED =  "Disconnected";
 	protected static final String  MESSAGE =  "Message";
+	protected static final String END_MESSAGE = "stop";
 	protected final String UsernameLogged;
 	DatagramSocket UDP_SEND_Socket;
 	
 	
 	
-	public InternalSocket(String UsernameLoggedAccount_) throws SocketException{
+	public InternalSocket(String UsernameLoggedAccount_){
 		this.UsernameLogged = UsernameLoggedAccount_;
 		System.out.println("InternalSocket: starting UDP AND TCP SENDER SOCKET . . .");
-		this.UDP_SEND_Socket = new DatagramSocket(InternalSocket.UDP_PORT_SEND);
+		try {
+			this.UDP_SEND_Socket = new DatagramSocket(InternalSocket.UDP_PORT_SEND);
+		} catch (SocketException e) {
+			System.out.println("Internal Socket: Error init UDP socket in constructor");
+			e.printStackTrace();
+		}
 		
 	}
 	
@@ -175,34 +185,111 @@ class UDPThreadReceiver extends Thread {
 	DatagramSocket receiver;
 	
 	public UDPThreadReceiver() throws SocketException {
+		super();
 		System.out.println("ThreadReceiver: starting . . .");
 		receiver = new DatagramSocket(InternalSocket.UDP_PORT_RCV);
+		this.start();
 		
 	}
 	
 	@Override
 	public void run(){
-		System.out.println("ThreadReceiver: running . . .");
+		System.out.println("UDPThreadReceiver: running . . .");
 		while(true) {
 			byte[] buffer = new byte[InternalSocket.MAX_CHAR];
 			DatagramPacket inPacket = new DatagramPacket(buffer,buffer.length);
 			try {
 				receiver.receive(inPacket);
-				System.out.println("ThreadReceiver: msg received");
+				System.out.println("UDPThreadReceiver: msg received");
 				InetAddress clientAddress = inPacket.getAddress();
 				String message = new String (inPacket.getData(), 0, inPacket.getLength());
 				
 			}catch (IOException e) {
-				System.out.println("Error thread");
+				System.out.println("UDPThreadReceiver: Error thread");
 			}
 		}
 		
 		
 	}
 	
+	class TCPThreadReceiver extends Thread {
+		ServerSocket receiver;
+		int n;
+		public TCPThreadReceiver() {
+			super();
+			try {
+				receiver = new ServerSocket(InternalSocket.TCP_PORT_RCV);
+			} catch (IOException e) {
+				System.out.println("TCPThreadReceiver: Error constructor ServSocket");
+				e.printStackTrace();
+			}
+			this.n = 0;
+			this.start();
+			
+		}
+		
+		public void run() {
+			while(true) {
+				try {
+					Socket clientSocket = receiver.accept();
+					n++;
+					ThreadSocketFils temp = new ThreadSocketFils(clientSocket, n);
+					
+				} catch (IOException e) {
+					System.out.println("TCPThreadReceiver: Error accept");
+					e.printStackTrace();
+				}
+			}
+			
+		}
+		
+	}
 	
 	
+	class ThreadSocketFils extends Thread{
+		Socket son;
+		int n;
+		
+		ThreadSocketFils(Socket chassot, int a){
+			son = chassot;
+			n =a;
+			this.start();
+		}
+		
+		@Override
+		public void run(){
+			try {
+				System.out.println("ThreadSocketFils" + n + ": Succesfully created");
+				BufferedReader in = new BufferedReader(new InputStreamReader(son.getInputStream()));
+				Boolean fin = false;
+				while(!fin) {
+					String temp = in.readLine();
+					if(!temp.isEmpty()) {
+						if (temp.contains(InternalSocket.END_MESSAGE)) {
+							fin = true;
+						}
+					}
+				}
+				son.close();
+			}catch(IOException e) {
+					System.out.println("ThreadSocketFils" + n + ": Error accept");
+					e.printStackTrace();
+			}
+		}
+			
+		}
 	
+	class Con implements Serializable{
+		private static final long serialVersionUID = 7732913674841021379L;
+		private Address addr;
+		public Con (Address adr) {
+			addr =adr;
+		}
+		
+	}
+	
+	
+		
 	
 	
 	
