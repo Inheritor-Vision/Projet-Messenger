@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class InternalSocket implements NetworkSocketInterface {
-	ArrayList<Address> connectedUserList; // Need to be synchronized
+	ArrayList<Address> connectedUserList = new ArrayList<Address>(); // Need to be synchronized
 	protected static final int UDP_PORT_RCV = 6666;
 	protected static final int UDP_PORT_SEND = 6667;
 	protected static final int TCP_PORT_RCV= 6668;
@@ -92,6 +92,11 @@ public class InternalSocket implements NetworkSocketInterface {
 	public ArrayList<Address> getUserList() {
 		// TODO Auto-generated method stub
 		return connectedUserList;
+	}
+	@Override
+	public void setUserList(ArrayList<Address> ul) {
+		// TODO Auto-generated method stub
+		this.connectedUserList = ul;
 	}
 
 	@Override

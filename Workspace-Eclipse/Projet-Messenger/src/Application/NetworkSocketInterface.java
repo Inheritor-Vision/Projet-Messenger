@@ -18,6 +18,9 @@ public interface NetworkSocketInterface {
  public ArrayList<Conversation> getHistorique();
  
  public void sendHistorique(ArrayList<Conversation> lh);
+
+ 
+ void setUserList(ArrayList<Address> ul);
  
  
 

@@ -4,17 +4,23 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 //import java.util.EventObject;
+import java.util.ArrayList;
 
 class UserInterface extends JFrame{
+	//juste pour test
+	ArrayList<Address> connectedUserList = new ArrayList<Address>();
+	//
 	
 	Controller co;
+	int nb_uc=0;
 	boolean connecte = false;
 	connexionPage connexionpage;
 	creationcomptePage creationcomptepage;
 	utilisateursconnectesPage utilisateursconnectespage;
 	MenuBar menubar;
+	JScrollPane scrollbar_uc;
 	
-	public UserInterface() {
+	public UserInterface(/*ArrayList<Address> connectedUserList/*pour test*/) {
 		/*super("Messenger");
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -23,6 +29,7 @@ class UserInterface extends JFrame{
 		});*/
 		
 		super("Messenger");
+		//this.connectedUserList = connectedUserList; //pour test
 		initGUI();
 		
 	}
@@ -35,6 +42,9 @@ class UserInterface extends JFrame{
 		this.connexionpage = new connexionPage();
 		this.creationcomptepage = new creationcomptePage();
 		this.utilisateursconnectespage = new utilisateursconnectesPage();
+		this.scrollbar_uc = new JScrollPane(this.utilisateursconnectespage);
+		this.scrollbar_uc.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		this.scrollbar_uc.setBounds(50, 30, 300, 50);
 		this.menubar = new MenuBar();
 		this.getContentPane().add(this.menubar, BorderLayout.PAGE_START);
 		setConnexionPage();
@@ -47,7 +57,8 @@ class UserInterface extends JFrame{
 		this.setVisible(false);
 		this.getContentPane().add(this.connexionpage, BorderLayout.CENTER);
 		this.getContentPane().remove(this.creationcomptepage);
-		this.getContentPane().remove(this.utilisateursconnectespage);
+		//this.getContentPane().remove(this.utilisateursconnectespage);
+		this.getContentPane().remove(this.scrollbar_uc);
 		this.setVisible(true);	
 	}
 	
@@ -55,13 +66,15 @@ class UserInterface extends JFrame{
 		this.setVisible(false);
 		this.getContentPane().add(this.creationcomptepage, BorderLayout.CENTER);
 		this.getContentPane().remove(this.connexionpage);
-		this.getContentPane().remove(this.utilisateursconnectespage);
+		//this.getContentPane().remove(this.utilisateursconnectespage);
+		this.getContentPane().remove(this.scrollbar_uc);
 		this.setVisible(true);	
 	}
 	
 	void setUtilisateursconnectesPage_same_frame() {
 		this.setVisible(false);
-		this.getContentPane().add(this.utilisateursconnectespage, BorderLayout.CENTER);
+		//this.getContentPane().add(this.utilisateursconnectespage, BorderLayout.CENTER);
+		this.getContentPane().add(this.scrollbar_uc, BorderLayout.CENTER);
 		this.getContentPane().remove(this.connexionpage);
 		this.getContentPane().remove(this.creationcomptepage);
 		this.setVisible(true);
@@ -142,30 +155,53 @@ class UserInterface extends JFrame{
 	
 class utilisateursconnectesPage extends JPanel{
 	private JButton[] utilisateurs;
+	private JLabel erreur;
 	private afficherconversationHandler acH = new afficherconversationHandler();
 
 	
 	public utilisateursconnectesPage() {
 		super(new GridLayout(0,1));
 		
-		this.utilisateurs = new JButton[100];
-		for (int i=0;i<100;i++) {
-			this.utilisateurs[i]= new JButton(Integer.toString(i));
-			this.add(this.utilisateurs[i]);
-			this.utilisateurs[i].addActionListener(this.acH);
+		//if (co.getSocket().getUserList().isEmpty()) {
+		if(connectedUserList.isEmpty()) { //pour test
+			this.erreur = new JLabel("Erreur, pas d'utilisateurs connectés");
+			this.add(this.erreur);
 		}
-		
-		
+		else {
+			String[] psdo = pseudo_uc();
+			this.utilisateurs = new JButton[nb_uc];
+			for (int i=0;i<nb_uc;i++) {
+				this.utilisateurs[i]= new JButton(psdo[i]);
+				this.utilisateurs[i].setMinimumSize(new Dimension(400,400));
+				this.add(this.utilisateurs[i]);
+				this.utilisateurs[i].addActionListener(this.acH);
+			}
+		}
+	
 		this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 	
 	}
 	
-	/*String[] pseudo_uc() {
-		String[] uc;
+	String[] pseudo_uc() { //recup une liste de pseudo des uc
+		/*String[] uc;
+		nb_uc = co.getSocket().getUserList().size();
+		uc = new String[nb_uc];
+		for (int i=0;i<nb_uc;i++) {
+			uc[i] = co.getSocket().getUserList().get(i).getPseudo();
+		}
 		
+		return uc;*/
+		
+		//pour test
+		String[] uc;
+		nb_uc = connectedUserList.size();
+		uc = new String[nb_uc];
+		for (int i=0;i<nb_uc;i++) {
+			uc[i] = connectedUserList.get(i).getPseudo();
+		}
 		
 		return uc;
-	}*/
+	}
 
 }
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -223,6 +259,7 @@ class utilisateursconnectesPage extends JPanel{
 	}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	
 ///////////////////////////////LES ACTIONS LISTENER///////////////////////////////////////////////////////
 	private class pagecreationcompteHandler implements ActionListener {
 
@@ -257,6 +294,10 @@ class utilisateursconnectesPage extends JPanel{
 			if ( username_.equals("admin") && password_.equals("admin")) { //par exemple pour l'instant
 				//(...)//
 				connexionpage.erreur.setText("Entrez username/password");
+				utilisateursconnectespage = new utilisateursconnectesPage();
+				scrollbar_uc = new JScrollPane(utilisateursconnectespage);
+				scrollbar_uc.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+				scrollbar_uc.setBounds(50, 30, 300, 50);
 				setUtilisateursconnectesPage_same_frame();
 			}
 			else {
@@ -275,7 +316,6 @@ class utilisateursconnectesPage extends JPanel{
 			// TODO Auto-generated method stub
 			
 			//(...)//
-			
 			connexionpage.erreur.setText("Entrez username/password");
 			setConnexionPage();
 		}
