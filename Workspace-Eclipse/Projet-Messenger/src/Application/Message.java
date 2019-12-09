@@ -2,7 +2,7 @@ package Application;
 import java.sql.Timestamp;
 
 public class Message {
-	Boolean isEnvoyeur;
+	Boolean isEnvoyeur; // 1=envoyeur / 0=receveur
 	String msg;
 	Timestamp date;
 	

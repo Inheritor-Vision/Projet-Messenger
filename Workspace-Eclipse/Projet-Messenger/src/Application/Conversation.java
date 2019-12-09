@@ -2,7 +2,7 @@ package Application;
 import java.util.ArrayList;
 
 public class Conversation {
-	private ArrayList<Message> conv;
+	private ArrayList<Message> conv = new ArrayList<Message>();
 	private Address destinataire;
 
 	protected Conversation(Address destinataire) {
@@ -28,6 +28,14 @@ public class Conversation {
 	
 	protected Address getDestinataire() {
 		return this.destinataire;
+	}
+	
+	protected void setDestinataire(Address dest) {
+		this.destinataire = dest;
+	}
+	
+	protected boolean isEmpty() {
+		return this.conv.isEmpty();
 	}
 
 }

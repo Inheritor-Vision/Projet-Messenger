@@ -17,8 +17,11 @@ class UserInterface extends JFrame{
 	connexionPage connexionpage;
 	creationcomptePage creationcomptepage;
 	utilisateursconnectesPage utilisateursconnectespage;
-	MenuBar menubar;
 	JScrollPane scrollbar_uc;
+	conversationPage conversationpage;
+	JScrollPane scrollbar_conv;
+	MenuBar menubar;
+	
 	
 	public UserInterface(/*ArrayList<Address> connectedUserList/*pour test*/) {
 		/*super("Messenger");
@@ -44,7 +47,12 @@ class UserInterface extends JFrame{
 		this.utilisateursconnectespage = new utilisateursconnectesPage();
 		this.scrollbar_uc = new JScrollPane(this.utilisateursconnectespage);
 		this.scrollbar_uc.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		this.scrollbar_uc.setBounds(50, 30, 300, 50);
+		//this.scrollbar_uc.setBounds(50, 30, 300, 50);
+		this.conversationpage = new conversationPage();
+		this.scrollbar_conv = new JScrollPane(this.conversationpage);
+		this.scrollbar_conv.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		this.scrollbar_conv.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		//this.scrollbar_conv.setBounds(50, 30, 300, 50);
 		this.menubar = new MenuBar();
 		this.getContentPane().add(this.menubar, BorderLayout.PAGE_START);
 		setConnexionPage();
@@ -57,8 +65,8 @@ class UserInterface extends JFrame{
 		this.setVisible(false);
 		this.getContentPane().add(this.connexionpage, BorderLayout.CENTER);
 		this.getContentPane().remove(this.creationcomptepage);
-		//this.getContentPane().remove(this.utilisateursconnectespage);
 		this.getContentPane().remove(this.scrollbar_uc);
+		this.getContentPane().remove(this.scrollbar_conv);
 		this.setVisible(true);	
 	}
 	
@@ -66,17 +74,39 @@ class UserInterface extends JFrame{
 		this.setVisible(false);
 		this.getContentPane().add(this.creationcomptepage, BorderLayout.CENTER);
 		this.getContentPane().remove(this.connexionpage);
-		//this.getContentPane().remove(this.utilisateursconnectespage);
 		this.getContentPane().remove(this.scrollbar_uc);
+		this.getContentPane().remove(this.scrollbar_conv);
 		this.setVisible(true);	
 	}
 	
 	void setUtilisateursconnectesPage_same_frame() {
 		this.setVisible(false);
-		//this.getContentPane().add(this.utilisateursconnectespage, BorderLayout.CENTER);
+		//on recrée la page pour màj
+		this.getContentPane().remove(this.scrollbar_uc);
+		this.utilisateursconnectespage = new utilisateursconnectesPage();
+		this.scrollbar_uc = new JScrollPane(this.utilisateursconnectespage);
+		this.scrollbar_uc.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		this.getContentPane().add(this.scrollbar_uc, BorderLayout.CENTER);
+		//
 		this.getContentPane().remove(this.connexionpage);
 		this.getContentPane().remove(this.creationcomptepage);
+		this.getContentPane().remove(this.scrollbar_conv);
+		this.setVisible(true);
+	}
+	
+	void setConversationPage() {
+		this.setVisible(false);		
+		//on recrée la page pour màj
+		this.getContentPane().remove(this.scrollbar_conv);
+		this.conversationpage = new conversationPage();
+		this.scrollbar_conv = new JScrollPane(this.conversationpage);
+		this.scrollbar_conv.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		this.scrollbar_conv.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		//
+		this.getContentPane().add(this.scrollbar_conv, BorderLayout.CENTER);
+		this.getContentPane().remove(this.connexionpage);
+		this.getContentPane().remove(this.creationcomptepage);
+		this.getContentPane().remove(this.scrollbar_uc);
 		this.setVisible(true);
 	}
 ////////////////////////////////////////////	
@@ -119,7 +149,7 @@ class UserInterface extends JFrame{
 	}
 ////////////////////////////////////////////////////////////////////////////////////////
 	
-//////////////////////////////////CREATION COMPTE (JPanel)////////////////////////////////////////////////////
+//////////////////////////////////PAGE DE CREATION COMPTE (JPanel)////////////////////////////////////////////////////
 	class creationcomptePage extends JPanel{
 		public JTextField username;
 		private JTextField password;
@@ -172,7 +202,7 @@ class utilisateursconnectesPage extends JPanel{
 			this.utilisateurs = new JButton[nb_uc];
 			for (int i=0;i<nb_uc;i++) {
 				this.utilisateurs[i]= new JButton(psdo[i]);
-				this.utilisateurs[i].setMinimumSize(new Dimension(400,400));
+				//this.utilisateurs[i].setMinimumSize(new Dimension(4000,4000));
 				this.add(this.utilisateurs[i]);
 				this.utilisateurs[i].addActionListener(this.acH);
 			}
@@ -203,6 +233,64 @@ class utilisateursconnectesPage extends JPanel{
 		return uc;
 	}
 
+}
+////////////////////////////////////////////////////////////////////////////////////////
+
+///////////////PAGE DE CONVERSATION (JPanel)////////////////////////////////////////////
+class conversationPage extends JPanel{
+	private JTextArea[] discussion;
+	private JTextField message;
+	private JButton envoi_message;
+	private envoyermessageHandler emH = new envoyermessageHandler();
+	
+	public conversationPage() {
+		super(new GridLayout(0,1));
+		try {
+			if (co.getConversation().isEmpty()) {
+				this.discussion = new JTextArea[1];
+				this.discussion[0] = new JTextArea("pas de conversation");
+				this.discussion[0].setForeground(Color.RED);
+			}
+			else {
+				this.discussion = new JTextArea[co.getConversation().getConvSize()];
+				Message[] m = co.getConversation().getAllMessages();
+				for (int i=0;i<co.getConversation().getConvSize();i++) {
+					this.discussion[i] = new JTextArea(m[i].getTimestamp() + " : " + m[i].getMsg());
+					if (m[i].getIsEnvoyeur()) {
+						this.discussion[i].setForeground(Color.BLUE);
+						//this.discussion[i].setHorizontalAlignment(SwingConstants.RIGHT);
+					}
+					else {
+						this.discussion[i].setForeground(Color.DARK_GRAY);
+						//this.discussion[i].setHorizontalAlignment(SwingConstants.LEFT);
+					}
+					this.add(this.discussion[i]);
+				}
+			} 
+		} catch (NullPointerException e) {
+			this.discussion = new JTextArea[1];
+			this.discussion[0] = new JTextArea("pas de conversation");
+			this.discussion[0].setForeground(Color.RED);
+		}
+		
+
+		this.message = new JTextField();
+		try {
+		this.envoi_message = new JButton("envoyer le message à "+ co.getConversation().getDestinataire().getPseudo());
+		} catch (NullPointerException e) {
+			this.envoi_message = new JButton("envoyer le message");
+		}
+		this.add(this.message);
+		this.add(this.envoi_message);
+		
+		this.envoi_message.addActionListener(this.emH);
+		
+		this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		
+	}
+	
+	
+	
 }
 ////////////////////////////////////////////////////////////////////////////////////////
 	
@@ -294,10 +382,10 @@ class utilisateursconnectesPage extends JPanel{
 			if ( username_.equals("admin") && password_.equals("admin")) { //par exemple pour l'instant
 				//(...)//
 				connexionpage.erreur.setText("Entrez username/password");
-				utilisateursconnectespage = new utilisateursconnectesPage();
+				/*utilisateursconnectespage = new utilisateursconnectesPage();
 				scrollbar_uc = new JScrollPane(utilisateursconnectespage);
-				scrollbar_uc.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-				scrollbar_uc.setBounds(50, 30, 300, 50);
+				scrollbar_uc.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);*/
+				//scrollbar_uc.setBounds(50, 30, 300, 50);
 				setUtilisateursconnectesPage_same_frame();
 			}
 			else {
@@ -375,6 +463,25 @@ class utilisateursconnectesPage extends JPanel{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
+			
+			//(...) màj co.conversation//
+			
+			setConversationPage();
+			
+		}
+		
+		
+	}
+	
+	private class envoyermessageHandler implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			
+			co.getConversation().addMessage(new Message(true,conversationpage.message.getText()));
+			
+			setConversationPage();
 			
 		}
 		
