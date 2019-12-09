@@ -13,7 +13,7 @@ public interface NetworkSocketInterface {
  
  public void sendMessage(Message msg, String Username);
  
- public void startReceiverThread(Controller cont);
+ public void startReceiverThread();
  
  public ArrayList<Conversation> getHistorique();
  
