@@ -144,7 +144,8 @@ public class InternalSocket implements NetworkSocketInterface {
 	@Override
 	public void startReceiverThread() {
 		// TODO Auto-generated method stub
-		TCPThreadReceiver temp = new TCPThreadReceiver();
+		TCPThreadReceiver TCP = new TCPThreadReceiver();
+		UDPThreadReceiver UDP = new UDPThreadReceiver();
 	}
 
 	@Override
@@ -271,7 +272,7 @@ class UDPThreadReceiver extends Thread {
 		ThreadSocketFils(Socket chassot, int a){
 			son = chassot;
 			n =a;
-			System.out.println("ThreadSocketFils: creation ThreadSocketfils . . .");
+			System.out.println("ThreadSocketFils" + n + ": creation ThreadSocketfils . . .");
 			this.start();
 		}
 		
@@ -281,15 +282,17 @@ class UDPThreadReceiver extends Thread {
 				System.out.println("ThreadSocketFils" + n + ": Succesfully created");
 				BufferedReader in = new BufferedReader(new InputStreamReader(son.getInputStream()));
 				Boolean fin = false;
+				String message = "";
 				while(!fin) {
 					String temp = in.readLine();
-					if(!temp.isEmpty()) {
-						System.out.println("ThreadSocketFils: msg received: " + temp);
-						if (temp.contains(InternalSocket.END_MESSAGE)) {
+					if(temp != null) {
+						System.out.println("ThreadSocketFils" + n + ": msg received: " + temp);
+						if (temp.equals(InternalSocket.END_MESSAGE)) {
 							fin = true;
 						}
 					}
 				}
+				System.out.println("ThreadSocketFils" + n +": Closing . . .");
 				son.close();
 			}catch(IOException e) {
 					System.out.println("ThreadSocketFils" + n + ": Error accept");

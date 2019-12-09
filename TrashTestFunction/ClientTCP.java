@@ -13,8 +13,9 @@ import java.net.UnknownHostException;
 public class ClientTCP {
     public static void main(String[] args) throws UnknownHostException, IOException {
         Socket sock = new Socket(InetAddress.getLocalHost(), 6668);
-        PrintWriter out = new PrintWriter(sock.getOutputStream());
-        out.println("ceci est un test de TCP BRO\n stop\n");
+        PrintWriter out = new PrintWriter(sock.getOutputStream(),true);
+        out.println("ceci est un test de TCP BRO\nstop\n");
+        out.close();
         sock.close();
     }
 }
