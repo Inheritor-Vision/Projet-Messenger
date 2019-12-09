@@ -142,9 +142,10 @@ public class InternalSocket implements NetworkSocketInterface {
 	}
 
 	@Override
-	public void startReceiverThread(Controller cont) {
+	public void startReceiverThread() {
 		// TODO Auto-generated method stub
-
+		TCPThreadReceiver TCP = new TCPThreadReceiver();
+		UDPThreadReceiver UDP = new UDPThreadReceiver();
 	}
 
 	@Override
@@ -192,10 +193,15 @@ public class InternalSocket implements NetworkSocketInterface {
 class UDPThreadReceiver extends Thread {
 	DatagramSocket receiver;
 	
-	public UDPThreadReceiver() throws SocketException {
+	public UDPThreadReceiver() {
 		super();
 		System.out.println("ThreadReceiver: starting . . .");
-		receiver = new DatagramSocket(InternalSocket.UDP_PORT_RCV);
+		try {
+			receiver = new DatagramSocket(InternalSocket.UDP_PORT_RCV);
+		} catch (SocketException e) {
+			System.out.println("UDPThreadReceiver: Error creatino socket");
+			e.printStackTrace();
+		}
 		this.start();
 		
 	}
@@ -207,10 +213,12 @@ class UDPThreadReceiver extends Thread {
 			byte[] buffer = new byte[InternalSocket.MAX_CHAR];
 			DatagramPacket inPacket = new DatagramPacket(buffer,buffer.length);
 			try {
+				System.out.println("UDPThreadReceiver: waiting for messages");
 				receiver.receive(inPacket);
-				System.out.println("UDPThreadReceiver: msg received");
+				
 				InetAddress clientAddress = inPacket.getAddress();
 				String message = new String (inPacket.getData(), 0, inPacket.getLength());
+				System.out.println("UDPThreadReceiver: msg received: " + message);
 				
 			}catch (IOException e) {
 				System.out.println("UDPThreadReceiver: Error thread");
@@ -219,6 +227,7 @@ class UDPThreadReceiver extends Thread {
 		
 		
 	}
+}
 	
 	class TCPThreadReceiver extends Thread {
 		ServerSocket receiver;
@@ -232,6 +241,7 @@ class UDPThreadReceiver extends Thread {
 				e.printStackTrace();
 			}
 			this.n = 0;
+			System.out.println("TCPThreadreceiver: Creation ServSocket");
 			this.start();
 			
 		}
@@ -241,6 +251,7 @@ class UDPThreadReceiver extends Thread {
 				try {
 					Socket clientSocket = receiver.accept();
 					n++;
+					System.out.println("TCPThreadReceiver: Creation Socket fils en cours . . .");
 					ThreadSocketFils temp = new ThreadSocketFils(clientSocket, n);
 					
 				} catch (IOException e) {
@@ -261,6 +272,7 @@ class UDPThreadReceiver extends Thread {
 		ThreadSocketFils(Socket chassot, int a){
 			son = chassot;
 			n =a;
+			System.out.println("ThreadSocketFils" + n + ": creation ThreadSocketfils . . .");
 			this.start();
 		}
 		
@@ -270,14 +282,17 @@ class UDPThreadReceiver extends Thread {
 				System.out.println("ThreadSocketFils" + n + ": Succesfully created");
 				BufferedReader in = new BufferedReader(new InputStreamReader(son.getInputStream()));
 				Boolean fin = false;
+				String message = "";
 				while(!fin) {
 					String temp = in.readLine();
-					if(!temp.isEmpty()) {
-						if (temp.contains(InternalSocket.END_MESSAGE)) {
+					if(temp != null) {
+						System.out.println("ThreadSocketFils" + n + ": msg received: " + temp);
+						if (temp.equals(InternalSocket.END_MESSAGE)) {
 							fin = true;
 						}
 					}
 				}
+				System.out.println("ThreadSocketFils" + n +": Closing . . .");
 				son.close();
 			}catch(IOException e) {
 					System.out.println("ThreadSocketFils" + n + ": Error accept");
@@ -301,4 +316,4 @@ class UDPThreadReceiver extends Thread {
 	
 	
 	
-}
+
