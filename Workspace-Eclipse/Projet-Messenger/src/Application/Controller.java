@@ -97,11 +97,13 @@ public class Controller {
 		
 		//test conversation
 		co.conversation.setDestinataire(ds);
-		co.conversation.addMessage(new Message(true, "bonjour"));
-		co.conversation.addMessage(new Message(false, "yo"));
-		co.conversation.addMessage(new Message(true, "ma phrase est très long exprès pour tester l'affichage des messages\n plutot long pas besoin de la lire jsuqu'au bout ça n'a pas trop d'interet hahahahahahah ahaha hahahah ahahahah ahahahahahahahahahahahaha"));
-		co.conversation.addMessage(new Message(false, "ma phrase aussi est très long exprès pour tester l'affichage des messages plutot long pas besoin de la lire jsuqu'au bout ça n'a pas trop d'interet hahahahahahah ahaha hahahah ahahahah ahahahahahahahahahahahaha"));
-		co.conversation.addMessage(new Message(true, "ok"));
+		co.conversation.addMessage(new Message(true, "bonjour",true));
+		co.conversation.addMessage(new Message(false, "yo",true));
+		co.conversation.addMessage(new Message(true, "ma phrase est très long exprès pour tester l'affichage des messages\n plutot long pas besoin de la lire jsuqu'au bout ça n'a pas trop d'interet hahahahahahah ahaha hahahah ahahahah ahahahahahahahahahahahaha",true));
+		co.conversation.addMessage(new Message(false, "ma phrase aussi est très long exprès pour tester l'affichage des messages plutot long pas besoin de la lire jsuqu'au bout ça n'a pas trop d'interet hahahahahahah ahaha hahahah ahahahah ahahahahahahahahahahahaha",true));
+		co.conversation.addMessage(new Message(true, "ok",true));
+		//co.conversation.addMessage(new Message(true, "1234567890123456789012345678901234567890123456789012345678901234567890123456789",true));
+		//co.conversation.addMessage(new Message(false, "1234567890123456789012345678901234567890123456789012345678901234567890123456789",true));
 		//
 		
 		try {
