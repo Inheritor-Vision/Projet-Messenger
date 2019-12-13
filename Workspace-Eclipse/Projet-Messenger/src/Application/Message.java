@@ -13,6 +13,12 @@ public class Message {
 		this.date = new Timestamp(System.currentTimeMillis());
 		this.isNew = _isNew;
 	}
+	protected Message(Boolean isSender , String msgs, Boolean _isNew, Timestamp ts) {
+		this.isEnvoyeur = isSender;
+		this.msg = msgs;
+		this.date = ts;
+		this.isNew = _isNew;
+	}
 	
 	protected String getMsg() {
 		return msg;
@@ -24,5 +30,8 @@ public class Message {
 
 	protected Boolean getIsEnvoyeur() {
 		return isEnvoyeur;
+	}
+	protected Boolean getIsNew() {
+		return isNew;
 	}
 }
