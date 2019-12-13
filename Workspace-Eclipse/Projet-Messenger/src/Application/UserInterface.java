@@ -21,6 +21,8 @@ class UserInterface extends JFrame{
 	JScrollPane scrollbar_uc;
 	conversationPage conversationpage;
 	JScrollPane scrollbar_conv;
+	msgPage msgpage;
+	changerpseudoPage changerpseudopage;
 	MenuBar menubar;
 	
 	
@@ -54,6 +56,8 @@ class UserInterface extends JFrame{
 		this.scrollbar_conv.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		this.scrollbar_conv.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		//this.scrollbar_conv.setBounds(50, 30, 300, 50);
+		this.msgpage = new msgPage();
+		this.changerpseudopage = new changerpseudoPage();
 		this.menubar = new MenuBar();
 		this.getContentPane().add(this.menubar, BorderLayout.PAGE_START);
 		setConnexionPage();
@@ -65,18 +69,33 @@ class UserInterface extends JFrame{
 	void setConnexionPage() {
 		this.setVisible(false);
 		this.getContentPane().add(this.connexionpage, BorderLayout.CENTER);
+		this.getContentPane().remove(this.changerpseudopage);
 		this.getContentPane().remove(this.creationcomptepage);
 		this.getContentPane().remove(this.scrollbar_uc);
 		this.getContentPane().remove(this.scrollbar_conv);
+		this.getContentPane().remove(this.msgpage);
 		this.setVisible(true);	
 	}
 	
 	void setCreationcomptePage() {
 		this.setVisible(false);
 		this.getContentPane().add(this.creationcomptepage, BorderLayout.CENTER);
+		this.getContentPane().remove(this.changerpseudopage);
 		this.getContentPane().remove(this.connexionpage);
 		this.getContentPane().remove(this.scrollbar_uc);
 		this.getContentPane().remove(this.scrollbar_conv);
+		this.getContentPane().remove(this.msgpage);
+		this.setVisible(true);	
+	}
+	
+	void setChangerpseudoPage() {
+		this.setVisible(false);
+		this.getContentPane().add(this.changerpseudopage, BorderLayout.CENTER);
+		this.getContentPane().remove(this.connexionpage);
+		this.getContentPane().remove(this.creationcomptepage);
+		this.getContentPane().remove(this.scrollbar_uc);
+		this.getContentPane().remove(this.scrollbar_conv);
+		this.getContentPane().remove(this.msgpage);
 		this.setVisible(true);	
 	}
 	
@@ -87,11 +106,13 @@ class UserInterface extends JFrame{
 		this.utilisateursconnectespage = new utilisateursconnectesPage();
 		this.scrollbar_uc = new JScrollPane(this.utilisateursconnectespage);
 		this.scrollbar_uc.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		this.getContentPane().add(this.scrollbar_uc, BorderLayout.CENTER);
 		//
+		this.getContentPane().add(this.scrollbar_uc, BorderLayout.CENTER);
 		this.getContentPane().remove(this.connexionpage);
+		this.getContentPane().remove(this.changerpseudopage);
 		this.getContentPane().remove(this.creationcomptepage);
 		this.getContentPane().remove(this.scrollbar_conv);
+		this.getContentPane().remove(this.msgpage);
 		this.setVisible(true);
 	}
 	
@@ -100,12 +121,15 @@ class UserInterface extends JFrame{
 		//on recrée la page pour màj
 		this.getContentPane().remove(this.scrollbar_conv);
 		this.conversationpage = new conversationPage();
+		this.msgpage = new msgPage();
 		this.scrollbar_conv = new JScrollPane(this.conversationpage);
 		this.scrollbar_conv.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		this.scrollbar_conv.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		//
 		this.getContentPane().add(this.scrollbar_conv, BorderLayout.CENTER);
+		this.getContentPane().add(this.msgpage, BorderLayout.SOUTH);
 		this.getContentPane().remove(this.connexionpage);
+		this.getContentPane().remove(this.changerpseudopage);
 		this.getContentPane().remove(this.creationcomptepage);
 		this.getContentPane().remove(this.scrollbar_uc);
 		this.setVisible(true);
@@ -182,145 +206,196 @@ class UserInterface extends JFrame{
 	}
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//////////////////////////////////PAGE DE CHANGEMENT DE PSEUDO(JPanel)////////////////////////////////////////////////////
+	class changerpseudoPage extends JPanel{
+		private JTextField pseudo;
+		private JButton creation;
+		private changerpseudoHandler cpH = new changerpseudoHandler();
+		
+		public changerpseudoPage() {
+			super(new GridLayout(0,1));
+			
+			
+			this.pseudo = new JTextField("pseudo");
+			this.creation = new JButton("changer");
+			
+			this.add(this.pseudo);
+			this.add(this.creation);
+			
+			this.creation.addActionListener(this.cpH);
+			
+			this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		
+		}
+	
+	
+	
+	}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+	
 /////////////////////////////////////////PAGE UTILISATEURS CONNECTES (JPanel)///////////////////////////////////////////	
 	
-class utilisateursconnectesPage extends JPanel{
-	private JButton[] utilisateurs;
-	private JLabel erreur;
-	private afficherconversationHandler acH = new afficherconversationHandler();
-
+	class utilisateursconnectesPage extends JPanel{
+		private JButton[] utilisateurs;
+		private JLabel erreur;
+		private afficherconversationHandler acH = new afficherconversationHandler();
 	
-	public utilisateursconnectesPage() {
-		super(new GridLayout(0,1));
 		
-		//if (co.getSocket().getUserList().isEmpty()) {
-		if(connectedUserList.isEmpty()) { //pour test
-			this.erreur = new JLabel("Erreur, pas d'utilisateurs connectés");
-			this.add(this.erreur);
-		}
-		else {
-			String[] psdo = pseudo_uc();
-			this.utilisateurs = new JButton[nb_uc];
-			for (int i=0;i<nb_uc;i++) {
-				this.utilisateurs[i]= new JButton(psdo[i]);
-				//this.utilisateurs[i].setMinimumSize(new Dimension(4000,4000));
-				this.add(this.utilisateurs[i]);
-				this.utilisateurs[i].addActionListener(this.acH);
+		public utilisateursconnectesPage() {
+			super(new GridLayout(0,1));
+			
+			//if (co.getSocket().getUserList().isEmpty()) {
+			if(connectedUserList.isEmpty()) { //pour test
+				this.erreur = new JLabel("Erreur, pas d'utilisateurs connectés");
+				this.add(this.erreur);
 			}
+			else {
+				String[] psdo = pseudo_uc();
+				this.utilisateurs = new JButton[nb_uc];
+				for (int i=0;i<nb_uc;i++) {
+					this.utilisateurs[i]= new JButton(psdo[i]);
+					//this.utilisateurs[i].setMinimumSize(new Dimension(4000,4000));
+					this.add(this.utilisateurs[i]);
+					this.utilisateurs[i].addActionListener(this.acH);
+				}
+			}
+		
+			this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		
 		}
-	
-		this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		
+		String[] pseudo_uc() { //recup une liste de pseudo des uc
+			/*String[] uc;
+			nb_uc = co.getSocket().getUserList().size();
+			uc = new String[nb_uc];
+			for (int i=0;i<nb_uc;i++) {
+				uc[i] = co.getSocket().getUserList().get(i).getPseudo();
+			}
+			
+			return uc;*/
+			
+			//pour test
+			String[] uc;
+			nb_uc = connectedUserList.size();
+			uc = new String[nb_uc];
+			for (int i=0;i<nb_uc;i++) {
+				uc[i] = connectedUserList.get(i).getPseudo();
+			}
+			
+			return uc;
+		}
 	
 	}
-	
-	String[] pseudo_uc() { //recup une liste de pseudo des uc
-		/*String[] uc;
-		nb_uc = co.getSocket().getUserList().size();
-		uc = new String[nb_uc];
-		for (int i=0;i<nb_uc;i++) {
-			uc[i] = co.getSocket().getUserList().get(i).getPseudo();
-		}
-		
-		return uc;*/
-		
-		//pour test
-		String[] uc;
-		nb_uc = connectedUserList.size();
-		uc = new String[nb_uc];
-		for (int i=0;i<nb_uc;i++) {
-			uc[i] = connectedUserList.get(i).getPseudo();
-		}
-		
-		return uc;
-	}
-
-}
 ////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////PAGE DE CONVERSATION (JPanel)////////////////////////////////////////////
-class conversationPage extends JPanel{
-	//private JTextArea[] discussion;
-	private JLabel[] discussion;
-	private JTextField message;
-	private JButton envoi_message;
-	private envoyermessageHandler emH = new envoyermessageHandler();
-	
-	public conversationPage() {
-		super(new GridLayout(0,1));
-		try {
-			if (co.getConversation().isEmpty()) {
+	class conversationPage extends JPanel{
+		//private JTextArea[] discussion;
+		private JLabel[] discussion;
+		/*private JTextField message;
+		private JButton envoi_message;
+		private envoyermessageHandler emH = new envoyermessageHandler();*/
+		
+		public conversationPage() {
+			super(new GridLayout(0,1));
+			try {
+				if (co.getConversation().isEmpty()) {
+					//this.discussion = new JTextArea[1];
+					//this.discussion[0] = new JTextArea("pas de conversation");
+					this.discussion = new JLabel[1];
+					this.discussion[0] = new JLabel("pas de conversation");
+					this.discussion[0].setForeground(Color.RED);
+				}
+				else {
+					//this.discussion = new JTextArea[co.getConversation().getConvSize()];
+					this.discussion = new JLabel[co.getConversation().getConvSize()];
+					Message[] m = co.getConversation().getAllMessages();
+					for (int i=0;i<co.getConversation().getConvSize();i++) {
+						//this.discussion[i] = new JTextArea(m[i].getTimestamp() + " : " + m[i].getMsg());
+						this.discussion[i] = new JLabel("<html><font color=0x000000 size=1>"+m[i].getTimestamp() + "</font> : <br>" + retour_ligne(m[i].getMsg())+"</html>");
+						if (m[i].getIsEnvoyeur()) {
+							this.discussion[i].setForeground(Color.BLUE);
+							this.discussion[i].setHorizontalAlignment(SwingConstants.RIGHT);
+						}
+						else {
+							this.discussion[i].setForeground(new Color(0x339933));
+							this.discussion[i].setHorizontalAlignment(SwingConstants.LEFT);
+						}
+						this.add(this.discussion[i]);
+					}
+				} 
+			} catch (NullPointerException e) {
 				//this.discussion = new JTextArea[1];
 				//this.discussion[0] = new JTextArea("pas de conversation");
 				this.discussion = new JLabel[1];
 				this.discussion[0] = new JLabel("pas de conversation");
 				this.discussion[0].setForeground(Color.RED);
 			}
-			else {
-				//this.discussion = new JTextArea[co.getConversation().getConvSize()];
-				this.discussion = new JLabel[co.getConversation().getConvSize()];
-				Message[] m = co.getConversation().getAllMessages();
-				for (int i=0;i<co.getConversation().getConvSize();i++) {
-					//this.discussion[i] = new JTextArea(m[i].getTimestamp() + " : " + m[i].getMsg());
-					this.discussion[i] = new JLabel("<html><font color=0x000000 size=1>"+m[i].getTimestamp() + "</font> : <br>" + retour_ligne(m[i].getMsg())+"</html>");
-					if (m[i].getIsEnvoyeur()) {
-						this.discussion[i].setForeground(Color.BLUE);
-						this.discussion[i].setHorizontalAlignment(SwingConstants.RIGHT);
-					}
-					else {
-						this.discussion[i].setForeground(new Color(0x339933));
-						this.discussion[i].setHorizontalAlignment(SwingConstants.LEFT);
-					}
-					this.add(this.discussion[i]);
+			
+	
+			/*this.message = new JTextField();
+			try {
+			this.envoi_message = new JButton("envoyer le message à "+ co.getConversation().getDestinataire().getPseudo());
+			} catch (NullPointerException e) {
+				this.envoi_message = new JButton("envoyer le message");
+			}
+			this.add(this.message);
+			this.add(this.envoi_message);
+			
+			this.envoi_message.addActionListener(this.emH);*/
+			
+			this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+			
+		}
+		
+		String retour_ligne(String str) {
+			String str_rtl;
+			boolean saut_l = false;
+			str_rtl = new String("");
+			
+			for (int i=1;i<str.length()+1;i++) {
+				if(i%40 == 0) {
+					saut_l=true;
 				}
-			} 
-		} catch (NullPointerException e) {
-			//this.discussion = new JTextArea[1];
-			//this.discussion[0] = new JTextArea("pas de conversation");
-			this.discussion = new JLabel[1];
-			this.discussion[0] = new JLabel("pas de conversation");
-			this.discussion[0].setForeground(Color.RED);
+				if(str.charAt(i-1)==' ' && saut_l) {
+					str_rtl = str_rtl + str.charAt(i-1) + "<br>";
+					saut_l=false;
+				}
+				else {
+					str_rtl = str_rtl + str.charAt(i-1);
+				}
+			}
+			
+			
+			return str_rtl;
 		}
 		
+		
+	}
 
-		this.message = new JTextField();
-		try {
-		this.envoi_message = new JButton("envoyer le message à "+ co.getConversation().getDestinataire().getPseudo());
-		} catch (NullPointerException e) {
-			this.envoi_message = new JButton("envoyer le message");
-		}
-		this.add(this.message);
-		this.add(this.envoi_message);
+	class msgPage extends JPanel{
 		
-		this.envoi_message.addActionListener(this.emH);
+		private JTextField message;
+		private JButton envoi_message;
+		private envoyermessageHandler emH = new envoyermessageHandler();
 		
-		this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-		
-	}
-	
-	String retour_ligne(String str) {
-		String str_rtl;
-		boolean saut_l = false;
-		str_rtl = new String("");
-		
-		for (int i=1;i<str.length()+1;i++) {
-			if(i%40 == 0) {
-				saut_l=true;
+		public msgPage() {
+			super(new GridLayout(0,1));
+			this.message = new JTextField();
+			try {
+			this.envoi_message = new JButton("envoyer le message à "+ co.getConversation().getDestinataire().getPseudo());
+			} catch (NullPointerException e) {
+				this.envoi_message = new JButton("envoyer le message");
 			}
-			if(str.charAt(i-1)==' ' && saut_l) {
-				str_rtl = str_rtl + str.charAt(i-1) + "<br>";
-				saut_l=false;
-			}
-			else {
-				str_rtl = str_rtl + str.charAt(i-1);
-			}
+			this.add(this.message);
+			this.add(this.envoi_message);
+			
+			this.envoi_message.addActionListener(this.emH);
+			
+			this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		}
 		
-		
-		return str_rtl;
 	}
-	
-	
-}
 ////////////////////////////////////////////////////////////////////////////////////////
 	
 ////////////////////////////////MENU BAR (JMenuBar)/////////////////////////////////////////////////////////////////
@@ -345,7 +420,7 @@ class conversationPage extends JPanel{
 			this.fermerapp = new JMenuItem("fermer l'application");
 			this.deconnexion = new JMenuItem("se déconnecter");
 			this.changercompte = new JMenuItem("changer de compte");
-			this.changerpseudo = new JMenuItem("modisfier le pseudo");
+			this.changerpseudo = new JMenuItem("modifier le pseudo");
 			this.creercompte = new JMenuItem("créer un compte");
 			this.changerconversation = new JMenuItem("changer de conversation");
 			this.userco = new JMenuItem("utilisateurs connectés");
@@ -358,7 +433,7 @@ class conversationPage extends JPanel{
 			this.msysteme.add(this.changercompte);
 			this.changercompte.addActionListener(new deconnexionHandler());
 			this.msysteme.add(this.changerpseudo);
-			this.changerpseudo.addActionListener(new changerpseudoHandler());
+			this.changerpseudo.addActionListener(new pagechangerpseudoHandler());
 			this.msysteme.add(this.creercompte);
 			this.creercompte.addActionListener(new pagecreationcompteHandler());
 			this.msysteme.add(this.fermerapp);
@@ -440,6 +515,18 @@ class conversationPage extends JPanel{
 		
 	}
 	
+	private class pagechangerpseudoHandler implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			setChangerpseudoPage();
+			
+		}
+		
+		
+	}
+	
 	private class changerpseudoHandler implements ActionListener {
 
 		@Override
@@ -508,7 +595,7 @@ class conversationPage extends JPanel{
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
 			
-			co.getConversation().addMessage(new Message(true,conversationpage.message.getText(),true));
+			co.getConversation().addMessage(new Message(true,msgpage.message.getText(),true));
 			
 			setConversationPage();
 			
@@ -516,6 +603,8 @@ class conversationPage extends JPanel{
 		
 		
 	}
+	
+	//public class recevoirmessageHandler
 	
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
