@@ -1,6 +1,7 @@
 package Application;
 
 import javax.swing.*;
+import java.lang.String;
 import java.awt.*;
 import java.awt.event.*;
 //import java.util.EventObject;
@@ -238,7 +239,8 @@ class utilisateursconnectesPage extends JPanel{
 
 ///////////////PAGE DE CONVERSATION (JPanel)////////////////////////////////////////////
 class conversationPage extends JPanel{
-	private JTextArea[] discussion;
+	//private JTextArea[] discussion;
+	private JLabel[] discussion;
 	private JTextField message;
 	private JButton envoi_message;
 	private envoyermessageHandler emH = new envoyermessageHandler();
@@ -247,29 +249,35 @@ class conversationPage extends JPanel{
 		super(new GridLayout(0,1));
 		try {
 			if (co.getConversation().isEmpty()) {
-				this.discussion = new JTextArea[1];
-				this.discussion[0] = new JTextArea("pas de conversation");
+				//this.discussion = new JTextArea[1];
+				//this.discussion[0] = new JTextArea("pas de conversation");
+				this.discussion = new JLabel[1];
+				this.discussion[0] = new JLabel("pas de conversation");
 				this.discussion[0].setForeground(Color.RED);
 			}
 			else {
-				this.discussion = new JTextArea[co.getConversation().getConvSize()];
+				//this.discussion = new JTextArea[co.getConversation().getConvSize()];
+				this.discussion = new JLabel[co.getConversation().getConvSize()];
 				Message[] m = co.getConversation().getAllMessages();
 				for (int i=0;i<co.getConversation().getConvSize();i++) {
-					this.discussion[i] = new JTextArea(m[i].getTimestamp() + " : " + m[i].getMsg());
+					//this.discussion[i] = new JTextArea(m[i].getTimestamp() + " : " + m[i].getMsg());
+					this.discussion[i] = new JLabel("<html><font color=0x000000 size=1>"+m[i].getTimestamp() + "</font> : <br>" + retour_ligne(m[i].getMsg())+"</html>");
 					if (m[i].getIsEnvoyeur()) {
 						this.discussion[i].setForeground(Color.BLUE);
-						//this.discussion[i].setHorizontalAlignment(SwingConstants.RIGHT);
+						this.discussion[i].setHorizontalAlignment(SwingConstants.RIGHT);
 					}
 					else {
-						this.discussion[i].setForeground(Color.DARK_GRAY);
-						//this.discussion[i].setHorizontalAlignment(SwingConstants.LEFT);
+						this.discussion[i].setForeground(new Color(0x339933));
+						this.discussion[i].setHorizontalAlignment(SwingConstants.LEFT);
 					}
 					this.add(this.discussion[i]);
 				}
 			} 
 		} catch (NullPointerException e) {
-			this.discussion = new JTextArea[1];
-			this.discussion[0] = new JTextArea("pas de conversation");
+			//this.discussion = new JTextArea[1];
+			//this.discussion[0] = new JTextArea("pas de conversation");
+			this.discussion = new JLabel[1];
+			this.discussion[0] = new JLabel("pas de conversation");
 			this.discussion[0].setForeground(Color.RED);
 		}
 		
@@ -289,6 +297,27 @@ class conversationPage extends JPanel{
 		
 	}
 	
+	String retour_ligne(String str) {
+		String str_rtl;
+		boolean saut_l = false;
+		str_rtl = new String("");
+		
+		for (int i=1;i<str.length()+1;i++) {
+			if(i%40 == 0) {
+				saut_l=true;
+			}
+			if(str.charAt(i-1)==' ' && saut_l) {
+				str_rtl = str_rtl + str.charAt(i-1) + "<br>";
+				saut_l=false;
+			}
+			else {
+				str_rtl = str_rtl + str.charAt(i-1);
+			}
+		}
+		
+		
+		return str_rtl;
+	}
 	
 	
 }
@@ -479,7 +508,7 @@ class conversationPage extends JPanel{
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
 			
-			co.getConversation().addMessage(new Message(true,conversationpage.message.getText()));
+			co.getConversation().addMessage(new Message(true,conversationpage.message.getText(),true));
 			
 			setConversationPage();
 			
