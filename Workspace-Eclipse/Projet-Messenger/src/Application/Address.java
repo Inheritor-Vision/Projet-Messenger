@@ -14,6 +14,8 @@ protected Address(InetAddress ip, String pseudo, String un) {
 }
  
 
+
+
 protected InetAddress getIP() {
 	return IP;
 }

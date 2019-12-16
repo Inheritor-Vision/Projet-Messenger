@@ -1,0 +1,34 @@
+
+/* //TEST KNOWN USER 
+InetAddress temp2 = InetAddress.getLocalHost();
+		System.out.println(temp2.getAddress()[0] + "." + temp2.getAddress()[1] +"." + temp2.getAddress()[2] + "." +temp2.getAddress()[3]);
+		
+		DBLocale db = new DBLocale("test.db");
+		db.createTableKnownUsers();
+		db.createConversations();
+		
+
+		Address add = new Address(InetAddress.getLocalHost(),"pseudal", "usernal");
+		db.setKnownUser(add);
+		add = new Address(InetAddress.getLocalHost(),"dimitriax", "dimitri");
+		db.setKnownUser(add);
+		add = new Address(InetAddress.getLocalHost(),"GAUUUDIAX", "gauthier");
+		db.setKnownUser(add);
+		add = new Address(InetAddress.getLocalHost(),"ARNAX", "arnaud");
+		db.setKnownUser(add);
+		add = new Address(InetAddress.getLocalHost(),"DARK_SASUK3", "simeon");
+		db.setKnownUser(add);
+		ArrayList<Address> LOL = db.getknownUsers();		
+		Iterator<Address> iter = LOL.iterator();
+		while(iter.hasNext()) {
+			Address temp = iter.next();
+			System.out.println("NEW USER IN LIST "+ temp.getPseudo() +"; "+ temp.getUsername() +"; " + temp.getIP());
+		}*/
+
+
+
+
+
+
+
+
