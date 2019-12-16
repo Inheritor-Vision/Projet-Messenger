@@ -22,6 +22,7 @@ public class Controller {
 		ArrayList<Address> utilco = new ArrayList<Address>();
 		utilco.add(valentin);
 		utilco.add(simeon);
+		.0
 		//*/
 		this.conversation = new Conversation(new Address(null,"test","test"));
 		this.userInterface = new UserInterface();
