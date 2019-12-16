@@ -42,6 +42,10 @@ public class Controller {
 		return conversation;
 	}
 	
+	public Account getLoggedAccount() {
+		return loggedAccount;
+	}
+	
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -71,6 +75,7 @@ public class Controller {
 		Address d6 = new Address(null,"d6","d6_u");
 		Address d7 = new Address(null,"d7","d7_u");
 		ArrayList<Address> utilco = new ArrayList<Address>();
+		ArrayList<Address> utilnco = new ArrayList<Address>();
 		utilco.add(valentin);
 		utilco.add(simeon);
 		utilco.add(kevin);
@@ -85,15 +90,17 @@ public class Controller {
 		utilco.add(a);
 		utilco.add(b);
 		utilco.add(c);
-		utilco.add(d);
-		utilco.add(d1);
-		utilco.add(d2);
-		utilco.add(d3);
-		utilco.add(d4);
-		utilco.add(d5);
-		utilco.add(d6);
-		utilco.add(d7);
+		utilnco.add(c);
+		utilnco.add(d);
+		utilnco.add(d1);
+		utilnco.add(d2);
+		utilnco.add(d3);
+		utilnco.add(d4);
+		utilnco.add(d5);
+		utilnco.add(d6);
+		utilnco.add(d7);
 		co.userInterface.connectedUserList = utilco;
+		co.userInterface.conversation_nc = utilnco;
 		
 		//test conversation
 		co.conversation.setDestinataire(ds);

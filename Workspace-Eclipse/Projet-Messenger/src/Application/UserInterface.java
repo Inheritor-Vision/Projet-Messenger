@@ -11,9 +11,11 @@ class UserInterface extends JFrame{
 	//juste pour test
 	ArrayList<Address> connectedUserList = new ArrayList<Address>();
 	//
+	ArrayList<Address> conversation_nc = new ArrayList<Address>();
 	
 	Controller co;
 	int nb_uc=0;
+	int nb_nc=0;
 	boolean connecte = false;
 	connexionPage connexionpage;
 	creationcomptePage creationcomptepage;
@@ -120,6 +122,7 @@ class UserInterface extends JFrame{
 		this.setVisible(false);		
 		//on recrée la page pour màj
 		this.getContentPane().remove(this.scrollbar_conv);
+		this.getContentPane().remove(this.msgpage);
 		this.conversationpage = new conversationPage();
 		this.msgpage = new msgPage();
 		this.scrollbar_conv = new JScrollPane(this.conversationpage);
@@ -128,6 +131,24 @@ class UserInterface extends JFrame{
 		//
 		this.getContentPane().add(this.scrollbar_conv, BorderLayout.CENTER);
 		this.getContentPane().add(this.msgpage, BorderLayout.SOUTH);
+		this.getContentPane().remove(this.connexionpage);
+		this.getContentPane().remove(this.changerpseudopage);
+		this.getContentPane().remove(this.creationcomptepage);
+		this.getContentPane().remove(this.scrollbar_uc);
+		this.setVisible(true);
+	}
+	
+	void setConversationPage_nc() {
+		this.setVisible(false);		
+		//on recrée la page pour màj
+		this.getContentPane().remove(this.scrollbar_conv);
+		this.getContentPane().remove(this.msgpage);
+		this.conversationpage = new conversationPage();
+		this.scrollbar_conv = new JScrollPane(this.conversationpage);
+		this.scrollbar_conv.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		this.scrollbar_conv.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		//
+		this.getContentPane().add(this.scrollbar_conv, BorderLayout.CENTER);
 		this.getContentPane().remove(this.connexionpage);
 		this.getContentPane().remove(this.changerpseudopage);
 		this.getContentPane().remove(this.creationcomptepage);
@@ -237,7 +258,9 @@ class UserInterface extends JFrame{
 	
 	class utilisateursconnectesPage extends JPanel{
 		private JButton[] utilisateurs;
-		private JLabel erreur;
+		private JButton[] utilisateursnc;
+		private JLabel erreuruc;
+		private JLabel erreurnc;
 		private afficherconversationHandler acH = new afficherconversationHandler();
 	
 		
@@ -246,17 +269,31 @@ class UserInterface extends JFrame{
 			
 			//if (co.getSocket().getUserList().isEmpty()) {
 			if(connectedUserList.isEmpty()) { //pour test
-				this.erreur = new JLabel("Erreur, pas d'utilisateurs connectés");
-				this.add(this.erreur);
+				this.erreuruc = new JLabel("Pas d'utilisateur connecté à afficher");
+				this.add(this.erreuruc);
 			}
 			else {
 				String[] psdo = pseudo_uc();
 				this.utilisateurs = new JButton[nb_uc];
 				for (int i=0;i<nb_uc;i++) {
-					this.utilisateurs[i]= new JButton(psdo[i]);
+					this.utilisateurs[i]= new JButton("connecté - "+ psdo[i]);
 					//this.utilisateurs[i].setMinimumSize(new Dimension(4000,4000));
 					this.add(this.utilisateurs[i]);
 					this.utilisateurs[i].addActionListener(this.acH);
+				}
+			}
+			if(conversation_nc.isEmpty()) {
+				this.erreurnc = new JLabel("Pas d'historique de conversation à afficher");
+				this.add(erreurnc);
+			}
+			else {
+				String[] psdonc = pseudo_nc();
+				this.utilisateursnc = new JButton[nb_nc];
+				for (int i=0;i<nb_nc;i++) {
+					this.utilisateursnc[i]= new JButton("déconnecté - "+ psdonc[i]+" "+nb_nc);
+					//this.utilisateurs[i].setMinimumSize(new Dimension(4000,4000));
+					this.add(this.utilisateursnc[i]);
+					this.utilisateursnc[i].addActionListener(this.acH);
 				}
 			}
 		
@@ -283,6 +320,60 @@ class UserInterface extends JFrame{
 			}
 			
 			return uc;
+		}
+		
+		String[] pseudo_nc() { //recup une liste de pseudo des unc opur qui il existe une conv
+			/*ArrayList<Address> co_nc = new ArrayList<Address>();
+			nb_uc = connectedUserList.size();
+			int test=0;
+			for (int j=0;j<conversation_nc.size();j++) {
+				for (int k=0;k<nb_uc;k++) {
+				
+					if (!conversation_nc.get(j).getPseudo().equals(co.getSocket().getUserList().get(k).getPseudo())) {
+						test++;
+					}
+					if (test==nb_uc) {
+						co_nc.add(conversation_nc.get(j));
+					}
+					
+				}
+			test=0;
+			}
+			String[] nc;
+			nb_nc=co_nc.size();
+			nc = new String[nb_nc];
+			for (int i=0;i<nb_nc;i++) {
+				nc[i] = co_nc.get(i).getPseudo();
+			}
+			
+			return nc;
+		*/
+			
+			//pour test
+			ArrayList<Address> co_nc = new ArrayList<Address>();
+			nb_uc = connectedUserList.size();
+			int test=0;
+			for (int j=0;j<conversation_nc.size();j++) {
+				for (int k=0;k<nb_uc;k++) {
+				
+					if (!conversation_nc.get(j).getPseudo().equals(connectedUserList.get(k).getPseudo())) {
+						test++;
+					}
+					if (test==nb_uc) {
+						co_nc.add(conversation_nc.get(j));
+					}
+					
+				}
+			test=0;
+			}
+			String[] nc;
+			nb_nc=co_nc.size();
+			nc = new String[nb_nc];
+			for (int i=0;i<nb_nc;i++) {
+				nc[i] = co_nc.get(i).getPseudo();
+			}
+			
+			return nc;
 		}
 	
 	}
@@ -496,6 +587,14 @@ class UserInterface extends JFrame{
 				connexionpage.erreur.setText("erreur de connexion");
 			}
 			
+			/*if (exist(username_, password_)) {
+				conversation_nc = pull_conversation(username_);
+				co.getLoggedAccount() = pull_account(username_);
+				
+			}
+			else {
+				connexionpage.erreur.setText("erreur de connexion");
+			}*/
 		}
 		
 		
@@ -580,9 +679,17 @@ class UserInterface extends JFrame{
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
 			
-			//(...) màj co.conversation//
 			
-			setConversationPage();
+			String but = e.getActionCommand();
+			if (but.charAt(0)=='d') { //c'est un utilisateur déconnecte
+				//(...) màj co.conversation//
+				setConversationPage_nc();
+			}
+			else {
+				//(...) màj co.conversation//	
+				setConversationPage();
+			}
+			
 			
 		}
 		
@@ -604,7 +711,10 @@ class UserInterface extends JFrame{
 		
 	}
 	
-	//public class recevoirmessageHandler
+	public void recevoirmessage(){
+		
+		
+	}
 	
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
