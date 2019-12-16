@@ -290,7 +290,7 @@ class UserInterface extends JFrame{
 				String[] psdonc = pseudo_nc();
 				this.utilisateursnc = new JButton[nb_nc];
 				for (int i=0;i<nb_nc;i++) {
-					this.utilisateursnc[i]= new JButton("déconnecté - "+ psdonc[i]+" "+nb_nc);
+					this.utilisateursnc[i]= new JButton("déconnecté - "+ psdonc[i]);
 					//this.utilisateurs[i].setMinimumSize(new Dimension(4000,4000));
 					this.add(this.utilisateursnc[i]);
 					this.utilisateursnc[i].addActionListener(this.acH);
