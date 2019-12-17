@@ -2,6 +2,8 @@ package Application;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Iterator;
 
 public class DBLocale {
@@ -88,17 +91,23 @@ public class DBLocale {
 		}
 	}
 	
-	protected Conversation getConversation(String corres) {
+	protected Conversation getConversation(String userLogged, String corresp) {
 		Conversation conv = null;
 		try {
-			conv = new Conversation(this.getUserAddress(corres));
+			conv = new Conversation(this.getUserAddress(corresp));
 		} catch (IOException e1) {
 			System.out.println("DBLocal: Error getUserAddress");
 			e1.printStackTrace();
 		}
 		try {
-			Statement stmt = coDB.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM conversations WHERE corres='" + corres + "';");
+			String sql = "SELECT * FROM conversations WHERE (sender = ? AND receiver = ?) OR (sender = ? AND receiver = ?);";
+			PreparedStatement stmt = this.coDB.prepareStatement(sql);
+			stmt.setString(1, userLogged);
+			stmt.setString(2, corresp);
+			stmt.setString(3, corresp);
+			stmt.setString(4, userLogged);
+			
+			ResultSet rs = stmt.executeQuery();
 			if (rs.next() == false) {
 				System.out.println("DBLocal: Error getConv return empty set");
 			}else {
@@ -128,15 +137,16 @@ public class DBLocale {
 		}
 	}
 	// id corres isSender isNew ts msg 
-	protected void setMessage(Message msg, String username) {
+	protected void setMessage(Message msg, String sender, String receiver) {
 		try {
-			String sql = "INSERT INTO conversations (corres, isSender, isNew, timestamp, message) VALUES (?,?,?,?,?)";
+			String sql = "INSERT INTO conversations (sender,receiver, isSender, isNew, timestamp, message) VALUES (?,?,?,?,?,?)";
 			PreparedStatement pstmt = this.coDB.prepareStatement(sql);
-			pstmt.setString(1, username);
-			pstmt.setInt(2,BoolToInt(msg.getIsEnvoyeur()));
-			pstmt.setInt(3,BoolToInt(msg.getIsNew()));
-			pstmt.setTimestamp(4, msg.getTimestamp());
-			pstmt.setString(5,msg.getMsg());
+			pstmt.setString(1, sender);
+			pstmt.setString(2, receiver);
+			pstmt.setInt(3,BoolToInt(msg.getIsEnvoyeur()));
+			pstmt.setInt(4,BoolToInt(msg.getIsNew()));
+			pstmt.setTimestamp(5, msg.getTimestamp());
+			pstmt.setString(6,msg.getMsg());
 			pstmt.executeUpdate();
 			
 		} catch (SQLException e) {
@@ -182,7 +192,8 @@ public class DBLocale {
 	protected void createTableConversations() {
 		String sql = "CREATE TABLE IF NOT EXISTS conversations (\n"
                 + "    id integer PRIMARY KEY AUTOINCREMENT,\n"
-                + "    corres text NOT NULL,\n"
+                + "    sender text NOT NULL,\n"
+                + "    receiver text NOT NULL,\n"
                 + "    isSender integer NOT NULL,\n"
                 + "    isNew integer NOT NULL,\n"
                 + "    timestamp date NOT NULL,\n"
@@ -204,8 +215,7 @@ public class DBLocale {
 		String sql = "CREATE TABLE IF NOT EXISTS account (\n"
                 + "    username text PRIMARY KEY,\n"
                 + "    password text NOT NULL,\n"
-                + "    pseudo text NOT NULL,\n"
-                + "    address blob NOT NULL\n"
+                + "    pseudo text NOT NULL\n"
                 + ");";
 		try {
 			Statement stmt = this.coDB.createStatement();
@@ -218,22 +228,26 @@ public class DBLocale {
 	}
 	
 	protected Account getAccount(String username, String password) {
-		String sql = "SELECT * FROM account WHERE username= ? AND password= ?";
+		String sql = "SELECT * FROM account WHERE (username = ?) AND (password = ?);"; //WHERE (username = ?) AND (password = ?) 
 		ResultSet rs = null;
 		String un;
 		String ps;
+		String pw;
 		Address temp;
-		Account tempA = null;;
+		Account tempA = null;
 		try {
 			PreparedStatement pstmt = this.coDB.prepareStatement(sql);
 			pstmt.setString(1,username);
-			pstmt.setString(2, password);
+			pstmt.setString(2,password);
 			rs = pstmt.executeQuery();
-			if (rs.next() == true) {
+			rs.next();
+			if ( true) {
+				System.out.println("YA");
 				 un = rs.getString("username");
-				 ps = rs.getString("password");
-				 temp = new Address(InetAddress.getByAddress(rs.getBytes("address")),ps,un);
-				 tempA = new Account(un,ps,rs.getString("pseudo"),temp);
+				 ps = rs.getString("pseudo");
+				 pw = rs.getString("password");
+				 temp = new Address(InetAddress.getByAddress(this.getPcIP()),ps,un);
+				 tempA = new Account(un,pw,ps,temp);
 			}
 			
 		} catch (SQLException | UnknownHostException e) {
@@ -242,6 +256,47 @@ public class DBLocale {
 		}
 		return tempA;
 		
+	}
+	
+	protected void setAccount(Account acc){
+		String sql = "INSERT INTO account (username,password,pseudo) VALUES (?,?,?)";
+		try {
+			PreparedStatement pstmt = this.coDB.prepareStatement(sql);
+			pstmt.setString(1, acc.getUsername());
+			pstmt.setString(2, acc.getPassword());
+			pstmt.setString(3, acc.getPseudo());
+			System.out.println("Debug: " + pstmt.executeUpdate());
+		} catch (SQLException e) {
+			System.out.println("DBLocal: Error setAccount");
+			e.printStackTrace();
+		}
+		
+	}
+	
+	protected byte[] getPcIP() {
+		Enumeration e;
+		byte[] res = null;
+		boolean fin = false;
+		try {
+			e = NetworkInterface.getNetworkInterfaces();
+			while(e.hasMoreElements())
+			{
+			    NetworkInterface n = (NetworkInterface) e.nextElement();
+			    Enumeration ee = n.getInetAddresses();
+			    while (ee.hasMoreElements() && !fin)
+			    {
+			        InetAddress i = (InetAddress) ee.nextElement();
+			        if(i.getAddress()[0] == 10) {
+			        	res = i.getAddress();
+			        }
+			        
+			    }
+			}
+		} catch (SocketException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return res;
 	}
 
 }

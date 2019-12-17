@@ -11,7 +11,7 @@ public class ClientUDP {
         DatagramSocket dgramSocket= new DatagramSocket(port);
         System.out.println("ClientUDP: Server Created on port " + port );
         String message = "Ceci est un test";
-        DatagramPacket outPkt = new DatagramPacket(message.getBytes(), message.length(), InetAddress.getLocalHost(), 6666);
+        DatagramPacket outPkt = new DatagramPacket(message.getBytes(), message.length(), InetAddress.getByName("insa-08133"), 6666);
         dgramSocket.send(outPkt);
         System.out.println("ClientUDP: message sent: " + message );
         dgramSocket.close();
