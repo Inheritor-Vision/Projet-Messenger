@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.*;
 //import java.util.EventObject;
 import java.util.ArrayList;
+import java.sql.Timestamp;
 
 class UserInterface extends JFrame{
 	//juste pour test
@@ -149,6 +150,25 @@ class UserInterface extends JFrame{
 		this.scrollbar_conv.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		//
 		this.getContentPane().add(this.scrollbar_conv, BorderLayout.CENTER);
+		this.getContentPane().remove(this.connexionpage);
+		this.getContentPane().remove(this.changerpseudopage);
+		this.getContentPane().remove(this.creationcomptepage);
+		this.getContentPane().remove(this.scrollbar_uc);
+		this.setVisible(true);
+	}
+	
+	void setConversationPage_recmsg() {
+		this.setVisible(false);		
+		//on recrée la page pour màj
+		this.getContentPane().remove(this.scrollbar_conv);
+		this.getContentPane().remove(this.msgpage);
+		this.conversationpage = new conversationPage();
+		this.scrollbar_conv = new JScrollPane(this.conversationpage);
+		this.scrollbar_conv.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		this.scrollbar_conv.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		//
+		this.getContentPane().add(this.scrollbar_conv, BorderLayout.CENTER);
+		this.getContentPane().add(this.msgpage, BorderLayout.SOUTH);
 		this.getContentPane().remove(this.connexionpage);
 		this.getContentPane().remove(this.changerpseudopage);
 		this.getContentPane().remove(this.creationcomptepage);
@@ -402,8 +422,7 @@ class UserInterface extends JFrame{
 					this.discussion = new JLabel[co.getConversation().getConvSize()];
 					Message[] m = co.getConversation().getAllMessages();
 					for (int i=0;i<co.getConversation().getConvSize();i++) {
-						//this.discussion[i] = new JTextArea(m[i].getTimestamp() + " : " + m[i].getMsg());
-						this.discussion[i] = new JLabel("<html><font color=0x000000 size=1>"+m[i].getTimestamp() + "</font> : <br>" + retour_ligne(m[i].getMsg())+"</html>");
+						this.discussion[i] = new JLabel(retour_ligne(m[i].getMsg(),m[i].getTimestamp()));
 						if (m[i].getIsEnvoyeur()) {
 							this.discussion[i].setForeground(Color.BLUE);
 							this.discussion[i].setHorizontalAlignment(SwingConstants.RIGHT);
@@ -439,7 +458,7 @@ class UserInterface extends JFrame{
 			
 		}
 		
-		String retour_ligne(String str) {
+		/*public String retour_ligne(String str, Timestamp date) {
 			String str_rtl;
 			boolean saut_l = false;
 			str_rtl = new String("");
@@ -458,8 +477,8 @@ class UserInterface extends JFrame{
 			}
 			
 			
-			return str_rtl;
-		}
+			return "<html><font color=0x000000 size=1>"+date + "</font> : <br>" + str_rtl+"</html>";
+		}*/
 		
 		
 	}
@@ -700,21 +719,77 @@ class UserInterface extends JFrame{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
 			
-			co.getConversation().addMessage(new Message(true,msgpage.message.getText(),true));
+			//maj conv
+			Message msg = new Message(true,msgpage.message.getText(),true);
+			co.getConversation().addMessage(msg);
+			//afficher new message
+			JLabel newm =new JLabel(retour_ligne(msg.getMsg(),msg.getTimestamp()));
+			newm.setHorizontalAlignment(SwingConstants.RIGHT);
+			newm.setForeground(Color.BLUE);
+			conversationpage.add(newm);
+			//rafraichissement
+			conversationpage.updateUI();
 			
-			setConversationPage();
+			msgpage.message.setText("");
+			
+			//setConversationPage();
 			
 		}
 		
 		
 	}
 	
-	public void recevoirmessage(){
+	public void recevoirmessageUI(Message msg){ //a utiliser uniquement si le message reçu vient de la conversation chargée
 		
+		
+		//maj conv
+		co.getConversation().addMessage(msg);
+		
+		//test
+		System.out.println(getContentPane().getComponents()[0].equals(scrollbar_conv));
+		System.out.println(getContentPane().getComponents()[1].equals(scrollbar_conv));
+		int n=getContentPane().getComponents().length;
+		for (int i=0;i<n;i++) {
+			System.out.println(getContentPane().getComponents()[i].getName());
+		}
+		//
+		
+		if(getContentPane().getComponents()[1].equals(scrollbar_conv)) {
+			//afficher new message
+			JLabel newm =new JLabel(retour_ligne(msg.getMsg(),msg.getTimestamp()));
+			newm.setHorizontalAlignment(SwingConstants.LEFT);
+			newm.setForeground(new Color(0x339933));
+			conversationpage.add(newm);
+			//rafraichissement
+			conversationpage.updateUI();
+		}
 		
 	}
 	
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+//////UTILITAIRE///////
+	public String retour_ligne(String str, Timestamp date) {
+		String str_rtl;
+		boolean saut_l = false;
+		str_rtl = new String("");
+		
+		for (int i=1;i<str.length()+1;i++) {
+			if(i%40 == 0) {
+				saut_l=true;
+			}
+			if(str.charAt(i-1)==' ' && saut_l) {
+				str_rtl = str_rtl + str.charAt(i-1) + "<br>";
+				saut_l=false;
+			}
+			else {
+				str_rtl = str_rtl + str.charAt(i-1);
+			}
+		}
+		
+		
+		return "<html><font color=0x000000 size=1>"+date + "</font> : <br>" + str_rtl+"</html>";
+	}
+////////////////////
 }

@@ -120,25 +120,35 @@ public class Controller {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("test");
+		System.out.println("test1");
 		
 		try {
-			Thread.sleep(10000);
+			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("test");
+		System.out.println("test2");
 		
 		Address neww = new Address(null,"new","new_u");
 		utilco.add(neww);
 		
-		
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("test3");
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		co.userInterface.recevoirmessageUI(new Message(false,"je suis la",true));
 		////
 		
-		while(true) {
-			
-		}
 		
 	}
 
