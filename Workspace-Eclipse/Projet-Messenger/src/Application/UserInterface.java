@@ -791,5 +791,5 @@ class UserInterface extends JFrame{
 		
 		return "<html><font color=0x000000 size=1>"+date + "</font> : <br>" + str_rtl+"</html>";
 	}
-////////////////////
+////////////////////////////
 }
