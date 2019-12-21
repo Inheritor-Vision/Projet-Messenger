@@ -15,6 +15,8 @@ public class Controller {
 	
 	private Conversation conversation;
 	
+	private DBLocale db;
+	
 	public Controller() {
 		/*//test utililisateurs connectes//
 		Address valentin = new Address(null,"Valentin_p","Valentin_u");
@@ -25,8 +27,12 @@ public class Controller {
 		.0
 		//*/
 		this.conversation = new Conversation(new Address(null,"test","test"));
+		this.db = new DBLocale("DBmessenger");
 		this.userInterface = new UserInterface();
 		this.userInterface.co = this;
+		this.userInterface.db = this.db;
+		
+		
 		
 		
 		

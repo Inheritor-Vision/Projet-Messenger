@@ -1,6 +1,7 @@
 package Application;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class Address {
  private InetAddress IP;
@@ -9,6 +10,16 @@ public class Address {
  
 protected Address(InetAddress ip, String pseudo, String un) {
 	IP = ip;
+	setPseudo(pseudo);
+	setUsername(un);
+}
+
+protected Address(String pseudo, String un) {
+	try {
+		this.IP = InetAddress.getLocalHost();
+	} catch (UnknownHostException e) {
+		this.IP = null;
+	}
 	setPseudo(pseudo);
 	setUsername(un);
 }

@@ -15,6 +15,7 @@ class UserInterface extends JFrame{
 	ArrayList<Address> conversation_nc = new ArrayList<Address>();
 	
 	Controller co;
+	DBLocale db;
 	int nb_uc=0;
 	int nb_nc=0;
 	boolean connecte = false;
@@ -217,7 +218,8 @@ class UserInterface extends JFrame{
 	
 //////////////////////////////////PAGE DE CREATION COMPTE (JPanel)////////////////////////////////////////////////////
 	class creationcomptePage extends JPanel{
-		public JTextField username;
+		private JLabel entete;
+		private JTextField username;
 		private JTextField password;
 		private JTextField pseudo;
 		private JButton creation;
@@ -226,11 +228,13 @@ class UserInterface extends JFrame{
 		public creationcomptePage() {
 			super(new GridLayout(0,1));
 			
+			this.entete = new JLabel("créer un compte");
 			this.username = new JTextField("username");
 			this.password = new JTextField("password");
 			this.pseudo = new JTextField("pseudo");
 			this.creation = new JButton("création du compte");
 			
+			this.add(this.entete);
 			this.add(this.username);
 			this.add(this.password);
 			this.add(this.pseudo);
@@ -578,7 +582,40 @@ class UserInterface extends JFrame{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
+			String username_ = creationcomptepage.username.getText();
+			String password_ = creationcomptepage.password.getText();
+			String pseudo_ = creationcomptepage.pseudo.getText();
+			ArrayList<Address> users = new ArrayList<Address>();
+			
+			boolean unique=true;
+			try {
+				users = db.getknownUsers();
+			} catch (NullPointerException npe) {
+				System.out.println(npe);
+			}
+			if (!users.isEmpty()) {
+				for (int i=0;i<users.size();i++) {
+					if (users.get(i).getUsername().equals(username_)) {
+						unique=false;
+					}
+				}
+			}
+			if (unique) {
+				Address add = new Address(pseudo_,username_);
+				Account acc =  new Account(username_,password_,pseudo_,add);
+				db.setAccount(acc);
+				db.setKnownUser(add);
+				
+				connexionpage.erreur.setText("création du compte de "+pseudo_+" réussie");
+				connexionpage.erreur.setForeground(Color.GREEN);
+				setConnexionPage();
+			}
+			else {
+				creationcomptepage.entete.setText("erreur: compte déjà existant");
+				creationcomptepage.entete.setForeground(Color.RED);
+
+			}
+			
 			
 		}
 		
@@ -627,6 +664,7 @@ class UserInterface extends JFrame{
 			
 			//(...)//
 			connexionpage.erreur.setText("Entrez username/password");
+			connexionpage.erreur.setForeground(Color.BLACK);
 			setConnexionPage();
 		}
 		
