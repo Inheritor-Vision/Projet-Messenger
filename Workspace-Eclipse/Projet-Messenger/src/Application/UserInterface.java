@@ -633,6 +633,7 @@ class UserInterface extends JFrame{
 			if ( username_.equals("admin") && password_.equals("admin")) { //par exemple pour l'instant
 				//(...)//
 				connexionpage.erreur.setText("Entrez username/password");
+				connexionpage.erreur.setForeground(Color.BLACK);
 				/*utilisateursconnectespage = new utilisateursconnectesPage();
 				scrollbar_uc = new JScrollPane(utilisateursconnectespage);
 				scrollbar_uc.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);*/
@@ -640,17 +641,25 @@ class UserInterface extends JFrame{
 				setUtilisateursconnectesPage_same_frame();
 			}
 			else {
-				connexionpage.erreur.setText("erreur de connexion");
+				//connexionpage.erreur.setText("erreur de connexion");
 			}
 			
-			/*if (exist(username_, password_)) {
-				conversation_nc = pull_conversation(username_);
-				co.getLoggedAccount() = pull_account(username_);
-				
+			Account acc;
+
+			acc = db.getAccount2(username_, password_);
+			
+			if (acc == null) {
+				connexionpage.erreur.setText("erreur de connexion");
+				connexionpage.erreur.setForeground(Color.RED);
 			}
 			else {
-				connexionpage.erreur.setText("erreur de connexion");
-			}*/
+				acc.setAddress(new Address(acc.getPseudo(),acc.getUsername())); //pour recup l'adresse IP du pc
+				System.out.println(acc.getAddress().getIP());
+				co.setLoggedAccount(acc);
+				setUtilisateursconnectesPage_same_frame();
+			}
+			
+			//+ vérifier qu'il n'y ai pas deja un uc avec ce compte
 		}
 		
 		

@@ -247,7 +247,7 @@ public class DBLocale {
 				 ps = rs.getString("pseudo");
 				 pw = rs.getString("password");
 				 temp = new Address(InetAddress.getByAddress(this.getPcIP()),ps,un);
-				 tempA = new Account(un,pw,ps,temp);
+				 tempA = new Account(un,pw,ps,temp);	 
 			}
 			
 		} catch (SQLException | UnknownHostException e) {
@@ -257,6 +257,40 @@ public class DBLocale {
 		return tempA;
 		
 	}
+	
+	//pour éviter l'erreur UnknownHostException (pour l'instant)//
+	protected Account getAccount2(String username, String password) {
+		String sql = "SELECT * FROM account WHERE (username = ?) AND (password = ?);"; //WHERE (username = ?) AND (password = ?) 
+		ResultSet rs = null;
+		String un;
+		String ps;
+		String pw;
+		Address temp;
+		Account tempA = null;
+		try {
+			PreparedStatement pstmt = this.coDB.prepareStatement(sql);
+			pstmt.setString(1,username);
+			pstmt.setString(2,password);
+			rs = pstmt.executeQuery();
+			rs.next();
+			if ( true) {
+				System.out.println("YA");
+				 un = rs.getString("username");
+				 ps = rs.getString("pseudo");
+				 pw = rs.getString("password");
+				 //temp = new Address(InetAddress.getByAddress(this.getPcIP()),ps,un);
+				 //tempA = new Account(un,pw,ps,temp);
+				 tempA = new Account(un,pw,ps,null);
+			}
+			
+		} catch (SQLException /*| UnknownHostException*/ e) {
+			System.out.println("DBLocal: Error getAccount creation or execute query");
+			e.printStackTrace();
+		}
+		return tempA;
+		
+	}
+	/////
 	
 	protected void setAccount(Account acc){
 		String sql = "INSERT INTO account (username,password,pseudo) VALUES (?,?,?)";
