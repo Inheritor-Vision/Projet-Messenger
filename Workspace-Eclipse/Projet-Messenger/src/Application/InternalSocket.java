@@ -14,12 +14,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.StringReader;
 import java.lang.Thread;
 import java.sql.Timestamp;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
 
+
+/* MUST BE SYNCHRONIZED, EACH TIME YOU CALL an INTERNALSOCKET object
+ * Peut etre source de pb -> deadlock : Essayer de conserver un unique synchronized*/
 public class InternalSocket implements NetworkSocketInterface {
 	ArrayList<Address> connectedUserList = new ArrayList<Address>(); // Need to be synchronized
 	protected static final int UDP_PORT_RCV = 6666;
@@ -78,7 +82,7 @@ public class InternalSocket implements NetworkSocketInterface {
 			System.out.println("InternalSocket: Error sendConnected");
 			e.printStackTrace();
 		}
-		String message = InternalSocket.CONNECTED.toString() + "bbbb\nbbbb" + loggedAccount.getUsername() + "\n" + loggedAccount.getPseudo() + "\n" + (new Timestamp(System.currentTimeMillis())).toString();;
+		String message = InternalSocket.CONNECTED.toString() + "\n" + loggedAccount.getPseudo() + "\n" + loggedAccount.getUsername() + "\n" + (new Timestamp(System.currentTimeMillis())).toString();;
 		try {
 			DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),listAllBroadcastAddresses().get(0), InternalSocket.UDP_PORT_RCV);
 			this.UDP_SEND_Socket.send(outPacket);
@@ -105,7 +109,7 @@ public class InternalSocket implements NetworkSocketInterface {
 		return connectedUserList;
 	}
 	@Override
-	public void setUserList(ArrayList<Address> ul) {
+	public synchronized void  setUserList(ArrayList<Address> ul) {
 		// TODO Auto-generated method stub
 		this.connectedUserList = ul;
 	}
@@ -145,7 +149,7 @@ public class InternalSocket implements NetworkSocketInterface {
 	public void startReceiverThread() {
 		// TODO Auto-generated method stub
 		TCPThreadReceiver TCP = new TCPThreadReceiver();
-		UDPThreadReceiver UDP = new UDPThreadReceiver();
+		UDPThreadReceiver UDP = new UDPThreadReceiver(this);
 	}
 
 	@Override
@@ -192,9 +196,11 @@ public class InternalSocket implements NetworkSocketInterface {
 
 class UDPThreadReceiver extends Thread {
 	DatagramSocket receiver;
+	InternalSocket IS;
 	
-	public UDPThreadReceiver() {
+	public UDPThreadReceiver(InternalSocket _IS) {
 		super();
+		this.IS = _IS;
 		System.out.println("ThreadReceiver: starting . . .");
 		try {
 			receiver = new DatagramSocket(InternalSocket.UDP_PORT_RCV);
@@ -218,7 +224,21 @@ class UDPThreadReceiver extends Thread {
 				
 				InetAddress clientAddress = inPacket.getAddress();
 				String message = new String (inPacket.getData(), 0, inPacket.getLength());
-				System.out.println("UDPThreadReceiver: msg received: " + message);
+				BufferedReader reader = new BufferedReader(new StringReader(message));
+				String line = reader.readLine();
+				if (line.contains(InternalSocket.CONNECTED)) {
+					System.out.println("UDPThreadReceiver: Connected received: " + message);
+					synchronized(this.IS) {
+						this.IS.getUserList().add(new Address(clientAddress,reader.readLine(), reader.readLine()));
+					}
+				}else if (line.contains(InternalSocket.DISCONNECTED)) {
+					System.out.println("UDPThreadReceiver: Disconnected received: " + message);
+					synchronized(this.IS) {
+						this.IS.getUserList().remove(new Address(clientAddress,reader.readLine(), reader.readLine()));
+					}
+				}else {
+					System.out.println("UDPThreadReceiver: Unknown message received: " + message);
+				}
 				
 			}catch (IOException e) {
 				System.out.println("UDPThreadReceiver: Error thread");
