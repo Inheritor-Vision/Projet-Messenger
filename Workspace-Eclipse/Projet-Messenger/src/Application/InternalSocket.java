@@ -34,15 +34,17 @@ public class InternalSocket implements NetworkSocketInterface {
 	protected static final String  CONNECTED =  "Connected";
 	protected static final String  DISCONNECTED =  "Disconnected";
 	protected static final String  MESSAGE =  "Message";
-	protected static final String END_MESSAGE = "stop";
+	protected static final String END_MESSAGE = "ef399b2d446bb37b7c32ad2cc1b6045b";
 	protected final String UsernameLogged;
 	DatagramSocket UDP_SEND_Socket;
+	protected DBLocale db;
 	
 	
 	
 	public InternalSocket(String UsernameLoggedAccount_){
 		this.UsernameLogged = UsernameLoggedAccount_;
 		this.connectedUserList = new ArrayList<Address>();
+		this.db = new DBLocale();
 		System.out.println("InternalSocket: starting UDP AND TCP SENDER SOCKET . . .");
 		try {
 			this.UDP_SEND_Socket = new DatagramSocket(InternalSocket.UDP_PORT_SEND);
@@ -148,7 +150,7 @@ public class InternalSocket implements NetworkSocketInterface {
 	@Override
 	public void startReceiverThread() {
 		// TODO Auto-generated method stub
-		TCPThreadReceiver TCP = new TCPThreadReceiver();
+		TCPThreadReceiver TCP = new TCPThreadReceiver(this.db);
 		UDPThreadReceiver UDP = new UDPThreadReceiver(this);
 	}
 
@@ -251,9 +253,11 @@ class UDPThreadReceiver extends Thread {
 	
 	class TCPThreadReceiver extends Thread {
 		ServerSocket receiver;
+		DBLocale db;
 		int n;
-		public TCPThreadReceiver() {
+		public TCPThreadReceiver(DBLocale db_) {
 			super();
+			this.db = db_;
 			try {
 				receiver = new ServerSocket(InternalSocket.TCP_PORT_RCV);
 			} catch (IOException e) {
@@ -272,7 +276,7 @@ class UDPThreadReceiver extends Thread {
 					Socket clientSocket = receiver.accept();
 					n++;
 					System.out.println("TCPThreadReceiver: Creation Socket fils en cours . . .");
-					ThreadSocketFils temp = new ThreadSocketFils(clientSocket, n);
+					ThreadSocketFils temp = new ThreadSocketFils(clientSocket, n, db);
 					
 				} catch (IOException e) {
 					System.out.println("TCPThreadReceiver: Error accept");
@@ -288,8 +292,9 @@ class UDPThreadReceiver extends Thread {
 	class ThreadSocketFils extends Thread{
 		Socket son;
 		int n;
-		
-		ThreadSocketFils(Socket chassot, int a){
+		DBLocale db;
+		ThreadSocketFils(Socket chassot, int a, DBLocale db_){
+			this.db= db_;
 			son = chassot;
 			n =a;
 			System.out.println("ThreadSocketFils" + n + ": creation ThreadSocketfils . . .");
@@ -303,15 +308,25 @@ class UDPThreadReceiver extends Thread {
 				BufferedReader in = new BufferedReader(new InputStreamReader(son.getInputStream()));
 				Boolean fin = false;
 				String message = "";
+				String sender = "";
+				String rcv = "";
+				Timestamp ts = null;
 				while(!fin) {
 					String temp = in.readLine();
 					if(temp != null) {
 						System.out.println("ThreadSocketFils" + n + ": msg received: " + temp);
-						if (temp.equals(InternalSocket.END_MESSAGE)) {
+						if(temp.equals(InternalSocket.MESSAGE)){	
+							sender = in.readLine();
+							rcv = in.readLine();
+							ts = Timestamp.valueOf(in.readLine());
+;						}else if (temp.equals(InternalSocket.END_MESSAGE)) {
 							fin = true;
+						}else {
+		                    message += temp+ "\n";
 						}
 					}
 				}
+				this.db.setMessage(new Message(false,message,true,ts),sender,rcv);
 				System.out.println("ThreadSocketFils" + n +": Closing . . .");
 				son.close();
 			}catch(IOException e) {

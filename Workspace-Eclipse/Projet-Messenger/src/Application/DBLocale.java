@@ -23,7 +23,10 @@ public class DBLocale {
 	protected Connection coDB;
 	protected ArrayList<Address> knownUsers = new ArrayList<Address>();
 	public DBLocale() {
-		this.coDB = null;
+		this.coDB = connectionDB("appDb");
+		this.createTableKnownUsers();
+		this.createTableConversations();
+		this.createTableAccount();
 	}
 	public  DBLocale(String nomDB) {
 		this.coDB = connectionDB(nomDB);
