@@ -30,7 +30,7 @@ class UserInterface extends JFrame{
 	MenuBar menubar;
 	
 	
-	public UserInterface(/*ArrayList<Address> connectedUserList/*pour test*/) {
+	public UserInterface(/*ArrayList<Address> connectedUserList/*pour test*/Controller cont, DBLocale dbl) {
 		/*super("Messenger");
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -40,6 +40,8 @@ class UserInterface extends JFrame{
 		
 		super("Messenger");
 		//this.connectedUserList = connectedUserList; //pour test
+		this.db=dbl;
+		this.co=cont;
 		initGUI();
 		
 	}
@@ -286,6 +288,7 @@ class UserInterface extends JFrame{
 		private JLabel erreuruc;
 		private JLabel erreurnc;
 		private afficherconversationHandler acH = new afficherconversationHandler();
+		ArrayList<Address> cnc = new ArrayList<Address>();
 	
 		
 		public utilisateursconnectesPage() {
@@ -306,12 +309,22 @@ class UserInterface extends JFrame{
 					this.utilisateurs[i].addActionListener(this.acH);
 				}
 			}
-			if(conversation_nc.isEmpty()) {
+			
+			try {
+				cnc = db.getknownUsers();
+				System.out.println(cnc);//test
+			}catch(NullPointerException e) {
+				System.out.println("knownusers vide");
+			}
+			//conversation_nc = db.getknownUsers();
+			//if(conversation_nc.isEmpty()) {
+			if(cnc.isEmpty()) {
 				this.erreurnc = new JLabel("Pas d'historique de conversation à afficher");
 				this.add(erreurnc);
 			}
 			else {
-				String[] psdonc = pseudo_nc();
+				String[] psdonc = pseudo_nc(); //PROBLEME ICI
+				System.out.println(psdonc+" "+psdonc.length);//test
 				this.utilisateursnc = new JButton[nb_nc];
 				for (int i=0;i<nb_nc;i++) {
 					this.utilisateursnc[i]= new JButton("déconnecté - "+ psdonc[i]);
@@ -346,7 +359,7 @@ class UserInterface extends JFrame{
 			return uc;
 		}
 		
-		String[] pseudo_nc() { //recup une liste de pseudo des unc opur qui il existe une conv
+		String[] pseudo_nc() { //recup une liste de pseudo des unc pour qui il existe une conv
 			/*ArrayList<Address> co_nc = new ArrayList<Address>();
 			nb_uc = connectedUserList.size();
 			int test=0;
@@ -377,14 +390,14 @@ class UserInterface extends JFrame{
 			ArrayList<Address> co_nc = new ArrayList<Address>();
 			nb_uc = connectedUserList.size();
 			int test=0;
-			for (int j=0;j<conversation_nc.size();j++) {
+			for (int j=0;j<cnc.size();j++) {
 				for (int k=0;k<nb_uc;k++) {
 				
-					if (!conversation_nc.get(j).getPseudo().equals(connectedUserList.get(k).getPseudo())) {
+					if (!cnc.get(j).getPseudo().equals(connectedUserList.get(k).getPseudo())) {
 						test++;
 					}
 					if (test==nb_uc) {
-						co_nc.add(conversation_nc.get(j));
+						co_nc.add(cnc.get(j));
 					}
 					
 				}
@@ -647,14 +660,15 @@ class UserInterface extends JFrame{
 			Account acc;
 
 			acc = db.getAccount2(username_, password_);
+			//acc = db.getAccount(username_, password_); //quand getpcip() marche
 			
 			if (acc == null) {
 				connexionpage.erreur.setText("erreur de connexion");
 				connexionpage.erreur.setForeground(Color.RED);
 			}
 			else {
-				acc.setAddress(new Address(acc.getPseudo(),acc.getUsername())); //pour recup l'adresse IP du pc
-				System.out.println(acc.getAddress().getIP());
+				acc.setAddress(new Address(acc.getPseudo(),acc.getUsername())); //si on utilise getAccount2()
+				System.out.println(acc.getAddress().getIP()); //test
 				co.setLoggedAccount(acc);
 				setUtilisateursconnectesPage_same_frame();
 			}
@@ -747,12 +761,55 @@ class UserInterface extends JFrame{
 			
 			
 			String but = e.getActionCommand();
+			String correspsdo;
+			String corresp = null;
+			ArrayList<Address> colist = db.getknownUsers();
+			int n = but.length();
 			if (but.charAt(0)=='d') { //c'est un utilisateur déconnecte
-				//(...) màj co.conversation//
+				correspsdo = but.substring(13,n);
+				for (int i=0;i<colist.size();i++) {
+					if (correspsdo.equals(colist.get(i).getPseudo())) {
+						corresp = colist.get(i).getUsername();
+					}
+				}
+				if (corresp == null) {
+					System.out.println("ERREUR: cas impossible -> un utilisateur déconnecté est forcément dans knownusers");
+				}
+				else {
+					co.setConversation(db.getConversation(co.getLoggedAccount().getUsername(), corresp));
+				}
 				setConversationPage_nc();
 			}
-			else {
-				//(...) màj co.conversation//	
+			else { //c'est un utilisateur connecte
+				correspsdo = but.substring(11,n);
+				for (int i=0;i<colist.size();i++) {
+					if (correspsdo.equals(colist.get(i).getPseudo())) {
+						corresp = colist.get(i).getUsername();
+					}
+				}
+				if (corresp == null) {
+					Address add=null;
+					//quand on utilisera socket
+					/*for (int j=0;j<co.getSocket().getUserList().size();j++) {
+						if (co.getSocket().getUserList().get(j).getPseudo().equals(correspsdo)) {
+							add = co.getSocket().getUserList().get(j);
+						}
+					}*/
+					for (int j=0;j<connectedUserList.size();j++) { //pour test
+						if (connectedUserList.get(j).getPseudo().equals(correspsdo)) {
+							add = connectedUserList.get(j);
+						}
+					}
+					if (add == null) {
+						System.out.println("ERREUR: cas impossible -> un utilisateur connecté est forcément dans connectedUserList");
+					}
+					else {
+						db.setKnownUser(add);
+					}
+				}
+				else {
+					co.setConversation(db.getConversation(co.getLoggedAccount().getUsername(), corresp));
+				}
 				setConversationPage();
 			}
 			

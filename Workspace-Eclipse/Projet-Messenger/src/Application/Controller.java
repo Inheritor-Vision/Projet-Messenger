@@ -28,9 +28,9 @@ public class Controller {
 		//*/
 		this.conversation = new Conversation(new Address(null,"test","test"));
 		this.db = new DBLocale("DBmessenger");
-		this.userInterface = new UserInterface();
-		this.userInterface.co = this;
-		this.userInterface.db = this.db;
+		this.userInterface = new UserInterface(this,this.db);
+		/*this.userInterface.co = this;
+		this.userInterface.db = this.db;*/
 		
 		
 		
@@ -49,6 +49,10 @@ public class Controller {
 		return conversation;
 	}
 	
+	public void setConversation(Conversation conv) {
+		this.conversation=conv;
+	}
+	
 	public Account getLoggedAccount() {
 		return loggedAccount;
 	}
@@ -63,11 +67,11 @@ public class Controller {
 		Controller co = new Controller();
 		
 		//test utililisateurs connectes//
-		Address valentin = new Address(null,"Valentin","Valentin_u");
+		/*Address valentin = new Address(null,"Valentin","Valentin_u");
 		Address simeon = new Address(null,"simeon","simeon_u");
 		Address kevin = new Address(null,"kevin","kevin_u");
 		Address yuyuan = new Address(null,"yuyuan","yuyuan_u");
-		Address ds = new Address(null,"D4rk-Sasuk3","ds_u");
+		Address ds = new Address("D4rk-Sasuk3","ds_u");
 		Address j = new Address(null,"jean","jean_u");
 		Address t = new Address(null,"tom","tom_u");
 		Address l = new Address(null,"leo","leo_u");
@@ -159,7 +163,15 @@ public class Controller {
 		co.userInterface.recevoirmessageUI(new Message(false,"je suis la",true));
 		////
 		
+	*/	
 		
+		Address ds = new Address("D4rk-Sasuk3","ds_u");
+		co.db.setKnownUser(ds);
+		co.db.setMessage(new Message(false,"bonjour",true), "D4rk-Sasuk3", "123");
+		ArrayList<Address> adr = co.db.getknownUsers();
+		for (int i=0;i<adr.size();i++) {
+			System.out.println(adr.get(i).getPseudo());
+		}
 	}
 
 

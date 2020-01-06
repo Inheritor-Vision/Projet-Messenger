@@ -150,7 +150,8 @@ public class DBLocale {
 			pstmt.executeUpdate();
 			
 		} catch (SQLException e) {
-			System.out.println("DBLocal: Error setMessage SQL");
+			System.out.println("DBLocal: Err	\n" + 
+					"or setMessage SQL");
 			e.printStackTrace();
 		}
 		
@@ -194,7 +195,8 @@ public class DBLocale {
                 + "    id integer PRIMARY KEY AUTOINCREMENT,\n"
                 + "    sender text NOT NULL,\n"
                 + "    receiver text NOT NULL,\n"
-                + "    isSender integer NOT NULL,\n"
+                + "    isSender integer NOT	\n" + 
+                " NULL,\n"
                 + "    isNew integer NOT NULL,\n"
                 + "    timestamp date NOT NULL,\n"
                 + "    message text NOT NULL\n"
