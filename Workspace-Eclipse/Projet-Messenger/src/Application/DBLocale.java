@@ -21,7 +21,6 @@ public class DBLocale {
 	
 	private static final String CHEMIN =  "./Db_Locale_Files";
 	protected Connection coDB;
-	protected ArrayList<Address> knownUsers = new ArrayList<Address>();
 	public DBLocale() {
 		this.coDB = connectionDB("appDb");
 		this.createTableKnownUsers();
@@ -51,13 +50,27 @@ public class DBLocale {
 		}
 		return c;
 	}
-	
-	protected ArrayList<Address> getknownUsers(){
+	protected Address getSpecificKnownUser(String UsernameLogged, String userToSearch) {
+		Address res = null;
+		try {
+			Statement stmt = this.coDB.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM knownUsers where usernameLogged = '" + UsernameLogged + "' AND username = '" + userToSearch + "' ;");
+			res =  new Address(InetAddress.getByAddress(rs.getBytes("address")), rs.getString("pseudo"), rs.getString("username"));
+		}catch (SQLException e) {
+			System.out.println("DBlocal: Error getSpecificKnownUser, SQL ERROR");
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			System.out.println("DBlocal: Error getSpecificKnownUser, Unknown Host Error");
+			e.printStackTrace();
+		}
+		return res;
+	}
+	protected ArrayList<Address> getknownUsers(String UsernameLogged){
 		ArrayList<Address> temp = new ArrayList<Address>();
 		Statement stmt;
 		try {
 			stmt = coDB.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM knownUsers;");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM knownUsers where usernameLogged = '" + UsernameLogged +"';");
 			while(rs.next()) {
 				String username = rs.getString("username");
 				String pseudo = rs.getString("pseudo");
@@ -77,8 +90,8 @@ public class DBLocale {
 		
 	}
 	
-	private Address getUserAddress(String corres) throws IOException {
-		Iterator<Address> iter = this.knownUsers.iterator();
+	private Address getUserAddress(String userLogged,String corres) throws IOException {
+		Iterator<Address> iter = this.getknownUsers(userLogged).iterator();
 		Address res = null;
 		Boolean fin = false;
 		while (iter.hasNext() && !fin) {
@@ -97,7 +110,7 @@ public class DBLocale {
 	protected Conversation getConversation(String userLogged, String corresp) {
 		Conversation conv = null;
 		try {
-			conv = new Conversation(this.getUserAddress(corresp));
+			conv = new Conversation(this.getUserAddress(userLogged,corresp));
 		} catch (IOException e1) {
 			System.out.println("DBLocal: Error getUserAddress");
 			e1.printStackTrace();
@@ -159,13 +172,14 @@ public class DBLocale {
 		
 	}
 	
-	protected void setKnownUser(Address add) {
-		String sql = "INSERT INTO knownUsers (username,pseudo,address) VALUES (?,?,?)";
+	protected void setKnownUser(Address add, String UsernameLogged) {
+		String sql = "INSERT INTO knownUsers (username,pseudo,address,usernameLogged) VALUES (?,?,?,?)";
 		try {
 			PreparedStatement pstmt = this.coDB.prepareStatement(sql);
 			pstmt.setString(1, add.getUsername());
 			pstmt.setString(2, add.getPseudo());
 			pstmt.setBytes(3, add.getIP().getAddress());
+			pstmt.setString(4,UsernameLogged);
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			System.out.println("DBLocale: Error setKnownUser, creation pstmt or execute");
@@ -176,6 +190,7 @@ public class DBLocale {
 	protected void createTableKnownUsers() {
 		String sql = "CREATE TABLE IF NOT EXISTS knownUsers (\n"
                 + "    id integer PRIMARY KEY AUTOINCREMENT,\n"
+                + "    usernameLogged text NOT NULL,\n"
                 + "    username text NOT NULL,\n"
                 + "    pseudo text NOT NULL,\n"
                 + "    address blob NOT NULL\n"
