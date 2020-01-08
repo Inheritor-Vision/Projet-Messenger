@@ -34,6 +34,7 @@ public class InternalSocket implements NetworkSocketInterface {
 	protected static final String  CONNECTED =  "Connected";
 	protected static final String  DISCONNECTED =  "Disconnected";
 	protected static final String  MESSAGE =  "Message";
+	protected static final String NEW_PSEUDO = "New_Pseudo";
 	protected static final String END_MESSAGE = "ef399b2d446bb37b7c32ad2cc1b6045b";
 	protected final String UsernameLogged;
 	DatagramSocket UDP_SEND_Socket;
@@ -45,7 +46,7 @@ public class InternalSocket implements NetworkSocketInterface {
 		this.UsernameLogged = UsernameLoggedAccount_;
 		this.connectedUserList = new ArrayList<Address>();
 		this.db = new DBLocale();
-		System.out.println("InternalSocket: starting UDP AND TCP SENDER SOCKET . . .");
+		
 		try {
 			this.UDP_SEND_Socket = new DatagramSocket(InternalSocket.UDP_PORT_SEND);
 		} catch (SocketException e) {
@@ -84,7 +85,7 @@ public class InternalSocket implements NetworkSocketInterface {
 			System.out.println("InternalSocket: Error sendConnected");
 			e.printStackTrace();
 		}
-		String message = InternalSocket.CONNECTED.toString() + "\n" + loggedAccount.getPseudo() + "\n" + loggedAccount.getUsername() + "\n" + (new Timestamp(System.currentTimeMillis())).toString();;
+		String message = InternalSocket.CONNECTED.toString() + "\n" + loggedAccount.getPseudo() + "\n" + loggedAccount.getUsername() + "\n" + (new Timestamp(System.currentTimeMillis())).toString();
 		try {
 			DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),listAllBroadcastAddresses().get(0), InternalSocket.UDP_PORT_RCV);
 			this.UDP_SEND_Socket.send(outPacket);
@@ -92,11 +93,19 @@ public class InternalSocket implements NetworkSocketInterface {
 			System.out.println("InternalSocket: Error dans sendConnected");
 			e.printStackTrace();
 		}
+	}
+	
+	public void sendNewPseudo(String New_Pseudo, String oldPseudo) {
+		try {
+			this.UDP_SEND_Socket.setBroadcast(true);
+			String message = InternalSocket.NEW_PSEUDO.toString() + "\n" + New_Pseudo + "\n" + this.UsernameLogged + "\n" + oldPseudo + "\n" + (new Timestamp(System.currentTimeMillis())).toString();
+			DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),listAllBroadcastAddresses().get(0), InternalSocket.UDP_PORT_RCV);
+			this.UDP_SEND_Socket.send(outPacket);
+		} catch (IOException e) {
+			System.out.println("InternalSocket: Error dans sendNewPseudo");
+			e.printStackTrace();
+		}
 		
-		
-		
-		
-
 	}
 
 	@Override
@@ -150,8 +159,9 @@ public class InternalSocket implements NetworkSocketInterface {
 	@Override
 	public void startReceiverThread() {
 		// TODO Auto-generated method stub
+		System.out.println("InternalSocket: starting RECEIVER UDP AND TCP THREADS . . .");
 		TCPThreadReceiver TCP = new TCPThreadReceiver(this.db, UsernameLogged,this.connectedUserList);
-		UDPThreadReceiver UDP = new UDPThreadReceiver(this.connectedUserList);
+		UDPThreadReceiver UDP = new UDPThreadReceiver(this.connectedUserList, this.db);
 	}
 
 	@Override
@@ -165,6 +175,8 @@ public class InternalSocket implements NetworkSocketInterface {
 		// TODO Auto-generated method stub
 
 	}
+	
+	
 
 	@Override
 	public void sendDisconnected(Account loggedAccount) {
@@ -199,9 +211,11 @@ public class InternalSocket implements NetworkSocketInterface {
 class UDPThreadReceiver extends Thread {
 	DatagramSocket receiver;
 	ArrayList<Address> connectedUserList;
+	DBLocale db;
 	
-	public UDPThreadReceiver(ArrayList<Address> _connectedUserList) {
+	public UDPThreadReceiver(ArrayList<Address> _connectedUserList, DBLocale _db) {
 		super();
+		this.db = _db;
 		this.connectedUserList = _connectedUserList;
 		System.out.println("ThreadReceiver: starting . . .");
 		try {
@@ -232,12 +246,31 @@ class UDPThreadReceiver extends Thread {
 					System.out.println("UDPThreadReceiver: Connected received: " + message);
 					synchronized(this.connectedUserList) {
 						this.connectedUserList.add(new Address(clientAddress,reader.readLine(), reader.readLine()));
-						System.out.println(this.connectedUserList.get(0).getPseudo() + this.connectedUserList.get(0).getUsername() + this.connectedUserList.get(0).getIP());
+						
 					}
 				}else if (line.contains(InternalSocket.DISCONNECTED)) {
 					System.out.println("UDPThreadReceiver: Disconnected received: " + message);
 					synchronized(this.connectedUserList) {
 						this.connectedUserList.remove(new Address(clientAddress,reader.readLine(), reader.readLine()));
+					}
+				}else if (line.contains(InternalSocket.NEW_PSEUDO)){
+					System.out.println("UDPThreadReceiver: New_Pseudo received: " + message);
+					synchronized(this.connectedUserList) {
+						String new_pseudo = reader.readLine();
+						String username = reader.readLine();
+						String old_pseudo = reader.readLine();
+						this.connectedUserList.add(new Address(InetAddress.getByAddress(clientAddress.getAddress()),new_pseudo, username));
+						Boolean fin = false;
+						Iterator<Address> iter = this.connectedUserList.iterator();
+						Address tempor;
+;						while (!fin && iter.hasNext()) {
+							tempor = iter.next();
+							if(tempor.getPseudo().equals(old_pseudo)) {
+								this.connectedUserList.remove(tempor);
+								fin = true;
+							}
+						}
+						this.connectedUserList.remove(new Address(InetAddress.getByAddress(clientAddress.getAddress()),old_pseudo, username));
 					}
 				}else {
 					System.out.println("UDPThreadReceiver: Unknown message received: " + message);
@@ -334,7 +367,7 @@ class UDPThreadReceiver extends Thread {
 					}
 					temp = in.readLine();
 				}
-				if( UsernameLogged == rcv) {
+				if( UsernameLogged.equals(rcv)) {
 					Address temporary = this.db.getSpecificKnownUser(UsernameLogged, sender);
 					if (temporary == null) {
 						synchronized(this.coUsers) {
@@ -342,7 +375,7 @@ class UDPThreadReceiver extends Thread {
 							Iterator<Address> lol = this.coUsers.iterator();
 							Address tempor = lol.next();
 							while(!fin2 && lol.hasNext()) {
-								if (tempor.getUsername() == sender) {
+								if (tempor.getUsername().equals(sender)) {
 									fin2 = true;
 									this.db.setKnownUser(new Address(tempor.getIP(),tempor.getPseudo(),tempor.getUsername()), UsernameLogged);
 								}

@@ -11,9 +11,9 @@ public class ClientUDP {
         int port = 6000;
         DatagramSocket dgramSocket= new DatagramSocket(port);
         System.out.println("ClientUDP: Server Created on port " + port );
-        String message = "Connected\nAlice Pseudo\nAlice Username\n" + (new Timestamp(System.currentTimeMillis())).toString();
+        String message = "New_Pseudo\nDark Eve\nEve usn\nEve psd\n" + (new Timestamp(System.currentTimeMillis())).toString();
         
-        DatagramPacket outPkt = new DatagramPacket(message.getBytes(), message.length(), InetAddress.getByName("insa-11269"), 6666);
+        DatagramPacket outPkt = new DatagramPacket(message.getBytes(), message.length(), InetAddress.getByName("insa-08128"), 6666);
         dgramSocket.send(outPkt);
         System.out.println("ClientUDP: message sent: " + message );
         dgramSocket.close();

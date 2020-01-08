@@ -15,14 +15,27 @@ public class testMain {
 	public static void main(String[] args) throws UnknownHostException {
 		
 		// TODO Auto-generated method stub
+		DBLocale db = new DBLocale();
+		db.setKnownUser(new Address(InetAddress.getLocalHost(), "Bob psd", "Bob usn"), "Alice usn");
+		db.setKnownUser(new Address(InetAddress.getLocalHost(), "Eve psd", "Eve usn"), "Alice usn");
+		db.updatePseudo("Dark Eve", "Eve psd", "Eve usn", "Alice usn");
+		System.out.println(db.getSpecificKnownUser("Alice usn", "Eve usn").getPseudo());
 		
 		
-		DBLocale db = new DBLocale("appDb");
-		db.setKnownUser(new Address(InetAddress.getLocalHost(),"Alice Pseudo Manual", "Alice Username Manual"),"Bob");
-		db.setKnownUser(new Address(InetAddress.getLocalHost(),"Eve Pseudo Manual", "Eve Username Manual"),"Bob");
-		db.setKnownUser(new Address(InetAddress.getLocalHost(),"Eve Pseudo Manual", "Eve Username Manual"),"Alice");
-		Address temp = db.getSpecificKnownUser("Bob", "Eve Username Manual");
-		System.out.println(temp.getPseudo());
+		//temp.sendNewPseudo("Dark Alice", "Alice psd");
+		
+		/*DBLocale db = new DBLocale("appDb");
+		db.setAccount(new Account("Alice usn", "Alice pswd", "Alice psd", new Address(InetAddress.getLocalHost(),"Alice psd","Alice usn")));
+		db.setAccount(new Account("Bob usn", "Bob pswd", "Bob psd", new Address(InetAddress.getLocalHost(),"Bob psd","Bob usn")));
+		db.setAccount(new Account("Eve usn", "Eve pswd", "Eve psd", new Address(InetAddress.getLocalHost(),"Eve psd","Eve usn")));
+		
+		db.setMessage(new Message(true,"Ceci est un test", true), "Alice", "Bob");
+		db.setMessage(new Message(true,"Ceci est une reponse test", true), "Bob", "Alice");
+		
+		db.setKnownUser(new Address(InetAddress.getLocalHost(),"Bob psd","Bob usn"), "Alice");
+		db.setKnownUser(new Address(InetAddress.getLocalHost(),"Eve psd","Eve usn"), "Alice");
+		db.setKnownUser(new Address(InetAddress.getLocalHost(),"Eve psd","Eve usn"), "Bob");
+		db.printAllTable();*/
 		//System.out.println(temp.get(0).getUsername() + "\n" + temp.get(0).getPseudo());
 		/*
 		 //Test send reception msg

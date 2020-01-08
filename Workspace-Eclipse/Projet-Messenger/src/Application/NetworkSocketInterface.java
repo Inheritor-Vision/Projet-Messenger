@@ -18,6 +18,8 @@ public interface NetworkSocketInterface {
  public ArrayList<Conversation> getHistorique();
  
  public void sendHistorique(ArrayList<Conversation> lh);
+ 
+ public void sendNewPseudo(String New_Pseudo, String oldPseudo);
 
  
  void setUserList(ArrayList<Address> ul);
