@@ -75,7 +75,7 @@ public class DBLocale {
 	}
 	
 	private Address getUserAddress(String corres) throws IOException {
-		Iterator<Address> iter = this.knownUsers.iterator();
+		Iterator<Address> iter = this.getknownUsers().iterator();
 		Address res = null;
 		Boolean fin = false;
 		while (iter.hasNext() && !fin) {
@@ -87,7 +87,7 @@ public class DBLocale {
 		if(res != null) {
 			return res;
 		}else {
-			throw new IOException("DBLocal: Error geteUserAddress");
+			throw new IOException("DBLocal: Error getUserAddress");
 		}
 	}
 	

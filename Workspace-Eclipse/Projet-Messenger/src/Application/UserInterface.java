@@ -16,6 +16,7 @@ class UserInterface extends JFrame{
 	
 	Controller co;
 	DBLocale db;
+	String corresp = null;
 	int nb_uc=0;
 	int nb_nc=0;
 	boolean connecte = false;
@@ -30,7 +31,7 @@ class UserInterface extends JFrame{
 	MenuBar menubar;
 	
 	
-	public UserInterface(/*ArrayList<Address> connectedUserList/*pour test*/Controller cont, DBLocale dbl) {
+	public UserInterface(/*ArrayList<Address> connectedUserList/*pour test*//*Controller cont, DBLocale dbl*/) {
 		/*super("Messenger");
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -40,8 +41,8 @@ class UserInterface extends JFrame{
 		
 		super("Messenger");
 		//this.connectedUserList = connectedUserList; //pour test
-		this.db=dbl;
-		this.co=cont;
+		/*this.db=dbl;
+		this.co=cont;*/
 		initGUI();
 		
 	}
@@ -312,7 +313,9 @@ class UserInterface extends JFrame{
 			
 			try {
 				cnc = db.getknownUsers();
-				System.out.println(cnc);//test
+				for (int i=0;i<cnc.size();i++) {
+					System.out.println("ui "+cnc.get(i).getPseudo());
+				}//test
 			}catch(NullPointerException e) {
 				System.out.println("knownusers vide");
 			}
@@ -323,14 +326,31 @@ class UserInterface extends JFrame{
 				this.add(erreurnc);
 			}
 			else {
-				String[] psdonc = pseudo_nc(); //PROBLEME ICI
+				//on regarde si les knownUsers ont une conv avec l'utilisateur logged, on enleve ceux qui n'en ont pas
+				ArrayList<Address> cnc2 = new ArrayList<Address>();
+				for (int j=0;j<cnc.size();j++) {
+					if (!db.getConversation(co.getLoggedAccount().getUsername(), cnc.get(j).getUsername()).isEmpty()) {
+						cnc2.add(cnc.get(j));
+					}
+				}
+				cnc = cnc2;
+				cnc2 = null; //free()
+				//
+				
+				String[] psdonc = pseudo_nc(); 
 				System.out.println(psdonc+" "+psdonc.length);//test
-				this.utilisateursnc = new JButton[nb_nc];
-				for (int i=0;i<nb_nc;i++) {
-					this.utilisateursnc[i]= new JButton("déconnecté - "+ psdonc[i]);
-					//this.utilisateurs[i].setMinimumSize(new Dimension(4000,4000));
-					this.add(this.utilisateursnc[i]);
-					this.utilisateursnc[i].addActionListener(this.acH);
+				if (psdonc.length == 0) {
+					this.erreurnc = new JLabel("Pas d'historique de conversation à afficher");
+					this.add(erreurnc);
+				}
+				else {
+					this.utilisateursnc = new JButton[nb_nc];
+					for (int i=0;i<nb_nc;i++) {
+						this.utilisateursnc[i]= new JButton("déconnecté - "+ psdonc[i]);
+						//this.utilisateurs[i].setMinimumSize(new Dimension(4000,4000));
+						this.add(this.utilisateursnc[i]);
+						this.utilisateursnc[i].addActionListener(this.acH);
+					}
 				}
 			}
 		
@@ -390,18 +410,23 @@ class UserInterface extends JFrame{
 			ArrayList<Address> co_nc = new ArrayList<Address>();
 			nb_uc = connectedUserList.size();
 			int test=0;
-			for (int j=0;j<cnc.size();j++) {
-				for (int k=0;k<nb_uc;k++) {
-				
-					if (!cnc.get(j).getPseudo().equals(connectedUserList.get(k).getPseudo())) {
-						test++;
-					}
-					if (test==nb_uc) {
-						co_nc.add(cnc.get(j));
-					}
+			if (nb_uc != 0) {
+				for (int j=0;j<cnc.size();j++) {
+					for (int k=0;k<nb_uc;k++) {
 					
+						if (!cnc.get(j).getPseudo().equals(connectedUserList.get(k).getPseudo())) {
+							test++;
+						}
+						if (test==nb_uc) {
+							co_nc.add(cnc.get(j));
+						}
+						
+					}
+				test=0;
 				}
-			test=0;
+			}
+			else {
+				co_nc = cnc;
 			}
 			String[] nc;
 			nb_nc=co_nc.size();
@@ -762,7 +787,7 @@ class UserInterface extends JFrame{
 			
 			String but = e.getActionCommand();
 			String correspsdo;
-			String corresp = null;
+			//String corresp = null;
 			ArrayList<Address> colist = db.getknownUsers();
 			int n = but.length();
 			if (but.charAt(0)=='d') { //c'est un utilisateur déconnecte
@@ -770,12 +795,15 @@ class UserInterface extends JFrame{
 				for (int i=0;i<colist.size();i++) {
 					if (correspsdo.equals(colist.get(i).getPseudo())) {
 						corresp = colist.get(i).getUsername();
+						
 					}
 				}
 				if (corresp == null) {
 					System.out.println("ERREUR: cas impossible -> un utilisateur déconnecté est forcément dans knownusers");
 				}
 				else {
+					System.out.println("UI "+corresp); //test
+					System.out.println("UI "+co.getLoggedAccount().getUsername()); //test
 					co.setConversation(db.getConversation(co.getLoggedAccount().getUsername(), corresp));
 				}
 				setConversationPage_nc();
@@ -795,7 +823,7 @@ class UserInterface extends JFrame{
 							add = co.getSocket().getUserList().get(j);
 						}
 					}*/
-					for (int j=0;j<connectedUserList.size();j++) { //pour test
+					for (int j=0;j<connectedUserList.size();j++) { //pour test sans socket
 						if (connectedUserList.get(j).getPseudo().equals(correspsdo)) {
 							add = connectedUserList.get(j);
 						}
@@ -805,7 +833,9 @@ class UserInterface extends JFrame{
 					}
 					else {
 						db.setKnownUser(add);
+						co.setConversation(new Conversation(add));
 					}
+					corresp=add.getUsername();
 				}
 				else {
 					co.setConversation(db.getConversation(co.getLoggedAccount().getUsername(), corresp));
@@ -827,6 +857,8 @@ class UserInterface extends JFrame{
 			//maj conv
 			Message msg = new Message(true,msgpage.message.getText(),true);
 			co.getConversation().addMessage(msg);
+			//maj db	
+			db.setMessage(msg, co.getLoggedAccount().getUsername(), corresp);
 			//afficher new message
 			JLabel newm =new JLabel(retour_ligne(msg.getMsg(),msg.getTimestamp()));
 			newm.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -844,22 +876,31 @@ class UserInterface extends JFrame{
 		
 	}
 	
-	public void recevoirmessageUI(Message msg){ //a utiliser uniquement si le message reçu vient de la conversation chargée
-		
-		
-		//maj conv
-		co.getConversation().addMessage(msg);
+	public void recevoirmessageUI(Message msg, Address sender){ //a utiliser uniquement si le message reçu vient de la conversation chargée
 		
 		//test
-		System.out.println(getContentPane().getComponents()[0].equals(scrollbar_conv));
-		System.out.println(getContentPane().getComponents()[1].equals(scrollbar_conv));
-		int n=getContentPane().getComponents().length;
-		for (int i=0;i<n;i++) {
-			System.out.println(getContentPane().getComponents()[i].getName());
-		}
-		//
+		System.out.println(co.getConversation().getDestinataire().getUsername());
 		
-		if(getContentPane().getComponents()[1].equals(scrollbar_conv)) {
+		//maj db
+		db.setMessage(msg, sender.getUsername(), co.getLoggedAccount().getUsername());
+		//on met le sender dans known user si on le connait pas
+		ArrayList<Address> ku = db.getknownUsers();
+		boolean connu = false;
+		for (int i=0;i<ku.size();i++) {
+			if (ku.get(i).getUsername().equals(sender.getUsername()) && ku.get(i).getIP().equals(sender.getIP())/*a voir si on regarde aussi l'IP*/) {
+				connu = true;
+			}
+		}
+		if (!connu) {
+			db.setKnownUser(sender);
+		}
+		if (getContentPane().getComponents()[1].equals(scrollbar_uc)) { //on est sur la page utilisateur connectes
+			setUtilisateursconnectesPage_same_frame();
+		}			
+			
+		if(co.getConversation().getDestinataire().getUsername().equals(sender.getUsername()) && getContentPane().getComponents()[1].equals(scrollbar_conv)) { //on est sur la page conversation avec celui qui envoie le message
+			//maj conv
+			co.getConversation().addMessage(msg);
 			//afficher new message
 			JLabel newm =new JLabel(retour_ligne(msg.getMsg(),msg.getTimestamp()));
 			newm.setHorizontalAlignment(SwingConstants.LEFT);
@@ -868,6 +909,7 @@ class UserInterface extends JFrame{
 			//rafraichissement
 			conversationpage.updateUI();
 		}
+		
 		
 	}
 	

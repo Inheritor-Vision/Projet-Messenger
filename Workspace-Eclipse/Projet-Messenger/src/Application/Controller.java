@@ -28,9 +28,9 @@ public class Controller {
 		//*/
 		this.conversation = new Conversation(new Address(null,"test","test"));
 		this.db = new DBLocale("DBmessenger");
-		this.userInterface = new UserInterface(this,this.db);
-		/*this.userInterface.co = this;
-		this.userInterface.db = this.db;*/
+		this.userInterface = new UserInterface(/*this,this.db*/);
+		this.userInterface.co = this;
+		this.userInterface.db = this.db;
 		
 		
 		
@@ -164,14 +164,30 @@ public class Controller {
 		////
 		
 	*/	
-		
-		Address ds = new Address("D4rk-Sasuk3","ds_u");
+		Address bbb = new Address("bbb_p","bbb_u");
+		co.db.setKnownUser(bbb);
+		Address ds = new Address("ds_p","ds_u");
 		co.db.setKnownUser(ds);
-		co.db.setMessage(new Message(false,"bonjour",true), "D4rk-Sasuk3", "123");
+		co.db.setMessage(new Message(false,"bonjour",true), "bbb_u", "123");
+		co.db.setMessage(new Message(false,"hello",true), "ds_u", "123");
 		ArrayList<Address> adr = co.db.getknownUsers();
 		for (int i=0;i<adr.size();i++) {
 			System.out.println(adr.get(i).getPseudo());
 		}
+		Address aaa = new Address("aaa_p","aaa_u");
+		//co.userInterface.connectedUserList.add(aaa);
+		try {
+			Thread.sleep(20000);
+			System.out.println("DONE");
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		co.userInterface.connectedUserList.add(aaa);
+		Message msg = new Message(false,"hahaha",true);
+		co.userInterface.recevoirmessageUI(msg,aaa);
+		//co.db.setMessage(msg, "aaa_u", "123");
+		co.userInterface.connectedUserList.remove(aaa);
 	}
 
 
