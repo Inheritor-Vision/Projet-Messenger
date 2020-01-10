@@ -21,9 +21,11 @@ public class DBLocale {
 	
 	private static final String CHEMIN =  "./Db_Locale_Files";
 	protected Connection coDB;
-	protected ArrayList<Address> knownUsers = new ArrayList<Address>();
 	public DBLocale() {
-		this.coDB = null;
+		this.coDB = connectionDB("appDb");
+		this.createTableKnownUsers();
+		this.createTableConversations();
+		this.createTableAccount();
 	}
 	public  DBLocale(String nomDB) {
 		this.coDB = connectionDB(nomDB);
@@ -33,7 +35,7 @@ public class DBLocale {
 		//this.knownUsers = this.getknownUsers();
 	}
 	
-	private Connection connectionDB(String nomDB) {
+	private synchronized Connection connectionDB(String nomDB) {
 		Connection c = null;
 		try {
 			Class.forName("org.sqlite.JDBC");
@@ -48,13 +50,27 @@ public class DBLocale {
 		}
 		return c;
 	}
-	
-	protected ArrayList<Address> getknownUsers(){
+	protected synchronized Address getSpecificKnownUser(String UsernameLogged, String userToSearch) {
+		Address res = null;
+		try {
+			Statement stmt = this.coDB.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM knownUsers where usernameLogged = '" + UsernameLogged + "' AND username = '" + userToSearch + "' ;");
+			res =  new Address(InetAddress.getByAddress(rs.getBytes("address")), rs.getString("pseudo"), rs.getString("username"));
+		}catch (SQLException e) {
+			System.out.println("DBlocal: Error getSpecificKnownUser, SQL ERROR");
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			System.out.println("DBlocal: Error getSpecificKnownUser, Unknown Host Error");
+			e.printStackTrace();
+		}
+		return res;
+	}
+	protected synchronized ArrayList<Address> getknownUsers(String UsernameLogged){
 		ArrayList<Address> temp = new ArrayList<Address>();
 		Statement stmt;
 		try {
 			stmt = coDB.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM knownUsers;");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM knownUsers where usernameLogged = '" + UsernameLogged +"';");
 			while(rs.next()) {
 				String username = rs.getString("username");
 				String pseudo = rs.getString("pseudo");
@@ -74,8 +90,10 @@ public class DBLocale {
 		
 	}
 	
-	private Address getUserAddress(String corres) throws IOException {
-		Iterator<Address> iter = this.getknownUsers().iterator();
+
+	private synchronized Address getUserAddress(String userLogged,String corres) throws IOException {
+		Iterator<Address> iter = this.getknownUsers(userLogged).iterator();
+
 		Address res = null;
 		Boolean fin = false;
 		while (iter.hasNext() && !fin) {
@@ -91,10 +109,10 @@ public class DBLocale {
 		}
 	}
 	
-	protected Conversation getConversation(String userLogged, String corresp) {
+	protected synchronized Conversation getConversation(String userLogged, String corresp) {
 		Conversation conv = null;
 		try {
-			conv = new Conversation(this.getUserAddress(corresp));
+			conv = new Conversation(this.getUserAddress(userLogged,corresp));
 		} catch (IOException e1) {
 			System.out.println("DBLocal: Error getUserAddress");
 			e1.printStackTrace();
@@ -118,9 +136,10 @@ public class DBLocale {
 					String msg = rs.getString("message");
 					conv.addMessage(new Message(isSender,msg,isNew, ts));
 				}while(rs.next());
-				rs.close();
-			    stmt.close(); 
+				 
 			}
+			rs.close();
+		    stmt.close();
 			
 		} catch (SQLException e) {
 			System.out.println("DBlocal: Error getMessage");
@@ -129,7 +148,7 @@ public class DBLocale {
 		return conv;
 	}
 	
-	private int BoolToInt(boolean a) {
+	private synchronized int BoolToInt(boolean a) {
 		if (a == true) {
 			return 1;
 		}else {
@@ -137,7 +156,7 @@ public class DBLocale {
 		}
 	}
 	// id corres isSender isNew ts msg 
-	protected void setMessage(Message msg, String sender, String receiver) {
+	protected synchronized void setMessage(Message msg, String sender, String receiver) {
 		try {
 			String sql = "INSERT INTO conversations (sender,receiver, isSender, isNew, timestamp, message) VALUES (?,?,?,?,?,?)";
 			PreparedStatement pstmt = this.coDB.prepareStatement(sql);
@@ -157,13 +176,14 @@ public class DBLocale {
 		
 	}
 	
-	protected void setKnownUser(Address add) {
-		String sql = "INSERT INTO knownUsers (username,pseudo,address) VALUES (?,?,?)";
+	protected synchronized void setKnownUser(Address add, String UsernameLogged) {
+		String sql = "INSERT INTO knownUsers (username,pseudo,address,usernameLogged) VALUES (?,?,?,?)";
 		try {
 			PreparedStatement pstmt = this.coDB.prepareStatement(sql);
 			pstmt.setString(1, add.getUsername());
 			pstmt.setString(2, add.getPseudo());
 			pstmt.setBytes(3, add.getIP().getAddress());
+			pstmt.setString(4,UsernameLogged);
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			System.out.println("DBLocale: Error setKnownUser, creation pstmt or execute");
@@ -171,9 +191,10 @@ public class DBLocale {
 		}
 	}
 	
-	protected void createTableKnownUsers() {
+	protected synchronized void createTableKnownUsers() {
 		String sql = "CREATE TABLE IF NOT EXISTS knownUsers (\n"
                 + "    id integer PRIMARY KEY AUTOINCREMENT,\n"
+                + "    usernameLogged text NOT NULL,\n"
                 + "    username text NOT NULL,\n"
                 + "    pseudo text NOT NULL,\n"
                 + "    address blob NOT NULL\n"
@@ -190,7 +211,7 @@ public class DBLocale {
 	
 	}
 	
-	protected void createTableConversations() {
+	protected synchronized void  createTableConversations() {
 		String sql = "CREATE TABLE IF NOT EXISTS conversations (\n"
                 + "    id integer PRIMARY KEY AUTOINCREMENT,\n"
                 + "    sender text NOT NULL,\n"
@@ -213,7 +234,7 @@ public class DBLocale {
 	
 	}
 	
-	protected void createTableAccount() {
+	protected synchronized void  createTableAccount() {
 		String sql = "CREATE TABLE IF NOT EXISTS account (\n"
                 + "    username text PRIMARY KEY,\n"
                 + "    password text NOT NULL,\n"
@@ -229,7 +250,7 @@ public class DBLocale {
 		}
 	}
 	
-	protected Account getAccount(String username, String password) {
+	protected synchronized Account getAccount(String username, String password) {
 		String sql = "SELECT * FROM account WHERE (username = ?) AND (password = ?);"; //WHERE (username = ?) AND (password = ?) 
 		ResultSet rs = null;
 		String un;
@@ -260,6 +281,7 @@ public class DBLocale {
 		
 	}
 	
+
 	//pour éviter l'erreur UnknownHostException (pour l'instant)//
 	protected Account getAccount2(String username, String password) {
 		String sql = "SELECT * FROM account WHERE (username = ?) AND (password = ?);"; //WHERE (username = ?) AND (password = ?) 
@@ -294,7 +316,9 @@ public class DBLocale {
 	}
 	/////
 	
-	protected void setAccount(Account acc){
+
+	protected synchronized void setAccount(Account acc){
+
 		String sql = "INSERT INTO account (username,password,pseudo) VALUES (?,?,?)";
 		try {
 			PreparedStatement pstmt = this.coDB.prepareStatement(sql);
@@ -307,6 +331,19 @@ public class DBLocale {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	protected synchronized void updatePseudo(String new_Pseudo, String old_Pseudo, String username, String LoggedUsername) {
+		String sql = "UPDATE knownUsers SET pseudo = '" + new_Pseudo + "' where usernameLogged='" + LoggedUsername + "' AND pseudo='" + old_Pseudo + "' AND username='" + username + "';";
+		try {
+			Statement stmt = this.coDB.createStatement();
+			stmt.executeUpdate(sql);
+			stmt.close();
+		} catch (SQLException e) {
+			System.out.println("DBLocale: Error createTableKnownUsers, create statement or execute");
+			e.printStackTrace();
+		}
+	
 	}
 	
 	protected byte[] getPcIP() {
@@ -333,6 +370,72 @@ public class DBLocale {
 			e1.printStackTrace();
 		}
 		return res;
+	}
+	
+	protected void printAllTable() {
+		String sql;
+		try {
+			sql = "SELECT * FROM account;";
+			Statement stmt = this.coDB.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			if (rs.next() == false) {
+				System.out.println("\nDBLocal: account is EMPTY");
+			}else {
+				System.out.println("\nDBLocal:Table account:\n");
+				System.out.println("--------------------------------");
+				System.out.println("| username | pseudo | password |");
+				System.out.println("--------------------------------\n");
+				do {
+					String tmp1;
+					System.out.println("|" + rs.getString("username") + " | " + rs.getString("pseudo") + " | " + rs.getString("password") + "|");
+				}while(rs.next());
+				 
+			}
+			rs.close();
+		    stmt.close();
+		    
+		    sql = "SELECT * FROM conversations";
+		    stmt = this.coDB.createStatement();
+		    rs = stmt.executeQuery(sql);
+		    if (rs.next() == false) {
+				System.out.println("\nDBLocal: conversations is EMPTY");
+			}else {
+				System.out.println("\nDBLocal:Table conversations:\n");
+				System.out.println("--------------------------------------------------------------");
+				System.out.println("| sender | receiver | isSender | isNew | timestamp | message |");
+				System.out.println("--------------------------------------------------------------\n");
+				do {
+					System.out.println("|" + rs.getString("sender") + " | " + rs.getString("receiver") + " | " + rs.getBoolean("isSender") + " | " + rs.getBoolean("isNew")+ " | " + rs.getTimestamp("timestamp") + " | " + rs.getString("message") + " |");
+				}while(rs.next());
+				 
+			}
+			rs.close();
+		    stmt.close();
+		    
+		    sql = "SELECT * FROM knownUsers";
+		    stmt = this.coDB.createStatement();
+		    rs = stmt.executeQuery(sql);
+		    if (rs.next() == false) {
+				System.out.println("\nDBLocal: knownUsers is EMPTY");
+			}else {
+				System.out.println("\nDBLocal:Table knownUsers:\n");
+				System.out.println("------------------------------------------------");
+				System.out.println("| usernameLogged | username | pseudo | address |");
+				System.out.println("------------------------------------------------\n");
+				do {
+					System.out.println("|" + rs.getString("usernameLogged") + " | " + rs.getString("username") + " | " + rs.getString("pseudo") + " | " + rs.getBytes("address")[0] + "." + rs.getBytes("address")[1] + "." + rs.getBytes("address")[2] + "." + rs.getBytes("address")[3] + " |");
+				}while(rs.next());
+				 
+			}
+			rs.close();
+		    stmt.close();
+		    
+			
+		}catch (SQLException e) {
+			System.out.println("DBLocal: Error getAccount creation or execute query");
+			e.printStackTrace();
+		}
+		
 	}
 
 }

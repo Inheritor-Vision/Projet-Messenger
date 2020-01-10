@@ -165,12 +165,12 @@ public class Controller {
 		
 	*/	
 		Address bbb = new Address("bbb_p","bbb_u");
-		co.db.setKnownUser(bbb);
+		co.db.setKnownUser(bbb,co.getLoggedAccount().getUsername());
 		Address ds = new Address("ds_p","ds_u");
-		co.db.setKnownUser(ds);
+		co.db.setKnownUser(ds,co.getLoggedAccount().getUsername());
 		co.db.setMessage(new Message(false,"bonjour",true), "bbb_u", "123");
 		co.db.setMessage(new Message(false,"hello",true), "ds_u", "123");
-		ArrayList<Address> adr = co.db.getknownUsers();
+		ArrayList<Address> adr = co.db.getknownUsers(co.getLoggedAccount().getUsername());
 		for (int i=0;i<adr.size();i++) {
 			System.out.println(adr.get(i).getPseudo());
 		}

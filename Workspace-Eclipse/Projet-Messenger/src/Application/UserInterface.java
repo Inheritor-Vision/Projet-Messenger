@@ -312,7 +312,7 @@ class UserInterface extends JFrame{
 			}
 			
 			try {
-				cnc = db.getknownUsers();
+				cnc = db.getknownUsers(co.getLoggedAccount().getUsername());
 				for (int i=0;i<cnc.size();i++) {
 					System.out.println("ui "+cnc.get(i).getPseudo());
 				}//test
@@ -627,7 +627,7 @@ class UserInterface extends JFrame{
 			
 			boolean unique=true;
 			try {
-				users = db.getknownUsers();
+				users = db.getknownUsers(co.getLoggedAccount().getUsername());
 			} catch (NullPointerException npe) {
 				System.out.println(npe);
 			}
@@ -642,7 +642,7 @@ class UserInterface extends JFrame{
 				Address add = new Address(pseudo_,username_);
 				Account acc =  new Account(username_,password_,pseudo_,add);
 				db.setAccount(acc);
-				db.setKnownUser(add);
+				db.setKnownUser(add,co.getLoggedAccount().getUsername());
 				
 				connexionpage.erreur.setText("création du compte de "+pseudo_+" réussie");
 				connexionpage.erreur.setForeground(Color.GREEN);
@@ -788,7 +788,7 @@ class UserInterface extends JFrame{
 			String but = e.getActionCommand();
 			String correspsdo;
 			//String corresp = null;
-			ArrayList<Address> colist = db.getknownUsers();
+			ArrayList<Address> colist = db.getknownUsers(co.getLoggedAccount().getUsername());
 			int n = but.length();
 			if (but.charAt(0)=='d') { //c'est un utilisateur déconnecte
 				correspsdo = but.substring(13,n);
@@ -832,7 +832,7 @@ class UserInterface extends JFrame{
 						System.out.println("ERREUR: cas impossible -> un utilisateur connecté est forcément dans connectedUserList");
 					}
 					else {
-						db.setKnownUser(add);
+						db.setKnownUser(add,co.getLoggedAccount().getUsername());
 						co.setConversation(new Conversation(add));
 					}
 					corresp=add.getUsername();
@@ -884,7 +884,7 @@ class UserInterface extends JFrame{
 		//maj db
 		db.setMessage(msg, sender.getUsername(), co.getLoggedAccount().getUsername());
 		//on met le sender dans known user si on le connait pas
-		ArrayList<Address> ku = db.getknownUsers();
+		ArrayList<Address> ku = db.getknownUsers(co.getLoggedAccount().getUsername());
 		boolean connu = false;
 		for (int i=0;i<ku.size();i++) {
 			if (ku.get(i).getUsername().equals(sender.getUsername()) && ku.get(i).getIP().equals(sender.getIP())/*a voir si on regarde aussi l'IP*/) {
@@ -892,7 +892,7 @@ class UserInterface extends JFrame{
 			}
 		}
 		if (!connu) {
-			db.setKnownUser(sender);
+			db.setKnownUser(sender,co.getLoggedAccount().getUsername());
 		}
 		if (getContentPane().getComponents()[1].equals(scrollbar_uc)) { //on est sur la page utilisateur connectes
 			setUtilisateursconnectesPage_same_frame();

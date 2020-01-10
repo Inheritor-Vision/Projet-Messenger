@@ -15,10 +15,40 @@ public class testMain {
 	public static void main(String[] args) throws UnknownHostException {
 		
 		// TODO Auto-generated method stub
+		DBLocale db = new DBLocale();
+		db.setKnownUser(new Address(InetAddress.getLocalHost(), "Bob psd", "Bob usn"), "Alice usn");
+		db.setKnownUser(new Address(InetAddress.getLocalHost(), "Eve psd", "Eve usn"), "Alice usn");
+		db.updatePseudo("Dark Eve", "Eve psd", "Eve usn", "Alice usn");
+		System.out.println(db.getSpecificKnownUser("Alice usn", "Eve usn").getPseudo());
+		
+		
+		//temp.sendNewPseudo("Dark Alice", "Alice psd");
+		
+		/*DBLocale db = new DBLocale("appDb");
+		db.setAccount(new Account("Alice usn", "Alice pswd", "Alice psd", new Address(InetAddress.getLocalHost(),"Alice psd","Alice usn")));
+		db.setAccount(new Account("Bob usn", "Bob pswd", "Bob psd", new Address(InetAddress.getLocalHost(),"Bob psd","Bob usn")));
+		db.setAccount(new Account("Eve usn", "Eve pswd", "Eve psd", new Address(InetAddress.getLocalHost(),"Eve psd","Eve usn")));
+		
+		db.setMessage(new Message(true,"Ceci est un test", true), "Alice", "Bob");
+		db.setMessage(new Message(true,"Ceci est une reponse test", true), "Bob", "Alice");
+		
+		db.setKnownUser(new Address(InetAddress.getLocalHost(),"Bob psd","Bob usn"), "Alice");
+		db.setKnownUser(new Address(InetAddress.getLocalHost(),"Eve psd","Eve usn"), "Alice");
+		db.setKnownUser(new Address(InetAddress.getLocalHost(),"Eve psd","Eve usn"), "Bob");
+		db.printAllTable();*/
+		//System.out.println(temp.get(0).getUsername() + "\n" + temp.get(0).getPseudo());
+		/*
+		 //Test send reception msg
+		InternalSocket temp1 = new InternalSocket("tempUser");
+		System.out.println(temp1.connectedUserList.size());
+		temp1.startReceiverThread();
+		*/
+		/*
+		// Test UDP Connecte
 		InternalSocket temp1 = new InternalSocket("tempUser");
 		Address addr = new Address(InetAddress.getLocalHost(), "testPS", "testUN" );
 		Account test = new Account("testUN", "testPWd", "testPS", addr);
-		temp1.sendConnected(test);
+		temp1.sendConnected(test);*/
 		
 		/*//TEST TCP SEND
 		Address addr = new Address(InetAddress.getLocalHost(), "testPS", "testUN" );
@@ -29,7 +59,7 @@ public class testMain {
 		temp1.sendMessage(msg, "testUN");*/
 		
 		
-		//TEST TCP RCV
+		/*//TEST TCP RCV
 		
 
 		
@@ -39,7 +69,7 @@ public class testMain {
 		
 		DBLocale db = new DBLocale("test.db");
 		InetAddress temp3 = InetAddress.getByAddress(db.getPcIP());
-		System.out.println(temp3.getAddress()[0] + "." + temp3.getAddress()[1] +"." + temp3.getAddress()[2] + "." +temp3.getAddress()[3]);
+		System.out.println(temp3.getAddress()[0] + "." + temp3.getAddress()[1] +"." + temp3.getAddress()[2] + "." +temp3.getAddress()[3]);*/
 		
 		/* Test COnversation
 		db.knownUsers.add(new Address(InetAddress.getLocalHost(), "usertest", "unused champ"));

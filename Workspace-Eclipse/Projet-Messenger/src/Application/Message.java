@@ -34,4 +34,6 @@ public class Message {
 	protected Boolean getIsNew() {
 		return isNew;
 	}
+	
+	
 }
