@@ -163,7 +163,16 @@ public class Controller {
 		co.userInterface.recevoirmessageUI(new Message(false,"je suis la",true));
 		////
 		
-	*/	
+	*/	while (co.getLoggedAccount() == null) {
+		try {
+			Thread.sleep(10000);
+			System.out.println("acc null");
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		}
+		System.out.println("user not null");
 		Address bbb = new Address("bbb_p","bbb_u");
 		co.db.setKnownUser(bbb,co.getLoggedAccount().getUsername());
 		Address ds = new Address("ds_p","ds_u");

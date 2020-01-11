@@ -305,6 +305,7 @@ class UserInterface extends JFrame{
 				this.utilisateurs = new JButton[nb_uc];
 				for (int i=0;i<nb_uc;i++) {
 					this.utilisateurs[i]= new JButton("connecté - "+ psdo[i]);
+					this.utilisateurs[i].setBackground(new Color(0xA4CBDF));
 					//this.utilisateurs[i].setMinimumSize(new Dimension(4000,4000));
 					this.add(this.utilisateurs[i]);
 					this.utilisateurs[i].addActionListener(this.acH);
@@ -347,6 +348,7 @@ class UserInterface extends JFrame{
 					this.utilisateursnc = new JButton[nb_nc];
 					for (int i=0;i<nb_nc;i++) {
 						this.utilisateursnc[i]= new JButton("déconnecté - "+ psdonc[i]);
+						this.utilisateursnc[i].setBackground(new Color(0xD4DADD));
 						//this.utilisateurs[i].setMinimumSize(new Dimension(4000,4000));
 						this.add(this.utilisateursnc[i]);
 						this.utilisateursnc[i].addActionListener(this.acH);
@@ -627,7 +629,8 @@ class UserInterface extends JFrame{
 			
 			boolean unique=true;
 			try {
-				users = db.getknownUsers(co.getLoggedAccount().getUsername());
+				//users = db.getknownUsers(co.getLoggedAccount().getUsername());
+				users = db.getknownUsers(null);
 			} catch (NullPointerException npe) {
 				System.out.println(npe);
 			}
@@ -642,7 +645,8 @@ class UserInterface extends JFrame{
 				Address add = new Address(pseudo_,username_);
 				Account acc =  new Account(username_,password_,pseudo_,add);
 				db.setAccount(acc);
-				db.setKnownUser(add,co.getLoggedAccount().getUsername());
+				//db.setKnownUser(add,co.getLoggedAccount().getUsername());
+				db.setKnownUser(add,acc.getUsername()); //il se connait lui-même
 				
 				connexionpage.erreur.setText("création du compte de "+pseudo_+" réussie");
 				connexionpage.erreur.setForeground(Color.GREEN);
@@ -760,7 +764,7 @@ class UserInterface extends JFrame{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
+			setUtilisateursconnectesPage_same_frame();
 			
 		}
 		
@@ -771,7 +775,7 @@ class UserInterface extends JFrame{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
+			setUtilisateursconnectesPage_same_frame();
 			
 		}
 		

@@ -70,7 +70,13 @@ public class DBLocale {
 		Statement stmt;
 		try {
 			stmt = coDB.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM knownUsers where usernameLogged = '" + UsernameLogged +"';");
+			ResultSet rs;
+			if (UsernameLogged == null) {
+				rs = stmt.executeQuery("SELECT * FROM knownUsers;");
+			} //on récupère tout
+			else{
+				rs = stmt.executeQuery("SELECT * FROM knownUsers where usernameLogged = '" + UsernameLogged +"';");
+			}
 			while(rs.next()) {
 				String username = rs.getString("username");
 				String pseudo = rs.getString("pseudo");
