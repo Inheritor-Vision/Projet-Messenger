@@ -16,7 +16,7 @@ protected Address(InetAddress ip, String pseudo, String un) {
 
 protected Address(String pseudo, String un) {
 	try {
-		this.IP = InetAddress.getLocalHost();
+		this.IP = InetAddress.getByAddress(DBLocale.getPcIP());
 	} catch (UnknownHostException e) {
 		this.IP = null;
 	}

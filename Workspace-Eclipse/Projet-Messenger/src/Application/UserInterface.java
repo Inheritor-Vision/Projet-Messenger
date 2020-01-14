@@ -674,7 +674,7 @@ class UserInterface extends JFrame{
 				co.setLoggedAccount(acc);
 				
 				//rzo
-				co.setSocket(new InternalSocket(acc.getUsername()));
+				co.setSocket(new InternalSocket(acc.getUsername(),co.getUI()));
 				//
 				
 				setUtilisateursconnectesPage_same_frame();
@@ -698,7 +698,13 @@ class UserInterface extends JFrame{
 			setConnexionPage();
 			corresp = null;
 			//rzo
-			co.setSocket(null);
+			co.getSocket().termine();
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			//
 		}
 		

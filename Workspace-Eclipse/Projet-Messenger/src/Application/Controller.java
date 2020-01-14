@@ -60,6 +60,9 @@ public class Controller {
 	public Account getLoggedAccount() {
 		return loggedAccount;
 	}
+	public UserInterface getUI() {
+		return userInterface;
+	}
 	
 	public void setLoggedAccount(Account acc) {
 		this.loggedAccount=acc;
@@ -70,10 +73,10 @@ public class Controller {
 		// TODO Auto-generated method stub
 		Controller co = new Controller();
 		
-		System.out.println(co.db.getPcIP()[0]);
+		/*System.out.println(co.db.getPcIP()[0]);
 		System.out.println(co.db.getPcIP()[1]);
 		System.out.println(co.db.getPcIP()[2]);
-		System.out.println(co.db.getPcIP()[3]);
+		System.out.println(co.db.getPcIP()[3]);*/
 		
 		
 		//test utililisateurs connectes//
@@ -173,7 +176,8 @@ public class Controller {
 		co.userInterface.recevoirmessageUI(new Message(false,"je suis la",true));
 		////
 		
-	*/	while (co.getLoggedAccount() == null) {
+	*/	
+		/*while (co.getLoggedAccount() == null) {
 		try {
 			Thread.sleep(10000);
 			System.out.println("acc null");
@@ -206,7 +210,7 @@ public class Controller {
 		Message msg = new Message(false,"hahaha",true);
 		co.userInterface.recevoirmessageUI(msg,aaa);
 		//co.db.setMessage(msg, "aaa_u", "123");
-		co.userInterface.connectedUserList.remove(aaa);
+		co.userInterface.connectedUserList.remove(aaa);*/
 	}
 
 

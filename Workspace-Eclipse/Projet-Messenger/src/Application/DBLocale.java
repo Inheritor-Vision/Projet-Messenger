@@ -275,7 +275,7 @@ public class DBLocale {
 				 un = rs.getString("username");
 				 ps = rs.getString("pseudo");
 				 pw = rs.getString("password");
-				 temp = new Address(InetAddress.getByAddress(this.getPcIP()),ps,un);
+				 temp = new Address(InetAddress.getByAddress(DBLocale.getPcIP()),ps,un);
 				 tempA = new Account(un,pw,ps,temp);	 
 			}
 			
@@ -352,7 +352,7 @@ public class DBLocale {
 	
 	}
 	
-	protected byte[] getPcIP() {
+	protected static byte[] getPcIP() {
 		Enumeration e;
 		byte[] res = null;
 		boolean fin = false;
