@@ -246,7 +246,7 @@ class UDPThreadReceiver extends Thread {
 	public void run(){
 		System.out.println("UDPThreadReceiver: running . . .");
 		try {
-			receiver.setSoTimeout(5000);
+			receiver.setSoTimeout(1000);
 		} catch (SocketException e1) {
 			System.out.println("UDPThreadReceiver: Error setSO");
 			e1.printStackTrace();
@@ -255,7 +255,7 @@ class UDPThreadReceiver extends Thread {
 			byte[] buffer = new byte[InternalSocket.MAX_CHAR];
 			DatagramPacket inPacket = new DatagramPacket(buffer,buffer.length);
 			try {
-				System.out.println("UDPThreadReceiver: waiting for messages");
+				
 				receiver.receive(inPacket);
 				if (inPacket != null) {
 					InetAddress clientAddress = inPacket.getAddress();
@@ -345,7 +345,7 @@ class UDPThreadReceiver extends Thread {
 		
 		public void run() {
 			try {
-				receiver.setSoTimeout(5000);
+				receiver.setSoTimeout(1000);
 			} catch (SocketException e1) {
 				System.out.println("TCPThreadReceiver: Error setTO");
 				e1.printStackTrace();
