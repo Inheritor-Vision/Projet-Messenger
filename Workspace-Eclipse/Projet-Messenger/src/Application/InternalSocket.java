@@ -51,6 +51,7 @@ public class InternalSocket implements NetworkSocketInterface {
 		this.connectedUserList = new ArrayList<Address>();
 		this.db = new DBLocale();
 		this.UI = _UI;
+		this.startReceiverThread();
 		try {
 			this.UDP_SEND_Socket = new DatagramSocket(InternalSocket.UDP_PORT_SEND);
 		} catch (SocketException e) {
