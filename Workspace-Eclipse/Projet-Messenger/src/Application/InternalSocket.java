@@ -37,7 +37,7 @@ public class InternalSocket implements NetworkSocketInterface {
 	protected static final String  MESSAGE =  "Message";
 	protected static final String NEW_PSEUDO = "New_Pseudo";
 	protected static final String END_MESSAGE = "ef399b2d446bb37b7c32ad2cc1b6045b";
-	protected final String UsernameLogged;
+	protected final Account UsernameLogged;
 	DatagramSocket UDP_SEND_Socket;
 	UDPThreadReceiver UDP_RCV_Thread;
 	TCPThreadReceiver TCP_RCV_Thread;
@@ -46,7 +46,7 @@ public class InternalSocket implements NetworkSocketInterface {
 	
 	
 	
-	public InternalSocket(String UsernameLoggedAccount_, UserInterface _UI){
+	public InternalSocket(Account UsernameLoggedAccount_, UserInterface _UI){
 		this.UsernameLogged = UsernameLoggedAccount_;
 		this.connectedUserList = new ArrayList<Address>();
 		this.db = new DBLocale();
@@ -54,6 +54,7 @@ public class InternalSocket implements NetworkSocketInterface {
 		this.startReceiverThread();
 		try {
 			this.UDP_SEND_Socket = new DatagramSocket(InternalSocket.UDP_PORT_SEND);
+			this.sendConnected(UsernameLogged);
 		} catch (SocketException e) {
 			System.out.println("Internal Socket: Error init UDP socket in constructor");
 			e.printStackTrace();
@@ -90,6 +91,7 @@ public class InternalSocket implements NetworkSocketInterface {
 			System.out.println("InternalSocket: Error sendConnected");
 			e.printStackTrace();
 		}
+		System.out.println("InternalSocket: BROADCAST SENT");
 		String message = InternalSocket.CONNECTED.toString() + "\n" + loggedAccount.getPseudo() + "\n" + loggedAccount.getUsername() + "\n" + (new Timestamp(System.currentTimeMillis())).toString();
 		try {
 			DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),listAllBroadcastAddresses().get(0), InternalSocket.UDP_PORT_RCV);
@@ -171,7 +173,7 @@ public class InternalSocket implements NetworkSocketInterface {
 	public void startReceiverThread() {
 		// TODO Auto-generated method stub
 		System.out.println("InternalSocket: starting RECEIVER UDP AND TCP THREADS . . .");
-		this.TCP_RCV_Thread = new TCPThreadReceiver(this.db, UsernameLogged,this.connectedUserList, this.UI);
+		this.TCP_RCV_Thread = new TCPThreadReceiver(this.db, UsernameLogged.getUsername(),this.connectedUserList, this.UI);
 		this.UDP_RCV_Thread = new UDPThreadReceiver(this.connectedUserList, this.db);
 	}
 
