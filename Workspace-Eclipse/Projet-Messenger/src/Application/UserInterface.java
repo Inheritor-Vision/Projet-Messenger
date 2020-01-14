@@ -674,7 +674,7 @@ class UserInterface extends JFrame{
 				co.setLoggedAccount(acc);
 				
 				//rzo
-				co.setSocket(new InternalSocket(acc.getUsername(),co.getUI()));
+				co.setSocket(new InternalSocket(acc,co.getUI()));
 				//
 				
 				setUtilisateursconnectesPage_same_frame();
