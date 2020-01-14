@@ -14,11 +14,7 @@ public class testMain {
 
 	public static void main(String[] args) throws UnknownHostException, InterruptedException {
 		
-		InternalSocket IS = new InternalSocket("test", null);
-		Thread.sleep(10000);
-		System.out.println("lol");
-		IS.termine();
-		
+				
 		// TODO Auto-generated method stub
 		/*DBLocale db = new DBLocale();
 		db.setKnownUser(new Address(InetAddress.getLocalHost(), "Bob psd", "Bob usn"), "Alice usn");
