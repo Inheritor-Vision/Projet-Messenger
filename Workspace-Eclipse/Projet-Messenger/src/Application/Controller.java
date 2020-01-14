@@ -27,7 +27,7 @@ public class Controller {
 		.0
 		//*/
 		this.conversation = new Conversation(new Address(null,"test","test"));
-		this.db = new DBLocale("DBmessenger");
+		this.db = new DBLocale();
 		this.userInterface = new UserInterface(/*this,this.db*/);
 		this.userInterface.co = this;
 		this.userInterface.db = this.db;
@@ -43,6 +43,10 @@ public class Controller {
 	
 	public InternalSocket getSocket() {
 		return socket;
+	}
+	
+	public void setSocket(InternalSocket so) {
+		this.socket=so;
 	}
 	
 	public Conversation getConversation() {
@@ -65,6 +69,8 @@ public class Controller {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Controller co = new Controller();
+		
+		System.out.println(co.db.getPcIP());
 		
 		//test utililisateurs connectes//
 		/*Address valentin = new Address(null,"Valentin","Valentin_u");

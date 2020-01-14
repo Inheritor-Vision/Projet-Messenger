@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.sql.Timestamp;
 
 class UserInterface extends JFrame{
-	//juste pour test
+	//test sans socket
 	ArrayList<Address> connectedUserList = new ArrayList<Address>();
 	//
 	ArrayList<Address> conversation_nc = new ArrayList<Address>();
@@ -295,21 +295,26 @@ class UserInterface extends JFrame{
 		public utilisateursconnectesPage() {
 			super(new GridLayout(0,1));
 			
-			//if (co.getSocket().getUserList().isEmpty()) {
-			if(connectedUserList.isEmpty()) { //pour test
-				this.erreuruc = new JLabel("Pas d'utilisateur connecté à afficher");
-				this.add(this.erreuruc);
-			}
-			else {
-				String[] psdo = pseudo_uc();
-				this.utilisateurs = new JButton[nb_uc];
-				for (int i=0;i<nb_uc;i++) {
-					this.utilisateurs[i]= new JButton("connecté - "+ psdo[i]);
-					this.utilisateurs[i].setBackground(new Color(0xA4CBDF));
-					//this.utilisateurs[i].setMinimumSize(new Dimension(4000,4000));
-					this.add(this.utilisateurs[i]);
-					this.utilisateurs[i].addActionListener(this.acH);
+			try {
+				if (co.getSocket().getUserList().isEmpty()) { //avec socket
+				//if(connectedUserList.isEmpty()) { //sans socket
+					this.erreuruc = new JLabel("Pas d'utilisateur connecté à afficher");
+					this.add(this.erreuruc);
 				}
+				else {
+					String[] psdo = pseudo_uc();
+					this.utilisateurs = new JButton[nb_uc];
+					for (int i=0;i<nb_uc;i++) {
+						this.utilisateurs[i]= new JButton("connecté - "+ psdo[i]);
+						this.utilisateurs[i].setBackground(new Color(0xA4CBDF));
+						//this.utilisateurs[i].setMinimumSize(new Dimension(4000,4000));
+						this.add(this.utilisateurs[i]);
+						this.utilisateurs[i].addActionListener(this.acH);
+					}
+				}
+			}catch(NullPointerException np) {
+				this.erreuruc = new JLabel("Pas de liste d'utilisateurs");
+				this.add(this.erreuruc);
 			}
 			
 			try {
@@ -361,62 +366,31 @@ class UserInterface extends JFrame{
 		}
 		
 		String[] pseudo_uc() { //recup une liste de pseudo des uc
-			/*String[] uc;
-			nb_uc = co.getSocket().getUserList().size();
-			uc = new String[nb_uc];
-			for (int i=0;i<nb_uc;i++) {
-				uc[i] = co.getSocket().getUserList().get(i).getPseudo();
-			}
-			
-			return uc;*/
-			
-			//pour test
+						
 			String[] uc;
-			nb_uc = connectedUserList.size();
+			nb_uc = co.getSocket().getUserList().size(); //avec socket
+			//nb_uc = connectedUserList.size(); //sans socket
 			uc = new String[nb_uc];
 			for (int i=0;i<nb_uc;i++) {
-				uc[i] = connectedUserList.get(i).getPseudo();
+				uc[i] = co.getSocket().getUserList().get(i).getPseudo(); //avec socket
+				//uc[i] = connectedUserList.get(i).getPseudo(); //sans socket
 			}
 			
 			return uc;
 		}
 		
 		String[] pseudo_nc() { //recup une liste de pseudo des unc pour qui il existe une conv
-			/*ArrayList<Address> co_nc = new ArrayList<Address>();
-			nb_uc = connectedUserList.size();
-			int test=0;
-			for (int j=0;j<conversation_nc.size();j++) {
-				for (int k=0;k<nb_uc;k++) {
-				
-					if (!conversation_nc.get(j).getPseudo().equals(co.getSocket().getUserList().get(k).getPseudo())) {
-						test++;
-					}
-					if (test==nb_uc) {
-						co_nc.add(conversation_nc.get(j));
-					}
-					
-				}
-			test=0;
-			}
-			String[] nc;
-			nb_nc=co_nc.size();
-			nc = new String[nb_nc];
-			for (int i=0;i<nb_nc;i++) {
-				nc[i] = co_nc.get(i).getPseudo();
-			}
 			
-			return nc;
-		*/
-			
-			//pour test
 			ArrayList<Address> co_nc = new ArrayList<Address>();
-			nb_uc = connectedUserList.size();
+			nb_uc = co.getSocket().getUserList().size(); //avec socket
+			//nb_uc = connectedUserList.size(); //sans socket
 			int test=0;
 			if (nb_uc != 0) {
 				for (int j=0;j<cnc.size();j++) {
 					for (int k=0;k<nb_uc;k++) {
 					
-						if (!cnc.get(j).getPseudo().equals(connectedUserList.get(k).getPseudo())) {
+						if (!cnc.get(j).getPseudo().equals(co.getSocket().getUserList().get(k).getPseudo())) { //avec socket
+						//if (!cnc.get(j).getPseudo().equals(connectedUserList.get(k).getPseudo())) { //sans socket
 							test++;
 						}
 						if (test==nb_uc) {
@@ -668,7 +642,6 @@ class UserInterface extends JFrame{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
 			String username_ = connexionpage.username.getText();
 			String password_ = connexionpage.password.getText();
 			
@@ -699,6 +672,11 @@ class UserInterface extends JFrame{
 				acc.setAddress(new Address(acc.getPseudo(),acc.getUsername())); //si on utilise getAccount2()
 				System.out.println(acc.getAddress().getIP()); //test
 				co.setLoggedAccount(acc);
+				
+				//rzo
+				co.setSocket(new InternalSocket(acc.getUsername()));
+				//
+				
 				setUtilisateursconnectesPage_same_frame();
 			}
 			
@@ -718,6 +696,10 @@ class UserInterface extends JFrame{
 			connexionpage.erreur.setText("Entrez username/password");
 			connexionpage.erreur.setForeground(Color.BLACK);
 			setConnexionPage();
+			corresp = null;
+			//rzo
+			co.setSocket(null);
+			//
 		}
 		
 		
@@ -765,6 +747,7 @@ class UserInterface extends JFrame{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			setUtilisateursconnectesPage_same_frame();
+			corresp = null;
 			
 		}
 		
@@ -776,7 +759,7 @@ class UserInterface extends JFrame{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			setUtilisateursconnectesPage_same_frame();
-			
+			corresp = null;
 		}
 		
 		
@@ -821,17 +804,20 @@ class UserInterface extends JFrame{
 				}
 				if (corresp == null) {
 					Address add=null;
-					//quand on utilisera socket
-					/*for (int j=0;j<co.getSocket().getUserList().size();j++) {
+					//avec socket
+					for (int j=0;j<co.getSocket().getUserList().size();j++) {
 						if (co.getSocket().getUserList().get(j).getPseudo().equals(correspsdo)) {
 							add = co.getSocket().getUserList().get(j);
 						}
-					}*/
-					for (int j=0;j<connectedUserList.size();j++) { //pour test sans socket
+					}
+					//
+					//sans socket
+					/*for (int j=0;j<connectedUserList.size();j++) { 
 						if (connectedUserList.get(j).getPseudo().equals(correspsdo)) {
 							add = connectedUserList.get(j);
 						}
-					}
+					}*/
+					//
 					if (add == null) {
 						System.out.println("ERREUR: cas impossible -> un utilisateur connecté est forcément dans connectedUserList");
 					}
@@ -861,6 +847,9 @@ class UserInterface extends JFrame{
 			//maj conv
 			Message msg = new Message(true,msgpage.message.getText(),true);
 			co.getConversation().addMessage(msg);
+			//rzo
+			co.getSocket().sendMessage(msg, corresp);
+			//
 			//maj db	
 			db.setMessage(msg, co.getLoggedAccount().getUsername(), corresp);
 			//afficher new message
@@ -888,6 +877,8 @@ class UserInterface extends JFrame{
 		//maj db
 		db.setMessage(msg, sender.getUsername(), co.getLoggedAccount().getUsername());
 		//on met le sender dans known user si on le connait pas
+		
+		//vérifie si sender dans knownusers puis ajoute
 		ArrayList<Address> ku = db.getknownUsers(co.getLoggedAccount().getUsername());
 		boolean connu = false;
 		for (int i=0;i<ku.size();i++) {
@@ -898,6 +889,9 @@ class UserInterface extends JFrame{
 		if (!connu) {
 			db.setKnownUser(sender,co.getLoggedAccount().getUsername());
 		}
+		//
+		
+		
 		if (getContentPane().getComponents()[1].equals(scrollbar_uc)) { //on est sur la page utilisateur connectes
 			setUtilisateursconnectesPage_same_frame();
 		}			

@@ -22,7 +22,7 @@ public class DBLocale {
 	private static final String CHEMIN =  "./Db_Locale_Files";
 	protected Connection coDB;
 	public DBLocale() {
-		this.coDB = connectionDB("appDb");
+		this.coDB = connectionDB("DBMessenger");
 		this.createTableKnownUsers();
 		this.createTableConversations();
 		this.createTableAccount();

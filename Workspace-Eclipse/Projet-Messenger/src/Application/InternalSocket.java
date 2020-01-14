@@ -46,6 +46,7 @@ public class InternalSocket implements NetworkSocketInterface {
 		this.UsernameLogged = UsernameLoggedAccount_;
 		this.connectedUserList = new ArrayList<Address>();
 		this.db = new DBLocale();
+		this.startReceiverThread();
 		
 		try {
 			this.UDP_SEND_Socket = new DatagramSocket(InternalSocket.UDP_PORT_SEND);
