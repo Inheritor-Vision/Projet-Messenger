@@ -12,14 +12,20 @@ import java.util.List;
 
 public class testMain {
 
-	public static void main(String[] args) throws UnknownHostException {
+	public static void main(String[] args) throws UnknownHostException, InterruptedException {
+		
+		InternalSocket IS = new InternalSocket("test", null);
+		IS.startReceiverThread();
+		Thread.sleep(10000);
+		System.out.println("lol");
+		IS.termine();
 		
 		// TODO Auto-generated method stub
-		DBLocale db = new DBLocale();
+		/*DBLocale db = new DBLocale();
 		db.setKnownUser(new Address(InetAddress.getLocalHost(), "Bob psd", "Bob usn"), "Alice usn");
 		db.setKnownUser(new Address(InetAddress.getLocalHost(), "Eve psd", "Eve usn"), "Alice usn");
 		db.updatePseudo("Dark Eve", "Eve psd", "Eve usn", "Alice usn");
-		System.out.println(db.getSpecificKnownUser("Alice usn", "Eve usn").getPseudo());
+		System.out.println(db.getSpecificKnownUser("Alice usn", "Eve usn").getPseudo());*/
 		
 		
 		//temp.sendNewPseudo("Dark Alice", "Alice psd");

@@ -9,6 +9,7 @@ import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -38,16 +39,19 @@ public class InternalSocket implements NetworkSocketInterface {
 	protected static final String END_MESSAGE = "ef399b2d446bb37b7c32ad2cc1b6045b";
 	protected final String UsernameLogged;
 	DatagramSocket UDP_SEND_Socket;
+	UDPThreadReceiver UDP_RCV_Thread;
+	TCPThreadReceiver TCP_RCV_Thread;
 	protected DBLocale db;
+	protected UserInterface UI;
 	
 	
 	
-	public InternalSocket(String UsernameLoggedAccount_){
+	public InternalSocket(String UsernameLoggedAccount_, UserInterface _UI){
 		this.UsernameLogged = UsernameLoggedAccount_;
 		this.connectedUserList = new ArrayList<Address>();
 		this.db = new DBLocale();
+		this.UI = _UI;
 		this.startReceiverThread();
-		
 		try {
 			this.UDP_SEND_Socket = new DatagramSocket(InternalSocket.UDP_PORT_SEND);
 		} catch (SocketException e) {
@@ -108,6 +112,12 @@ public class InternalSocket implements NetworkSocketInterface {
 		}
 		
 	}
+	
+	public void termine() {
+		this.UDP_SEND_Socket.close();
+		this.TCP_RCV_Thread.setStop();
+		this.UDP_RCV_Thread.setStop();
+	}
 
 	@Override
 	public void isServerUp() {
@@ -161,8 +171,8 @@ public class InternalSocket implements NetworkSocketInterface {
 	public void startReceiverThread() {
 		// TODO Auto-generated method stub
 		System.out.println("InternalSocket: starting RECEIVER UDP AND TCP THREADS . . .");
-		TCPThreadReceiver TCP = new TCPThreadReceiver(this.db, UsernameLogged,this.connectedUserList);
-		UDPThreadReceiver UDP = new UDPThreadReceiver(this.connectedUserList, this.db);
+		this.TCP_RCV_Thread = new TCPThreadReceiver(this.db, UsernameLogged,this.connectedUserList, this.UI);
+		this.UDP_RCV_Thread = new UDPThreadReceiver(this.connectedUserList, this.db);
 	}
 
 	@Override
@@ -213,6 +223,7 @@ class UDPThreadReceiver extends Thread {
 	DatagramSocket receiver;
 	ArrayList<Address> connectedUserList;
 	DBLocale db;
+	boolean termine = false;
 	
 	public UDPThreadReceiver(ArrayList<Address> _connectedUserList, DBLocale _db) {
 		super();
@@ -228,59 +239,75 @@ class UDPThreadReceiver extends Thread {
 		this.start();
 		
 	}
-	
+	public void setStop() {
+		this.termine = true;
+	}
 	@Override
 	public void run(){
 		System.out.println("UDPThreadReceiver: running . . .");
-		while(true) {
+		try {
+			receiver.setSoTimeout(5000);
+		} catch (SocketException e1) {
+			System.out.println("UDPThreadReceiver: Error setSO");
+			e1.printStackTrace();
+		}
+		while(!termine) {
 			byte[] buffer = new byte[InternalSocket.MAX_CHAR];
 			DatagramPacket inPacket = new DatagramPacket(buffer,buffer.length);
 			try {
 				System.out.println("UDPThreadReceiver: waiting for messages");
 				receiver.receive(inPacket);
-				
-				InetAddress clientAddress = inPacket.getAddress();
-				String message = new String (inPacket.getData(), 0, inPacket.getLength());
-				BufferedReader reader = new BufferedReader(new StringReader(message));
-				String line = reader.readLine();
-				if (line.contains(InternalSocket.CONNECTED)) {
-					System.out.println("UDPThreadReceiver: Connected received: " + message);
-					synchronized(this.connectedUserList) {
-						this.connectedUserList.add(new Address(clientAddress,reader.readLine(), reader.readLine()));
-						
-					}
-				}else if (line.contains(InternalSocket.DISCONNECTED)) {
-					System.out.println("UDPThreadReceiver: Disconnected received: " + message);
-					synchronized(this.connectedUserList) {
-						this.connectedUserList.remove(new Address(clientAddress,reader.readLine(), reader.readLine()));
-					}
-				}else if (line.contains(InternalSocket.NEW_PSEUDO)){
-					System.out.println("UDPThreadReceiver: New_Pseudo received: " + message);
-					synchronized(this.connectedUserList) {
-						String new_pseudo = reader.readLine();
-						String username = reader.readLine();
-						String old_pseudo = reader.readLine();
-						this.connectedUserList.add(new Address(InetAddress.getByAddress(clientAddress.getAddress()),new_pseudo, username));
-						Boolean fin = false;
-						Iterator<Address> iter = this.connectedUserList.iterator();
-						Address tempor;
-;						while (!fin && iter.hasNext()) {
-							tempor = iter.next();
-							if(tempor.getPseudo().equals(old_pseudo)) {
-								this.connectedUserList.remove(tempor);
-								fin = true;
-							}
+				if (inPacket != null) {
+					InetAddress clientAddress = inPacket.getAddress();
+					String message = new String (inPacket.getData(), 0, inPacket.getLength());
+					BufferedReader reader = new BufferedReader(new StringReader(message));
+					String line = reader.readLine();
+					if (line.contains(InternalSocket.CONNECTED)) {
+						System.out.println("UDPThreadReceiver: Connected received: " + message);
+						synchronized(this.connectedUserList) {
+							this.connectedUserList.add(new Address(clientAddress,reader.readLine(), reader.readLine()));
+							
 						}
-						this.connectedUserList.remove(new Address(InetAddress.getByAddress(clientAddress.getAddress()),old_pseudo, username));
+					}else if (line.contains(InternalSocket.DISCONNECTED)) {
+						System.out.println("UDPThreadReceiver: Disconnected received: " + message);
+						synchronized(this.connectedUserList) {
+							this.connectedUserList.remove(new Address(clientAddress,reader.readLine(), reader.readLine()));
+						}
+					}else if (line.contains(InternalSocket.NEW_PSEUDO)){
+						System.out.println("UDPThreadReceiver: New_Pseudo received: " + message);
+						synchronized(this.connectedUserList) {
+							String new_pseudo = reader.readLine();
+							String username = reader.readLine();
+							String old_pseudo = reader.readLine();
+							this.connectedUserList.add(new Address(InetAddress.getByAddress(clientAddress.getAddress()),new_pseudo, username));
+							Boolean fin = false;
+							Iterator<Address> iter = this.connectedUserList.iterator();
+							Address tempor;
+	;						while (!fin && iter.hasNext()) {
+								tempor = iter.next();
+								if(tempor.getPseudo().equals(old_pseudo)) {
+									this.connectedUserList.remove(tempor);
+									fin = true;
+								}
+							}
+							this.connectedUserList.remove(new Address(InetAddress.getByAddress(clientAddress.getAddress()),old_pseudo, username));
+						}
+					}else {
+						System.out.println("UDPThreadReceiver: Unknown message received: " + message);
 					}
-				}else {
-					System.out.println("UDPThreadReceiver: Unknown message received: " + message);
 				}
+				
+				
+				
+			} catch(SocketTimeoutException a) {
 				
 			}catch (IOException e) {
 				System.out.println("UDPThreadReceiver: Error thread");
+				e.printStackTrace();
 			}
 		}
+		this.receiver.close();
+		System.out.println("UDPThreadReceiver: Closing . . .");
 		
 		
 	}
@@ -292,11 +319,14 @@ class UDPThreadReceiver extends Thread {
 		ArrayList<Address> coUsers;
 		int n;
 		String UsernameLogged;
-		public TCPThreadReceiver(DBLocale db_, String _UsernameLogged, ArrayList<Address> _coUsers) {
+		UserInterface UI;
+		boolean termine = false;
+		public TCPThreadReceiver(DBLocale db_, String _UsernameLogged, ArrayList<Address> _coUsers, UserInterface _UI) {
 			super();
 			this.coUsers = _coUsers;
 			this.UsernameLogged = _UsernameLogged;
 			this.db = db_;
+			this.UI = _UI;
 			try {
 				receiver = new ServerSocket(InternalSocket.TCP_PORT_RCV);
 			} catch (IOException e) {
@@ -309,18 +339,45 @@ class UDPThreadReceiver extends Thread {
 			
 		}
 		
+		public void setStop() {
+			this.termine = true;
+		}
+		
 		public void run() {
-			while(true) {
-				try {
-					Socket clientSocket = receiver.accept();
-					n++;
-					System.out.println("TCPThreadReceiver: Creation Socket fils en cours . . .");
-					ThreadSocketFils temp = new ThreadSocketFils(clientSocket, n, db,UsernameLogged, this.coUsers);
+			try {
+				receiver.setSoTimeout(5000);
+			} catch (SocketException e1) {
+				System.out.println("TCPThreadReceiver: Error setTO");
+				e1.printStackTrace();
+			}
+			while(!termine) {
+				
 					
-				} catch (IOException e) {
-					System.out.println("TCPThreadReceiver: Error accept");
-					e.printStackTrace();
-				}
+					
+					Socket clientSocket;
+					try {
+						clientSocket = receiver.accept();
+						if (clientSocket != null) {
+							n++;
+							System.out.println("TCPThreadReceiver: Creation Socket fils en cours . . .");
+							ThreadSocketFils temp = new ThreadSocketFils(clientSocket, n, db,UsernameLogged, this.coUsers, this.UI);
+						}
+					} catch(SocketTimeoutException a) {
+						
+					}catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					
+				
+			}
+			try {
+				this.receiver.close();
+				System.out.println("TCPThreadReceiver: Closing . . .");
+			} catch (IOException e) {
+				System.out.println("TCPThreadReceiver: Error close");
+				e.printStackTrace();
 			}
 			
 		}
@@ -334,12 +391,14 @@ class UDPThreadReceiver extends Thread {
 		DBLocale db;
 		ArrayList<Address> coUsers;
 		String UsernameLogged;
-		ThreadSocketFils(Socket chassot, int a, DBLocale db_, String _UsernameLogged, ArrayList<Address> _coUsers){
+		UserInterface UI;
+		ThreadSocketFils(Socket chassot, int a, DBLocale db_, String _UsernameLogged, ArrayList<Address> _coUsers, UserInterface _UI){
 			this.UsernameLogged = _UsernameLogged;
 			this.db= db_;
 			this.coUsers = _coUsers;
 			son = chassot;
 			n =a;
+			this.UI = _UI;
 			System.out.println("ThreadSocketFils" + n + ": creation ThreadSocketfils . . .");
 			this.start();
 		}
@@ -378,20 +437,23 @@ class UDPThreadReceiver extends Thread {
 							while(!fin2 && lol.hasNext()) {
 								if (tempor.getUsername().equals(sender)) {
 									fin2 = true;
-									this.db.setKnownUser(new Address(tempor.getIP(),tempor.getPseudo(),tempor.getUsername()), UsernameLogged);
+									temporary = new Address(tempor.getIP(),tempor.getPseudo(),tempor.getUsername());
+									this.db.setKnownUser(temporary, UsernameLogged);
 								}
 							}
 						}
 						
 					}
-					
-					this.db.setMessage(new Message(false,message,true,ts),sender,rcv);
+					Message ephemere = new Message(false,message,true,ts);
+					this.db.setMessage(ephemere,sender,rcv);
+					this.UI.recevoirmessageUI(ephemere,temporary);
 				}else {
 					System.out.println("ThreadSocketFils" + n +": Msg rejeté car mauvais destinataire");
 				}
 				
 				System.out.println("ThreadSocketFils" + n +": Closing . . .");
 				son.close();
+				
 			}catch(IOException e) {
 					System.out.println("ThreadSocketFils" + n + ": Error accept");
 					e.printStackTrace();
