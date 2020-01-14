@@ -70,7 +70,11 @@ public class Controller {
 		// TODO Auto-generated method stub
 		Controller co = new Controller();
 		
-		System.out.println(co.db.getPcIP());
+		System.out.println(co.db.getPcIP()[0]);
+		System.out.println(co.db.getPcIP()[1]);
+		System.out.println(co.db.getPcIP()[2]);
+		System.out.println(co.db.getPcIP()[3]);
+		
 		
 		//test utililisateurs connectes//
 		/*Address valentin = new Address(null,"Valentin","Valentin_u");

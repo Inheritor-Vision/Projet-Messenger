@@ -365,7 +365,8 @@ public class DBLocale {
 			    while (ee.hasMoreElements() && !fin)
 			    {
 			        InetAddress i = (InetAddress) ee.nextElement();
-			        if(i.getAddress()[0] == 10) {
+			        //if(i.getAddress()[0] == 10) {
+			        if(i.getAddress().length == 4 && !(i.getAddress()[0]==127 && i.getAddress()[1]==0 && i.getAddress()[2]==0 && i.getAddress()[3]==1)) {
 			        	res = i.getAddress();
 			        }
 			        

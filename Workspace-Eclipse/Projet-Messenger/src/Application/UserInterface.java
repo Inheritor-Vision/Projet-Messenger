@@ -661,8 +661,8 @@ class UserInterface extends JFrame{
 			
 			Account acc;
 
-			acc = db.getAccount2(username_, password_);
-			//acc = db.getAccount(username_, password_); //quand getpcip() marche
+			//acc = db.getAccount2(username_, password_);
+			acc = db.getAccount(username_, password_); //quand getpcip() marche
 			
 			if (acc == null) {
 				connexionpage.erreur.setText("erreur de connexion");
