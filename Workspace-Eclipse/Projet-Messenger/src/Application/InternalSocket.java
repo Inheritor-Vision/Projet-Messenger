@@ -36,6 +36,7 @@ public class InternalSocket implements NetworkSocketInterface {
 	protected static final String  DISCONNECTED =  "Disconnected";
 	protected static final String  MESSAGE =  "Message";
 	protected static final String NEW_PSEUDO = "New_Pseudo";
+	protected static final String CON_ACK = "Con_Ack";
 	protected static final String END_MESSAGE = "ef399b2d446bb37b7c32ad2cc1b6045b";
 	protected final Account UsernameLogged;
 	DatagramSocket UDP_SEND_Socket;
@@ -116,6 +117,7 @@ public class InternalSocket implements NetworkSocketInterface {
 	}
 	
 	public void termine() {
+		this.sendDisconnected(UsernameLogged);
 		this.UDP_SEND_Socket.close();
 		this.TCP_RCV_Thread.setStop();
 		this.UDP_RCV_Thread.setStop();
@@ -174,7 +176,7 @@ public class InternalSocket implements NetworkSocketInterface {
 		// TODO Auto-generated method stub
 		System.out.println("InternalSocket: starting RECEIVER UDP AND TCP THREADS . . .");
 		this.TCP_RCV_Thread = new TCPThreadReceiver(this.db, UsernameLogged.getUsername(),this.connectedUserList, this.UI);
-		this.UDP_RCV_Thread = new UDPThreadReceiver(this.connectedUserList, this.db);
+		this.UDP_RCV_Thread = new UDPThreadReceiver(this.connectedUserList, this.db, this.UDP_SEND_Socket, UsernameLogged);
 	}
 
 	@Override
@@ -203,32 +205,21 @@ public class InternalSocket implements NetworkSocketInterface {
 			e.printStackTrace();
 		}
 		
-		/*InetAddress otherIP;
-		synchronized (connectedUserList) {
-			for (int i = 0; i < connectedUserList.size(); i++) {
-				
-				otherIP = connectedUserList.get(i).getIP();
-				String message = InternalSocket.DISCONNECTED.toString() + "\n" + loggedAccount.getUsername() + "\n" + loggedAccount.getPseudo() + "\n" + (new Timestamp(System.currentTimeMillis())).toString();;
-				DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),otherIP, InternalSocket.UDP_PORT_RCV);
-				try {
-					Socket.send(outPacket);
-				} catch( IOException e) {
-					System.out.println("Error Sending in send connected");
-				}
-			}
-		}*/
-	}
 
 }
 
 class UDPThreadReceiver extends Thread {
 	DatagramSocket receiver;
+	DatagramSocket sender;
 	ArrayList<Address> connectedUserList;
 	DBLocale db;
 	boolean termine = false;
+	Account userLogged;
 	
-	public UDPThreadReceiver(ArrayList<Address> _connectedUserList, DBLocale _db) {
+	public UDPThreadReceiver(ArrayList<Address> _connectedUserList, DBLocale _db, DatagramSocket _DS, Account _UN) {
 		super();
+		this.sender = _DS;
+		this.userLogged = _UN;
 		this.db = _db;
 		this.connectedUserList = _connectedUserList;
 		System.out.println("ThreadReceiver: starting . . .");
@@ -244,11 +235,22 @@ class UDPThreadReceiver extends Thread {
 	public void setStop() {
 		this.termine = true;
 	}
+	
+	private void sendSpecificConnected(InetAddress addr, String Pseudo, String Username) {
+		String message = InternalSocket.CON_ACK + "\n" + userLogged.getPseudo() + "\n" + userLogged.getUsername() + "\n" + (new Timestamp(System.currentTimeMillis())).toString();
+		try {
+			DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),addr, InternalSocket.UDP_PORT_RCV);
+			this.sender.send(outPacket);
+		} catch ( IOException e) {
+			System.out.println("InternalSocket: Error dans sendConnected");
+			e.printStackTrace();
+		}
+	}
 	@Override
 	public void run(){
 		System.out.println("UDPThreadReceiver: running . . .");
 		try {
-			receiver.setSoTimeout(5000);
+			receiver.setSoTimeout(1000);
 		} catch (SocketException e1) {
 			System.out.println("UDPThreadReceiver: Error setSO");
 			e1.printStackTrace();
@@ -257,7 +259,7 @@ class UDPThreadReceiver extends Thread {
 			byte[] buffer = new byte[InternalSocket.MAX_CHAR];
 			DatagramPacket inPacket = new DatagramPacket(buffer,buffer.length);
 			try {
-				System.out.println("UDPThreadReceiver: waiting for messages");
+				
 				receiver.receive(inPacket);
 				if (inPacket != null) {
 					InetAddress clientAddress = inPacket.getAddress();
@@ -266,10 +268,14 @@ class UDPThreadReceiver extends Thread {
 					String line = reader.readLine();
 					if (line.contains(InternalSocket.CONNECTED)) {
 						System.out.println("UDPThreadReceiver: Connected received: " + message);
+						String Pseudo = reader.readLine();
+						String Username = reader.readLine();
 						synchronized(this.connectedUserList) {
-							this.connectedUserList.add(new Address(clientAddress,reader.readLine(), reader.readLine()));
 							
+							this.connectedUserList.add(new Address(clientAddress,Pseudo,Username ));
+							this.sendSpecificConnected(clientAddress, Pseudo, Username);
 						}
+	
 					}else if (line.contains(InternalSocket.DISCONNECTED)) {
 						System.out.println("UDPThreadReceiver: Disconnected received: " + message);
 						synchronized(this.connectedUserList) {
@@ -293,6 +299,13 @@ class UDPThreadReceiver extends Thread {
 								}
 							}
 							this.connectedUserList.remove(new Address(InetAddress.getByAddress(clientAddress.getAddress()),old_pseudo, username));
+						}
+					}else if(line.contains(InternalSocket.CON_ACK)) {
+						System.out.println("UDPThreadReceiver: Connected_ACK received: " + message);
+						synchronized(this.connectedUserList) {
+							String Pseudo = reader.readLine();
+							String Username = reader.readLine();
+							this.connectedUserList.add(new Address(clientAddress,Pseudo,Username ));
 						}
 					}else {
 						System.out.println("UDPThreadReceiver: Unknown message received: " + message);
@@ -347,7 +360,7 @@ class UDPThreadReceiver extends Thread {
 		
 		public void run() {
 			try {
-				receiver.setSoTimeout(5000);
+				receiver.setSoTimeout(1000);
 			} catch (SocketException e1) {
 				System.out.println("TCPThreadReceiver: Error setTO");
 				e1.printStackTrace();
@@ -474,8 +487,7 @@ class UDPThreadReceiver extends Thread {
 	}
 	
 	
-		
-	
+}	
 	
 	
 

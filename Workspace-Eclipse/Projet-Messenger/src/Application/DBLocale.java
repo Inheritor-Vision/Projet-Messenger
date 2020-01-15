@@ -55,7 +55,10 @@ public class DBLocale {
 		try {
 			Statement stmt = this.coDB.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM knownUsers where usernameLogged = '" + UsernameLogged + "' AND username = '" + userToSearch + "' ;");
-			res =  new Address(InetAddress.getByAddress(rs.getBytes("address")), rs.getString("pseudo"), rs.getString("username"));
+			if (!rs.isClosed()) {
+				res =  new Address(InetAddress.getByAddress(rs.getBytes("address")), rs.getString("pseudo"), rs.getString("username"));
+			}
+			
 		}catch (SQLException e) {
 			System.out.println("DBlocal: Error getSpecificKnownUser, SQL ERROR");
 			e.printStackTrace();
