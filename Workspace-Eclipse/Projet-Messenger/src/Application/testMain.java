@@ -14,7 +14,8 @@ public class testMain {
 
 	public static void main(String[] args) throws UnknownHostException, InterruptedException {
 		
-		InternalSocket IS = new InternalSocket("test", null);
+		Account acc = new Account("test","test","test",null);
+		InternalSocket IS = new InternalSocket(acc, null);
 		IS.startReceiverThread();
 		Thread.sleep(10000);
 		System.out.println("lol");
