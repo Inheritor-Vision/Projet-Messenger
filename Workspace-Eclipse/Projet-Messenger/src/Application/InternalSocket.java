@@ -235,12 +235,14 @@ class UDPThreadReceiver extends Thread {
 	}
 	
 	private void sendSpecificConnected(InetAddress addr, String Pseudo, String Username) {
+		
 		String message = InternalSocket.CON_ACK + "\n" + userLogged.getPseudo() + "\n" + userLogged.getUsername() + "\n" + (new Timestamp(System.currentTimeMillis())).toString();
+		System.out.println("UDPThreadReceiver: sendSpecificConnected" + message + "\n\n" + addr.getAddress()[0] + + addr.getAddress()[1] + + addr.getAddress()[2] + addr.getAddress()[3]);
 		try {
 			DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),addr, InternalSocket.UDP_PORT_RCV);
 			this.sender.send(outPacket);
 		} catch ( IOException e) {
-			System.out.println("InternalSocket: Error dans sendConnected");
+			System.out.println("UDPThreadReceiver: Error dans sendConnected");
 			e.printStackTrace();
 		}
 	}
@@ -272,6 +274,7 @@ class UDPThreadReceiver extends Thread {
 							synchronized(this.connectedUserList) {
 								
 								this.connectedUserList.add(new Address(clientAddress,Pseudo,Username ));
+								
 								this.sendSpecificConnected(clientAddress, Pseudo, Username);
 							}
 						}
