@@ -879,7 +879,7 @@ class UserInterface extends JFrame{
 		
 		//test
 		System.out.println(co.getConversation().getDestinataire().getUsername());
-		
+		/*
 		//maj db
 		db.setMessage(msg, sender.getUsername(), co.getLoggedAccount().getUsername());
 		//on met le sender dans known user si on le connait pas
@@ -888,14 +888,14 @@ class UserInterface extends JFrame{
 		ArrayList<Address> ku = db.getknownUsers(co.getLoggedAccount().getUsername());
 		boolean connu = false;
 		for (int i=0;i<ku.size();i++) {
-			if (ku.get(i).getUsername().equals(sender.getUsername()) && ku.get(i).getIP().equals(sender.getIP())/*a voir si on regarde aussi l'IP*/) {
+			if (ku.get(i).getUsername().equals(sender.getUsername()) && ku.get(i).getIP().equals(sender.getIP())/*a voir si on regarde aussi l'IP*//*) {
 				connu = true;
 			}
 		}
 		if (!connu) {
 			db.setKnownUser(sender,co.getLoggedAccount().getUsername());
 		}
-		//
+		//*/
 		
 		
 		if (getContentPane().getComponents()[1].equals(scrollbar_uc)) { //on est sur la page utilisateur connectes

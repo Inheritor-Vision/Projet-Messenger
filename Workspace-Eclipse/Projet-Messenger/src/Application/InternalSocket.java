@@ -156,7 +156,7 @@ public class InternalSocket implements NetworkSocketInterface {
 			}
 		}
 		System.out.println("InternalSocket: addr find " + res.getIP());
-		String message = InternalSocket.MESSAGE.toString() + "\n" +  UsernameLogged + "\n" + Username + "\n" + msg.getTimestamp().toString() + "\n" + msg.getMsg();
+		String message = InternalSocket.MESSAGE.toString() + "\n" +  UsernameLogged.getUsername() + "\n" + Username + "\n" + msg.getTimestamp().toString() + "\n" + msg.getMsg();
 		System.out.println("InternalSocket: msg : " + message);
 		InetAddress addrRcv = res.getIP();
 		try {
@@ -270,7 +270,7 @@ class UDPThreadReceiver extends Thread {
 						System.out.println("UDPThreadReceiver: Connected received: " + message);
 						String Pseudo = reader.readLine();
 						String Username = reader.readLine();
-						if (Username != userLogged.getUsername()) {
+						if (!Username.equals(userLogged.getUsername())) {
 							synchronized(this.connectedUserList) {
 								
 								this.connectedUserList.add(new Address(clientAddress,Pseudo,Username ));

@@ -73,10 +73,11 @@ public class Controller {
 		// TODO Auto-generated method stub
 		Controller co = new Controller();
 		
-		/*System.out.println(co.db.getPcIP()[0]);
+		System.out.println(co.db.getPcIP()[0]);
 		System.out.println(co.db.getPcIP()[1]);
 		System.out.println(co.db.getPcIP()[2]);
-		System.out.println(co.db.getPcIP()[3]);*/
+		System.out.println(co.db.getPcIP()[3]);
+		
 		
 		
 		//test utililisateurs connectes//
@@ -211,6 +212,7 @@ public class Controller {
 		co.userInterface.recevoirmessageUI(msg,aaa);
 		//co.db.setMessage(msg, "aaa_u", "123");
 		co.userInterface.connectedUserList.remove(aaa);*/
+		while(true) {}
 	}
 
 
