@@ -270,11 +270,14 @@ class UDPThreadReceiver extends Thread {
 						System.out.println("UDPThreadReceiver: Connected received: " + message);
 						String Pseudo = reader.readLine();
 						String Username = reader.readLine();
-						synchronized(this.connectedUserList) {
-							
-							this.connectedUserList.add(new Address(clientAddress,Pseudo,Username ));
-							this.sendSpecificConnected(clientAddress, Pseudo, Username);
+						if (Username != userLogged.getUsername()) {
+							synchronized(this.connectedUserList) {
+								
+								this.connectedUserList.add(new Address(clientAddress,Pseudo,Username ));
+								this.sendSpecificConnected(clientAddress, Pseudo, Username);
+							}
 						}
+						
 	
 					}else if (line.contains(InternalSocket.DISCONNECTED)) {
 						System.out.println("UDPThreadReceiver: Disconnected received: " + message);
