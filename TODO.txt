@@ -1,1 +1,8 @@
 Internal socket doit être synchronisé !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+Handle NewPseudo: Supprimer de la DB + UI 
+DBLocale: mettre des while en cas de SQLiteBUSY ? 
+UI: Press enter to send msg
+Server de présence + Serv SQL ? 
+Test
