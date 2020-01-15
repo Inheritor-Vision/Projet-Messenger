@@ -879,8 +879,11 @@ class UserInterface extends JFrame{
 		
 		//test
 		System.out.println(co.getConversation().getDestinataire().getUsername());
+
 		/*
 		//maj db
+
+
 		db.setMessage(msg, sender.getUsername(), co.getLoggedAccount().getUsername());
 		//on met le sender dans known user si on le connait pas
 		

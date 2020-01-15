@@ -20,22 +20,22 @@ public class DBLocale {
 	//sqlite java
 	
 	private static final String CHEMIN =  "./Db_Locale_Files";
-	protected Connection coDB;
+	final static protected Connection coDB = connectionDB("DBMessenger");
 	public DBLocale() {
-		this.coDB = connectionDB("DBMessenger");
+		//this.coDB = connectionDB("DBMessenger");
 		this.createTableKnownUsers();
 		this.createTableConversations();
 		this.createTableAccount();
 	}
 	public  DBLocale(String nomDB) {
-		this.coDB = connectionDB(nomDB);
+		//this.coDB = connectionDB(nomDB);
 		this.createTableKnownUsers();
 		this.createTableConversations();
 		this.createTableAccount();
 		//this.knownUsers = this.getknownUsers();
 	}
 	
-	private synchronized Connection connectionDB(String nomDB) {
+	private static synchronized Connection connectionDB(String nomDB) {
 		Connection c = null;
 		try {
 			Class.forName("org.sqlite.JDBC");

@@ -23,6 +23,7 @@ public class testMain {
 		IS.termine();
 		
 
+
 		// TODO Auto-generated method stub
 		/*DBLocale db = new DBLocale();
 		db.setKnownUser(new Address(InetAddress.getLocalHost(), "Bob psd", "Bob usn"), "Alice usn");
