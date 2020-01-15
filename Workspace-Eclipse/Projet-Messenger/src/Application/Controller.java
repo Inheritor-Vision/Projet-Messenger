@@ -78,6 +78,7 @@ public class Controller {
 		System.out.println(co.db.getPcIP()[2]);
 		System.out.println(co.db.getPcIP()[3]);
 		
+		co.db.printAllTable();
 		
 		
 		//test utililisateurs connectes//

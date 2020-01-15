@@ -8,6 +8,7 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.sql.Timestamp;
 
+@SuppressWarnings("serial")
 class UserInterface extends JFrame{
 	//test sans socket
 	ArrayList<Address> connectedUserList = new ArrayList<Address>();
@@ -179,11 +180,12 @@ class UserInterface extends JFrame{
 		this.getContentPane().remove(this.scrollbar_uc);
 		this.setVisible(true);
 	}
+
 ////////////////////////////////////////////	
 	
 	
 /////////////////////////////////////////PAGE DE CONNEXION (JPanel)///////////////////////////////////////////	
-	
+
 	class connexionPage extends JPanel{
 		private JTextField username;
 		private JTextField password;
@@ -208,6 +210,8 @@ class UserInterface extends JFrame{
 			this.add(this.connexion);
 			this.add(this.creation);
 			
+			this.username.addActionListener(this.coH); //press enter
+			this.password.addActionListener(this.coH); //press enter
 			this.connexion.addActionListener(this.coH);
 			this.creation.addActionListener(this.crH);
 			
@@ -220,6 +224,7 @@ class UserInterface extends JFrame{
 ////////////////////////////////////////////////////////////////////////////////////////
 	
 //////////////////////////////////PAGE DE CREATION COMPTE (JPanel)////////////////////////////////////////////////////
+
 	class creationcomptePage extends JPanel{
 		private JLabel entete;
 		private JTextField username;
@@ -243,6 +248,9 @@ class UserInterface extends JFrame{
 			this.add(this.pseudo);
 			this.add(this.creation);
 			
+			this.username.addActionListener(this.crH); //press enter
+			this.password.addActionListener(this.crH); //press enter
+			this.pseudo.addActionListener(this.crH); //press enter
 			this.creation.addActionListener(this.crH);
 			
 			this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -255,6 +263,7 @@ class UserInterface extends JFrame{
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 	
 //////////////////////////////////PAGE DE CHANGEMENT DE PSEUDO(JPanel)////////////////////////////////////////////////////
+
 	class changerpseudoPage extends JPanel{
 		private JTextField pseudo;
 		private JButton creation;
@@ -270,6 +279,7 @@ class UserInterface extends JFrame{
 			this.add(this.pseudo);
 			this.add(this.creation);
 			
+			this.pseudo.addActionListener(this.cpH); //press enter
 			this.creation.addActionListener(this.cpH);
 			
 			this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -282,7 +292,7 @@ class UserInterface extends JFrame{
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 	
 /////////////////////////////////////////PAGE UTILISATEURS CONNECTES (JPanel)///////////////////////////////////////////	
-	
+
 	class utilisateursconnectesPage extends JPanel{
 		private JButton[] utilisateurs;
 		private JButton[] utilisateursnc;
@@ -418,6 +428,7 @@ class UserInterface extends JFrame{
 ////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////PAGE DE CONVERSATION (JPanel)////////////////////////////////////////////
+
 	class conversationPage extends JPanel{
 		//private JTextArea[] discussion;
 		private JLabel[] discussion;
@@ -500,6 +511,7 @@ class UserInterface extends JFrame{
 		
 		
 	}
+	
 
 	class msgPage extends JPanel{
 		
@@ -511,13 +523,14 @@ class UserInterface extends JFrame{
 			super(new GridLayout(0,1));
 			this.message = new JTextField();
 			try {
-			this.envoi_message = new JButton("envoyer le message à "+ co.getConversation().getDestinataire().getPseudo());
+				this.envoi_message = new JButton("envoyer le message à "+ co.getConversation().getDestinataire().getPseudo());
 			} catch (NullPointerException e) {
 				this.envoi_message = new JButton("envoyer le message");
 			}
 			this.add(this.message);
 			this.add(this.envoi_message);
 			
+			this.message.addActionListener(this.emH); //press enter
 			this.envoi_message.addActionListener(this.emH);
 			
 			this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -527,6 +540,7 @@ class UserInterface extends JFrame{
 ////////////////////////////////////////////////////////////////////////////////////////
 	
 ////////////////////////////////MENU BAR (JMenuBar)/////////////////////////////////////////////////////////////////
+
 	class MenuBar extends JMenuBar{
 		
 		private JMenu msysteme;
@@ -690,7 +704,6 @@ class UserInterface extends JFrame{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
 			
 			//(...)//
 			connexionpage.erreur.setText("Entrez username/password");
@@ -702,7 +715,6 @@ class UserInterface extends JFrame{
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			//
@@ -715,7 +727,6 @@ class UserInterface extends JFrame{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
 			setChangerpseudoPage();
 			
 		}
@@ -738,7 +749,6 @@ class UserInterface extends JFrame{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
 			
 			//(...) deconnexion//
 			
@@ -775,7 +785,6 @@ class UserInterface extends JFrame{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
 			
 			
 			String but = e.getActionCommand();
