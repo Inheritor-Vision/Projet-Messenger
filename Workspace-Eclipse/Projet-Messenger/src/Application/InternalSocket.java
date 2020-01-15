@@ -52,7 +52,6 @@ public class InternalSocket implements NetworkSocketInterface {
 		this.connectedUserList = new ArrayList<Address>();
 		this.db = new DBLocale();
 		this.UI = _UI;
-		this.startReceiverThread();
 		try {
 			this.UDP_SEND_Socket = new DatagramSocket(InternalSocket.UDP_PORT_SEND);
 			this.sendConnected(UsernameLogged);
@@ -60,7 +59,7 @@ public class InternalSocket implements NetworkSocketInterface {
 			System.out.println("Internal Socket: Error init UDP socket in constructor");
 			e.printStackTrace();
 		}
-		
+		this.startReceiverThread();
 	}
 	
 	List<InetAddress> listAllBroadcastAddresses() throws SocketException {
@@ -118,7 +117,6 @@ public class InternalSocket implements NetworkSocketInterface {
 	
 	public void termine() {
 		this.sendDisconnected(UsernameLogged);
-		this.UDP_SEND_Socket.close();
 		this.TCP_RCV_Thread.setStop();
 		this.UDP_RCV_Thread.setStop();
 	}
@@ -156,7 +154,7 @@ public class InternalSocket implements NetworkSocketInterface {
 			}
 		}
 		System.out.println("InternalSocket: addr find " + res.getIP());
-		String message = InternalSocket.MESSAGE.toString() + "\n" +  UsernameLogged + "\n" + Username + "\n" + msg.getTimestamp().toString() + "\n" + msg.getMsg();
+		String message = InternalSocket.MESSAGE.toString() + "\n" +  UsernameLogged.getUsername() + "\n" + Username + "\n" + msg.getTimestamp().toString() + "\n" + msg.getMsg();
 		System.out.println("InternalSocket: msg : " + message);
 		InetAddress addrRcv = res.getIP();
 		try {
@@ -270,7 +268,7 @@ class UDPThreadReceiver extends Thread {
 						System.out.println("UDPThreadReceiver: Connected received: " + message);
 						String Pseudo = reader.readLine();
 						String Username = reader.readLine();
-						if (Username != userLogged.getUsername()) {
+						if (!Username.equals(userLogged.getUsername())) {
 							synchronized(this.connectedUserList) {
 								
 								this.connectedUserList.add(new Address(clientAddress,Pseudo,Username ));
@@ -282,7 +280,18 @@ class UDPThreadReceiver extends Thread {
 					}else if (line.contains(InternalSocket.DISCONNECTED)) {
 						System.out.println("UDPThreadReceiver: Disconnected received: " + message);
 						synchronized(this.connectedUserList) {
-							this.connectedUserList.remove(new Address(clientAddress,reader.readLine(), reader.readLine()));
+							String Username = reader.readLine();
+							Boolean fin = false;
+							Iterator<Address> iter = this.connectedUserList.iterator();
+							Address tempor;
+	;						while (!fin && iter.hasNext()) {
+								tempor = iter.next();
+								if(tempor.getUsername().equals(Username)) {
+									this.connectedUserList.remove(tempor);
+									fin = true;
+								}
+							}
+							
 						}
 					}else if (line.contains(InternalSocket.NEW_PSEUDO)){
 						System.out.println("UDPThreadReceiver: New_Pseudo received: " + message);
@@ -301,7 +310,6 @@ class UDPThreadReceiver extends Thread {
 									fin = true;
 								}
 							}
-							this.connectedUserList.remove(new Address(InetAddress.getByAddress(clientAddress.getAddress()),old_pseudo, username));
 						}
 					}else if(line.contains(InternalSocket.CON_ACK)) {
 						System.out.println("UDPThreadReceiver: Connected_ACK received: " + message);
@@ -412,7 +420,8 @@ class UDPThreadReceiver extends Thread {
 		UserInterface UI;
 		ThreadSocketFils(Socket chassot, int a, DBLocale db_, String _UsernameLogged, ArrayList<Address> _coUsers, UserInterface _UI){
 			this.UsernameLogged = _UsernameLogged;
-			this.db= db_;
+			//this.db= db_;
+			this.db = new DBLocale();
 			this.coUsers = _coUsers;
 			son = chassot;
 			n =a;
@@ -433,11 +442,11 @@ class UDPThreadReceiver extends Thread {
 				Timestamp ts = null;
 				String temp = in.readLine();
 				while(temp !=null) {
-					System.out.println("ThreadSocketFils" + n + ": msg received: " + temp);
 					if(temp.equals(InternalSocket.MESSAGE)){	
 						sender = in.readLine();
 						rcv = in.readLine();
 						ts = Timestamp.valueOf(in.readLine());
+
 ;					}else if (temp.equals(InternalSocket.END_MESSAGE)) {
 						fin = true;
 					}else {
@@ -445,18 +454,26 @@ class UDPThreadReceiver extends Thread {
 					}
 					temp = in.readLine();
 				}
+				System.out.println("ThreadSocketFils" + n + ": msg received: " + sender + ";\n"+ rcv + ";\n"+ message);
+				System.out.println("ThreadSocketFils" + n +":" + UsernameLogged +";");
 				if( UsernameLogged.equals(rcv)) {
 					Address temporary = this.db.getSpecificKnownUser(UsernameLogged, sender);
 					if (temporary == null) {
+						System.out.println("LOOOOOOOOOOLLLL2");
 						synchronized(this.coUsers) {
 							boolean fin2 = false;
 							Iterator<Address> lol = this.coUsers.iterator();
-							Address tempor = lol.next();
+							Address tempor;
 							while(!fin2 && lol.hasNext()) {
+								tempor = lol.next();
+								System.out.println("lollolol" + tempor.getUsername() + ";" + sender);
+								
 								if (tempor.getUsername().equals(sender)) {
+									System.out.println("LOOOOOOOOOOLLLL");
 									fin2 = true;
 									temporary = new Address(tempor.getIP(),tempor.getPseudo(),tempor.getUsername());
 									this.db.setKnownUser(temporary, UsernameLogged);
+									
 								}
 							}
 						}

@@ -13,8 +13,11 @@ import java.util.List;
 public class testMain {
 
 	public static void main(String[] args) throws UnknownHostException, InterruptedException {
-		
-				
+		ArrayList<Address> temp3 = new ArrayList<Address>();
+		Address temp1 =new Address("lol","lol"); 
+		Address temp2 =new Address("lol","lol"); 
+		temp3.add(temp1);
+		System.out.println(temp3.remove(temp1));		
 		// TODO Auto-generated method stub
 		/*DBLocale db = new DBLocale();
 		db.setKnownUser(new Address(InetAddress.getLocalHost(), "Bob psd", "Bob usn"), "Alice usn");
