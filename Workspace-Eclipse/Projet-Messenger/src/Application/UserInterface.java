@@ -659,23 +659,8 @@ class UserInterface extends JFrame{
 			String username_ = connexionpage.username.getText();
 			String password_ = connexionpage.password.getText();
 			
-			if ( username_.equals("admin") && password_.equals("admin")) { //par exemple pour l'instant
-				//(...)//
-				connexionpage.erreur.setText("Entrez username/password");
-				connexionpage.erreur.setForeground(Color.BLACK);
-				/*utilisateursconnectespage = new utilisateursconnectesPage();
-				scrollbar_uc = new JScrollPane(utilisateursconnectespage);
-				scrollbar_uc.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);*/
-				//scrollbar_uc.setBounds(50, 30, 300, 50);
-				setUtilisateursconnectesPage_same_frame();
-			}
-			else {
-				//connexionpage.erreur.setText("erreur de connexion");
-			}
-			
 			Account acc;
 
-			//acc = db.getAccount2(username_, password_);
 			acc = db.getAccount(username_, password_); //quand getpcip() marche
 			
 			if (acc == null) {
@@ -683,6 +668,9 @@ class UserInterface extends JFrame{
 				connexionpage.erreur.setForeground(Color.RED);
 			}
 			else {
+				connexionpage.erreur.setText("Entrez username/password");
+				connexionpage.erreur.setForeground(Color.BLACK);
+				
 				acc.setAddress(new Address(acc.getPseudo(),acc.getUsername())); //si on utilise getAccount2()
 				System.out.println(acc.getAddress().getIP()); //test
 				co.setLoggedAccount(acc);
@@ -706,18 +694,21 @@ class UserInterface extends JFrame{
 		public void actionPerformed(ActionEvent e) {
 			
 			//(...)//
+			if (!(getContentPane().getComponents()[1].equals(creationcomptepage) || getContentPane().getComponents()[1].equals(connexionpage))) { //on est pas connecté
+				//rzo
+				co.getSocket().termine();
+				//co.setLoggedAccount(null); //voir si ça bug pas
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+				//
+			}
 			connexionpage.erreur.setText("Entrez username/password");
 			connexionpage.erreur.setForeground(Color.BLACK);
 			setConnexionPage();
 			corresp = null;
-			//rzo
-			co.getSocket().termine();
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
-			//
 		}
 		
 		
@@ -727,7 +718,15 @@ class UserInterface extends JFrame{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			setChangerpseudoPage();
+			if(getContentPane().getComponents()[1].equals(connexionpage) || getContentPane().getComponents()[1].equals(creationcomptepage)) {
+				connexionpage.erreur.setText("Impossible de changer le pseudo sans être connecté");
+				connexionpage.erreur.setForeground(Color.RED);
+				
+				setConnexionPage();
+			}
+			else {
+				setChangerpseudoPage();
+			}
 			
 		}
 		
