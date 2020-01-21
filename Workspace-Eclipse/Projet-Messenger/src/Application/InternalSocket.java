@@ -306,18 +306,21 @@ class UDPThreadReceiver extends Thread {
 							String new_pseudo = reader.readLine();
 							String username = reader.readLine();
 							String old_pseudo = reader.readLine();
-							this.connectedUserList.add(new Address(InetAddress.getByAddress(clientAddress.getAddress()),new_pseudo, username));
-							Boolean fin = false;
-							Iterator<Address> iter = this.connectedUserList.iterator();
-							Address tempor;
-	;						while (!fin && iter.hasNext()) {
-								tempor = iter.next();
-								if(tempor.getPseudo().equals(old_pseudo)) {
-									this.connectedUserList.remove(tempor);
-									fin = true;
+							if (username != UsernameLogged.getUsername()) {
+								this.connectedUserList.add(new Address(InetAddress.getByAddress(clientAddress.getAddress()),new_pseudo, username));
+								Boolean fin = false;
+								Iterator<Address> iter = this.connectedUserList.iterator();
+								Address tempor;
+		;						while (!fin && iter.hasNext()) {
+									tempor = iter.next();
+									if(tempor.getPseudo().equals(old_pseudo)) {
+										this.connectedUserList.remove(tempor);
+										fin = true;
+									}
 								}
+								this.db.updatePseudo(new_pseudo, old_pseudo, username, UsernameLogged.getUsername());
 							}
-							this.db.updatePseudo(new_pseudo, old_pseudo, username, UsernameLogged.getUsername());
+							
 						}
 						
 					}else if(line.contains(InternalSocket.CON_ACK)) {
