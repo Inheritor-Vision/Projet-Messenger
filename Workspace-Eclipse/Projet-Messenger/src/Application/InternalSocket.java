@@ -48,18 +48,19 @@ public class InternalSocket implements NetworkSocketInterface {
 	
 	
 	public InternalSocket(Account UsernameLoggedAccount_, UserInterface _UI){
+		
 		this.UsernameLogged = UsernameLoggedAccount_;
 		this.connectedUserList = new ArrayList<Address>();
 		this.db = new DBLocale();
 		this.UI = _UI;
 		try {
 			this.UDP_SEND_Socket = new DatagramSocket(InternalSocket.UDP_PORT_SEND);
-			this.sendConnected(UsernameLogged);
 		} catch (SocketException e) {
 			System.out.println("Internal Socket: Error init UDP socket in constructor");
 			e.printStackTrace();
 		}
 		this.startReceiverThread();
+		this.sendConnected(UsernameLogged);
 	}
 	
 	List<InetAddress> listAllBroadcastAddresses() throws SocketException {
@@ -83,7 +84,9 @@ public class InternalSocket implements NetworkSocketInterface {
 
 	@Override
 	public void sendConnected(Account loggedAccount) {
-
+		while (!UDP_RCV_Thread.isAlive() ) {
+			
+		}
 		try {
 			this.UDP_SEND_Socket.setBroadcast(true);
 			
@@ -105,7 +108,7 @@ public class InternalSocket implements NetworkSocketInterface {
 	public void sendNewPseudo(String New_Pseudo, String oldPseudo) {
 		try {
 			this.UDP_SEND_Socket.setBroadcast(true);
-			String message = InternalSocket.NEW_PSEUDO.toString() + "\n" + New_Pseudo + "\n" + this.UsernameLogged + "\n" + oldPseudo + "\n" + (new Timestamp(System.currentTimeMillis())).toString();
+			String message = InternalSocket.NEW_PSEUDO.toString() + "\n" + New_Pseudo + "\n" + this.UsernameLogged.getUsername() + "\n" + oldPseudo + "\n" + (new Timestamp(System.currentTimeMillis())).toString();
 			DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),listAllBroadcastAddresses().get(0), InternalSocket.UDP_PORT_RCV);
 			this.UDP_SEND_Socket.send(outPacket);
 		} catch (IOException e) {
@@ -237,7 +240,7 @@ class UDPThreadReceiver extends Thread {
 	private void sendSpecificConnected(InetAddress addr, String Pseudo, String Username) {
 		
 		String message = InternalSocket.CON_ACK + "\n" + userLogged.getPseudo() + "\n" + userLogged.getUsername() + "\n" + (new Timestamp(System.currentTimeMillis())).toString();
-		System.out.println("UDPThreadReceiver: sendSpecificConnected" + message + "\n\n" + addr.getAddress()[0] + + addr.getAddress()[1] + + addr.getAddress()[2] + addr.getAddress()[3]);
+		System.out.println("UDPThreadReceiver: sendSpecificConnected " + message + "\n\n" + addr.getAddress()[0] + + addr.getAddress()[1] + + addr.getAddress()[2] + addr.getAddress()[3]);
 		try {
 			DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),addr, InternalSocket.UDP_PORT_RCV);
 			this.sender.send(outPacket);
@@ -262,12 +265,13 @@ class UDPThreadReceiver extends Thread {
 				
 				receiver.receive(inPacket);
 				if (inPacket != null) {
+					System.out.println("UUDPThreadReceiver: msg recu");
 					InetAddress clientAddress = inPacket.getAddress();
 					String message = new String (inPacket.getData(), 0, inPacket.getLength());
 					BufferedReader reader = new BufferedReader(new StringReader(message));
 					String line = reader.readLine();
 					if (line.contains(InternalSocket.CONNECTED)) {
-						System.out.println("UDPThreadReceiver: Connected received: " + message);
+						System.out.println("UDPThreadReceiver: Connected received: " + message +" from " + clientAddress.getAddress()[0] + "." + clientAddress.getAddress()[1] + "." + clientAddress.getAddress()[2] + "." + clientAddress.getAddress()[3]);
 						String Pseudo = reader.readLine();
 						String Username = reader.readLine();
 						if (!Username.equals(userLogged.getUsername())) {
@@ -313,7 +317,9 @@ class UDPThreadReceiver extends Thread {
 									fin = true;
 								}
 							}
+							this.db.updatePseudo(new_pseudo, old_pseudo, username, UsernameLogged.getUsername());
 						}
+						
 					}else if(line.contains(InternalSocket.CON_ACK)) {
 						System.out.println("UDPThreadReceiver: Connected_ACK received: " + message);
 						synchronized(this.connectedUserList) {
