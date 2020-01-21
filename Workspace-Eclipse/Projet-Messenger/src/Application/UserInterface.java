@@ -772,7 +772,7 @@ class UserInterface extends JFrame{
 				Account acc=new Account(co.getLoggedAccount().getUsername(),co.getLoggedAccount().getPassword(),pseudo_,add);
 				co.setLoggedAccount(acc);
 				//db
-				db.updatePseudo(pseudo_, old_psdo, co.getLoggedAccount().getUsername(), co.getLoggedAccount().getUsername()); //modifier le pseudo de son compte dans knownUsers (car on se connait soi-meme)
+				//db.updatePseudo(pseudo_, old_psdo, co.getLoggedAccount().getUsername(), co.getLoggedAccount().getUsername()); //modifier le pseudo de son compte dans knownUsers (car on se connait soi-meme)
 				db.updatePseudoAccount(co.getLoggedAccount().getUsername(), pseudo_); 
 				
 				
