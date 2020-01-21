@@ -15,14 +15,13 @@ public class testMain {
 	public static void main(String[] args) throws UnknownHostException, InterruptedException {
 		
 
-		Account acc = new Account("test","test","test",null);
-		InternalSocket IS = new InternalSocket(acc, null);
-		IS.startReceiverThread();
-		Thread.sleep(10000);
-		System.out.println("lol");
-		IS.termine();
-		
-
+		DBLocale db = new DBLocale();
+		db.setMessage(new Message(true,"Ceci est un test", true), "Alice", "Bob");
+		Thread.sleep(5000);
+		db.setMessage(new Message(true,"Ceci est une reponse test", true), "Bob", "Alice");
+		db.TEMP();
+		db.printAllTable();
+		System.out.println("fin");
 
 		// TODO Auto-generated method stub
 		/*DBLocale db = new DBLocale();

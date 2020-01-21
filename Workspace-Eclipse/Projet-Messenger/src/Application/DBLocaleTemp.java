@@ -15,19 +15,19 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 
-public class DBLocale {
+public class DBLocaleTemp {
 	//https://www.tutorialspoint.com/sqlite/sqlite_java.htm
 	//sqlite java
 	
 	private static final String CHEMIN =  "./Db_Locale_Files";
 	final static protected Connection coDB = connectionDB("DBMessenger");
-	public DBLocale() {
+	public DBLocaleTemp() {
 		//this.coDB = connectionDB("DBMessenger");
 		this.createTableKnownUsers();
 		this.createTableConversations();
 		this.createTableAccount();
 	}
-	public  DBLocale(String nomDB) {
+	public  DBLocaleTemp(String nomDB) {
 		//this.coDB = connectionDB(nomDB);
 		this.createTableKnownUsers();
 		this.createTableConversations();
@@ -248,22 +248,11 @@ public class DBLocale {
                 + "    username text PRIMARY KEY,\n"
                 + "    password text NOT NULL,\n"
                 + "    pseudo text NOT NULL\n"
+                + "    timestamp date NOT NULL\n"
                 + ");";
 		try {
 			Statement stmt = this.coDB.createStatement();
 			stmt.execute(sql);
-			stmt.close();
-		} catch (SQLException e) {
-			System.out.println("DBLocale: Error createTableKnownUsers, create statement or execute");
-			e.printStackTrace();
-		}
-	}
-	
-	protected synchronized void updatePseudoAccount(String username, String new_pseudo) {
-		String sql = "UPDATE account SET pseudo = '" + new_pseudo + "' where username='" + username + "';";
-		try {
-			Statement stmt = this.coDB.createStatement();
-			stmt.executeUpdate(sql);
 			stmt.close();
 		} catch (SQLException e) {
 			System.out.println("DBLocale: Error createTableKnownUsers, create statement or execute");
