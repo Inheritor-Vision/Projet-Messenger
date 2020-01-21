@@ -6,3 +6,4 @@ DBLocale: mettre des while en cas de SQLiteBUSY ?
 UI: Press enter to send msg
 Server de présence + Serv SQL ? 
 Test
+Faire une fonction updatePseudoAccount(String Username, String new_pseudo) qui modifie le pseudo de Username dans la table Account (DB)

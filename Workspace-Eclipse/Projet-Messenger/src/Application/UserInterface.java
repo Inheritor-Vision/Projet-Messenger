@@ -265,6 +265,7 @@ class UserInterface extends JFrame{
 //////////////////////////////////PAGE DE CHANGEMENT DE PSEUDO(JPanel)////////////////////////////////////////////////////
 
 	class changerpseudoPage extends JPanel{
+		private JLabel erreur_cp;
 		private JTextField pseudo;
 		private JButton creation;
 		private changerpseudoHandler cpH = new changerpseudoHandler();
@@ -272,10 +273,11 @@ class UserInterface extends JFrame{
 		public changerpseudoPage() {
 			super(new GridLayout(0,1));
 			
-			
+			this.erreur_cp = new JLabel("entrez un nouveau pseudo");
 			this.pseudo = new JTextField("pseudo");
 			this.creation = new JButton("changer");
 			
+			this.add(this.erreur_cp);
 			this.add(this.pseudo);
 			this.add(this.creation);
 			
@@ -718,6 +720,9 @@ class UserInterface extends JFrame{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			changerpseudopage.erreur_cp.setText("entrez un nouveau pseudo");
+			changerpseudopage.erreur_cp.setForeground(Color.BLACK);
+			
 			if(getContentPane().getComponents()[1].equals(connexionpage) || getContentPane().getComponents()[1].equals(creationcomptepage)) {
 				connexionpage.erreur.setText("Impossible de changer le pseudo sans être connecté");
 				connexionpage.erreur.setForeground(Color.RED);
@@ -738,7 +743,48 @@ class UserInterface extends JFrame{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
+			String pseudo_ = changerpseudopage.pseudo.getText();
 			
+			
+			//unicité sans serveur central (pas optimal)
+			ArrayList<Address> users = new ArrayList<Address>();
+			boolean unique=true;
+			try {
+				//users = db.getknownUsers(co.getLoggedAccount().getUsername());
+				users = db.getknownUsers(null); 
+			} catch (NullPointerException npe) {
+				System.out.println(npe);
+			}
+			if (!users.isEmpty()) {
+				for (int i=0;i<users.size();i++) {
+					if (users.get(i).getPseudo().equals(pseudo_)) {
+						unique=false;
+					}
+				}
+			}
+			//
+			if (unique) {
+				String old_psdo = co.getLoggedAccount().getPseudo();
+				//rzo
+				co.getSocket().sendNewPseudo(pseudo_, old_psdo);
+				//logged account
+				Address add=new Address(pseudo_,co.getLoggedAccount().getUsername());
+				Account acc=new Account(co.getLoggedAccount().getUsername(),co.getLoggedAccount().getPassword(),pseudo_,add);
+				co.setLoggedAccount(acc);
+				//db
+				db.updatePseudo(pseudo_, old_psdo, co.getLoggedAccount().getUsername(), co.getLoggedAccount().getUsername()); //modifier le pseudo de son compte dans knownUsers (car on se connait soi-meme)
+				db.updatePseudoAccount(co.getLoggedAccount().getUsername(), pseudo_); 
+				
+				
+				changerpseudopage.erreur_cp.setText("changement du pseudo réussi");
+				changerpseudopage.erreur_cp.setForeground(Color.GREEN);
+				//changerpseudopage.updateUI();
+			}
+			else {
+				changerpseudopage.erreur_cp.setText("erreur: pseudo déjà existant");
+				changerpseudopage.erreur_cp.setForeground(Color.RED);
+
+			}
 		}
 		
 		
