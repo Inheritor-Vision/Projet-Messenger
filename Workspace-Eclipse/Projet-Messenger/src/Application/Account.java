@@ -1,5 +1,7 @@
 package Application;
 
+import Common.Address;
+
 public class Account {
 	
 	private String pseudo;

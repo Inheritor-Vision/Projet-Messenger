@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 
+import Common.Address;
+import Common.Tools;
+
 public class DBLocaleTemp {
 	//https://www.tutorialspoint.com/sqlite/sqlite_java.htm
 	//sqlite java
@@ -279,7 +282,7 @@ public class DBLocaleTemp {
 				 un = rs.getString("username");
 				 ps = rs.getString("pseudo");
 				 pw = rs.getString("password");
-				 temp = new Address(InetAddress.getByAddress(DBLocale.getPcIP()),ps,un);
+				 temp = new Address(InetAddress.getByAddress(Tools.getPcIP()),ps,un);
 				 tempA = new Account(un,pw,ps,temp);	 
 			}
 			

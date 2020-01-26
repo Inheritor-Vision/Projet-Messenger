@@ -6,7 +6,12 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/boulou/Bureau/4A/POO/Projet-Messenger/Workspace-Eclipse/Projet-Messenger/lib/sqlite-jdbc-3.21.0.jar">
+	<classpathentry kind="lib" path="lib/servlet-api-tomcat9.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/sqlite-jdbc-3.21.0.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
