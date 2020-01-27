@@ -60,7 +60,7 @@ public class MessengerServlet extends HttpServlet{
 			    pseudo = req.getParameter(key);
 			}else if (key.equals("add")) {
 				String temp = req.getParameter(key);
-				if (temp=="1") {
+				if (temp.equals("1")) {
 					ajout = true;
 				}else {
 					ajout = false;

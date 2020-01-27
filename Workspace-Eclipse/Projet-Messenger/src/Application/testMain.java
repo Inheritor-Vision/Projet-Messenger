@@ -27,7 +27,7 @@ public class testMain {
 	public static void main(String[] args) throws UnknownHostException, InterruptedException, IOException {
 		
 		
-		/*HttpClient httpClient = HttpClient.newBuilder()
+		HttpClient httpClient = HttpClient.newBuilder()
 	            .version(HttpClient.Version.HTTP_2)
 	            .build();
 		
@@ -38,9 +38,10 @@ public class testMain {
         data.put("addr2", "101");
         data.put("addr3", "102");
         data.put("addr4", "103");
+        data.put("add","1");
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(Tools.buildFormDataFromMap(data))
-                .uri(URI.create("http://localhost:8080/test/PresenceServer"))
+                .uri(URI.create("https://srv-gei-tomcat.insa-toulouse.fr/Messenger/PresenceServer"))
                 .setHeader("User-Agent", "MessengerApp") // add request header
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .build();
@@ -51,7 +52,7 @@ public class testMain {
         System.out.println(response.statusCode());
 
         // print response body
-        System.out.println(response.body());*/
+        System.out.println(response.body());
 
 
 		
