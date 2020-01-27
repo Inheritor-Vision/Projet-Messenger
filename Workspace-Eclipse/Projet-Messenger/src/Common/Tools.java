@@ -33,6 +33,7 @@ public class Tools {
 	public static HttpRequest.BodyPublisher buildFormDataFromMap(Map<Object, Object> data) {
         var builder = new StringBuilder();
         for (Map.Entry<Object, Object> entry : data.entrySet()) {
+        	
             if (builder.length() > 0) {
                 builder.append("&");
             }
@@ -40,6 +41,7 @@ public class Tools {
             builder.append("=");
             builder.append(URLEncoder.encode(entry.getValue().toString(), StandardCharsets.UTF_8));
         }
+        System.out.println(builder.toString());
         return HttpRequest.BodyPublishers.ofString(builder.toString());
     }
 	

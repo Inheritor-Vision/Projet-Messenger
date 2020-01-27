@@ -20,6 +20,8 @@ public class Controller {
 	
 	private DBLocale db;
 	
+	private DBCentrale dbc;
+	
 	public Controller() {
 		/*//test utililisateurs connectes//
 		Address valentin = new Address(null,"Valentin_p","Valentin_u");
@@ -34,6 +36,8 @@ public class Controller {
 		this.userInterface = new UserInterface(/*this,this.db*/);
 		this.userInterface.co = this;
 		this.userInterface.db = this.db;
+		
+		this.dbc = new DBCentrale();
 		
 		
 		
