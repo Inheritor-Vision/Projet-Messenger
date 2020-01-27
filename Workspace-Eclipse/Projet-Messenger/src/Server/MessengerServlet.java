@@ -51,12 +51,21 @@ public class MessengerServlet extends HttpServlet{
 		byte[] addr = new byte[4];
 		String username = "";
 		String pseudo = "";
+		boolean ajout = true;
 		while (parameterNames.hasMoreElements()) {
 		    String key = parameterNames.nextElement();
 		    if(key.equals("username")) {
 		    	username = req.getParameter(key);
 		    }else if(key.equals("pseudo")) {
 			    pseudo = req.getParameter(key);
+			}else if (key.equals("add")) {
+				String temp = req.getParameter(key);
+				if (temp.equals("1")) {
+					ajout = true;
+				}else {
+					ajout = false;
+				}
+				
 			}else if(key.equals("addr1")) {
 				addr[0] = (byte)Integer.parseInt(req.getParameter(key));
 			}else if(key.equals("addr2")) {
@@ -66,8 +75,23 @@ public class MessengerServlet extends HttpServlet{
 			}else {
 				addr[3] = (byte)Integer.parseInt(req.getParameter(key));
 			}
-		}  
-		coUsers.add(new Address(InetAddress.getByAddress(addr), pseudo, username));
+		} 
+		
+		if (!ajout) {
+			Boolean fin = false;
+			Iterator<Address> iter = coUsers.iterator();
+			Address tempor;
+;						while (!fin && iter.hasNext()) {
+				tempor = iter.next();
+				if(tempor.getUsername().equals(username)) {
+					coUsers.remove(tempor);
+					fin = true;
+				}
+			}
+		}else {
+			coUsers.add(new Address(InetAddress.getByAddress(addr), pseudo, username));
+		}
+		
 	}
 }
 

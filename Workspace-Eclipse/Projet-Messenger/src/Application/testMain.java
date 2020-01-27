@@ -39,6 +39,7 @@ public class testMain {
         data.put("addr2", "101");
         data.put("addr3", "102");
         data.put("addr4", "103");
+        data.put("add","1");
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(Tools.buildFormDataFromMap(data))
                 .uri(URI.create("https://srv-gei-tomcat.insa-toulouse.fr/Messenger/PresenceServer"))
