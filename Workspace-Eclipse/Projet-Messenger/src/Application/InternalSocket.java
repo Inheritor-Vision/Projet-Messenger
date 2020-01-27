@@ -307,7 +307,6 @@ class UDPThreadReceiver extends Thread {
 							String username = reader.readLine();
 							String old_pseudo = reader.readLine();
 							if (!username.equals(userLogged.getUsername())) {
-								System.out.println("LOOOOOOOOOOOOOOOOL");
 								this.connectedUserList.add(new Address(InetAddress.getByAddress(clientAddress.getAddress()),new_pseudo, username));
 								Boolean fin = false;
 								Iterator<Address> iter = this.connectedUserList.iterator();
