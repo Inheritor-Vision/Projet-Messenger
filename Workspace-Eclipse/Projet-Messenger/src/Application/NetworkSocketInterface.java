@@ -1,6 +1,8 @@
 package Application;
 import java.util.ArrayList;
 
+import Common.Address;
+
 public interface NetworkSocketInterface {
 	
  public void sendConnected(Account loggedAccount);

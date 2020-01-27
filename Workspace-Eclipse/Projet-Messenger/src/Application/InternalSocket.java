@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.net.http.HttpClient;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -21,24 +24,28 @@ import java.sql.Timestamp;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
+import Common.Tools;
+
+import Common.Address;
 
 
 /* MUST BE SYNCHRONIZED, EACH TIME YOU CALL an INTERNALSOCKET object
  * Peut etre source de pb -> deadlock : Essayer de conserver un unique synchronized*/
 public class InternalSocket implements NetworkSocketInterface {
 	ArrayList<Address> connectedUserList = new ArrayList<Address>(); // Need to be synchronized
-	protected static final int UDP_PORT_RCV = 6666;
+	/*protected static final int UDP_PORT_RCV = 6666;
 	protected static final int UDP_PORT_SEND = 6667;
 	protected static final int TCP_PORT_RCV= 6668;
 	protected static final int TCP_PORT_SEND = 6669;
-	protected static final int MAX_CHAR = 256;
+	
 	protected static final String  CONNECTED =  "Connected";
 	protected static final String  DISCONNECTED =  "Disconnected";
 	protected static final String  MESSAGE =  "Message";
 	protected static final String NEW_PSEUDO = "New_Pseudo";
 	protected static final String CON_ACK = "Con_Ack";
-	protected static final String END_MESSAGE = "ef399b2d446bb37b7c32ad2cc1b6045b";
+	protected static final String END_MESSAGE = "ef399b2d446bb37b7c32ad2cc1b6045b";*/
 	protected final Account UsernameLogged;
+	protected static final int MAX_CHAR = 256;
 	DatagramSocket UDP_SEND_Socket;
 	UDPThreadReceiver UDP_RCV_Thread;
 	TCPThreadReceiver TCP_RCV_Thread;
@@ -54,7 +61,7 @@ public class InternalSocket implements NetworkSocketInterface {
 		this.db = new DBLocale();
 		this.UI = _UI;
 		try {
-			this.UDP_SEND_Socket = new DatagramSocket(InternalSocket.UDP_PORT_SEND);
+			this.UDP_SEND_Socket = new DatagramSocket(Tools.Ports.UDP_SEND.getValue());
 		} catch (SocketException e) {
 			System.out.println("Internal Socket: Error init UDP socket in constructor");
 			e.printStackTrace();
@@ -95,9 +102,9 @@ public class InternalSocket implements NetworkSocketInterface {
 			e.printStackTrace();
 		}
 		System.out.println("InternalSocket: BROADCAST SENT");
-		String message = InternalSocket.CONNECTED.toString() + "\n" + loggedAccount.getPseudo() + "\n" + loggedAccount.getUsername() + "\n" + (new Timestamp(System.currentTimeMillis())).toString();
+		String message = Tools.Msg_Code.Connected.toString() + "\n" + loggedAccount.getPseudo() + "\n" + loggedAccount.getUsername() + "\n" + (new Timestamp(System.currentTimeMillis())).toString();
 		try {
-			DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),listAllBroadcastAddresses().get(0), InternalSocket.UDP_PORT_RCV);
+			DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),listAllBroadcastAddresses().get(0), Tools.Ports.UDP_RCV.getValue());
 			this.UDP_SEND_Socket.send(outPacket);
 		} catch ( IOException e) {
 			System.out.println("InternalSocket: Error dans sendConnected");
@@ -108,8 +115,8 @@ public class InternalSocket implements NetworkSocketInterface {
 	public void sendNewPseudo(String New_Pseudo, String oldPseudo) {
 		try {
 			this.UDP_SEND_Socket.setBroadcast(true);
-			String message = InternalSocket.NEW_PSEUDO.toString() + "\n" + New_Pseudo + "\n" + this.UsernameLogged.getUsername() + "\n" + oldPseudo + "\n" + (new Timestamp(System.currentTimeMillis())).toString();
-			DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),listAllBroadcastAddresses().get(0), InternalSocket.UDP_PORT_RCV);
+			String message = Tools.Msg_Code.New_Pseudo.toString() + "\n" + New_Pseudo + "\n" + this.UsernameLogged.getUsername() + "\n" + oldPseudo + "\n" + (new Timestamp(System.currentTimeMillis())).toString();
+			DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),listAllBroadcastAddresses().get(0), Tools.Ports.UDP_RCV.getValue());
 			this.UDP_SEND_Socket.send(outPacket);
 		} catch (IOException e) {
 			System.out.println("InternalSocket: Error dans sendNewPseudo");
@@ -157,11 +164,11 @@ public class InternalSocket implements NetworkSocketInterface {
 			}
 		}
 		System.out.println("InternalSocket: addr find " + res.getIP());
-		String message = InternalSocket.MESSAGE.toString() + "\n" +  UsernameLogged.getUsername() + "\n" + Username + "\n" + msg.getTimestamp().toString() + "\n" + msg.getMsg();
+		String message = Tools.Msg_Code.Message.toString() + "\n" +  UsernameLogged.getUsername() + "\n" + Username + "\n" + msg.getTimestamp().toString() + "\n" + msg.getMsg();
 		System.out.println("InternalSocket: msg : " + message);
 		InetAddress addrRcv = res.getIP();
 		try {
-			Socket TCP_SEND_Socket = new Socket(addrRcv, InternalSocket.TCP_PORT_RCV);
+			Socket TCP_SEND_Socket = new Socket(addrRcv, Tools.Ports.TCP_RCV.getValue());
 			PrintWriter out = new PrintWriter(TCP_SEND_Socket.getOutputStream(),true);
 			out.println(message);
 			TCP_SEND_Socket.close();
@@ -196,9 +203,9 @@ public class InternalSocket implements NetworkSocketInterface {
 
 	@Override
 	public void sendDisconnected(Account loggedAccount) {
-		String message = InternalSocket.DISCONNECTED.toString() + "\n" + loggedAccount.getUsername() + "\n" + loggedAccount.getPseudo() + "\n" + (new Timestamp(System.currentTimeMillis())).toString();;
+		String message = Tools.Msg_Code.Disconnected.toString() + "\n" + loggedAccount.getUsername() + "\n" + loggedAccount.getPseudo() + "\n" + (new Timestamp(System.currentTimeMillis())).toString();;
 		try {
-			DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),listAllBroadcastAddresses().get(0), InternalSocket.UDP_PORT_RCV);
+			DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),listAllBroadcastAddresses().get(0), Tools.Ports.UDP_RCV.getValue());
 			this.UDP_SEND_Socket.send(outPacket);
 			this.UDP_SEND_Socket.close();
 		} catch ( IOException e) {
@@ -225,7 +232,7 @@ class UDPThreadReceiver extends Thread {
 		this.connectedUserList = _connectedUserList;
 		System.out.println("ThreadReceiver: starting . . .");
 		try {
-			receiver = new DatagramSocket(InternalSocket.UDP_PORT_RCV);
+			receiver = new DatagramSocket(Tools.Ports.UDP_RCV.getValue());
 		} catch (SocketException e) {
 			System.out.println("UDPThreadReceiver: Error creatino socket");
 			e.printStackTrace();
@@ -239,10 +246,10 @@ class UDPThreadReceiver extends Thread {
 	
 	private void sendSpecificConnected(InetAddress addr, String Pseudo, String Username) {
 		
-		String message = InternalSocket.CON_ACK + "\n" + userLogged.getPseudo() + "\n" + userLogged.getUsername() + "\n" + (new Timestamp(System.currentTimeMillis())).toString();
+		String message = Tools.Msg_Code.Con_Ack + "\n" + userLogged.getPseudo() + "\n" + userLogged.getUsername() + "\n" + (new Timestamp(System.currentTimeMillis())).toString();
 		System.out.println("UDPThreadReceiver: sendSpecificConnected " + message + "\n\n" + addr.getAddress()[0] + + addr.getAddress()[1] + + addr.getAddress()[2] + addr.getAddress()[3]);
 		try {
-			DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),addr, InternalSocket.UDP_PORT_RCV);
+			DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),addr, Tools.Ports.UDP_RCV.getValue());
 			this.sender.send(outPacket);
 		} catch ( IOException e) {
 			System.out.println("UDPThreadReceiver: Error dans sendConnected");
@@ -270,7 +277,7 @@ class UDPThreadReceiver extends Thread {
 					String message = new String (inPacket.getData(), 0, inPacket.getLength());
 					BufferedReader reader = new BufferedReader(new StringReader(message));
 					String line = reader.readLine();
-					if (line.contains(InternalSocket.CONNECTED)) {
+					if (line.contains(Tools.Msg_Code.Connected.toString())) {
 						System.out.println("UDPThreadReceiver: Connected received: " + message +" from " + clientAddress.getAddress()[0] + "." + clientAddress.getAddress()[1] + "." + clientAddress.getAddress()[2] + "." + clientAddress.getAddress()[3]);
 						String Pseudo = reader.readLine();
 						String Username = reader.readLine();
@@ -284,7 +291,7 @@ class UDPThreadReceiver extends Thread {
 						}
 						
 	
-					}else if (line.contains(InternalSocket.DISCONNECTED)) {
+					}else if (line.contains(Tools.Msg_Code.Disconnected.toString())) {
 						System.out.println("UDPThreadReceiver: Disconnected received: " + message);
 						synchronized(this.connectedUserList) {
 							String Username = reader.readLine();
@@ -300,7 +307,7 @@ class UDPThreadReceiver extends Thread {
 							}
 							
 						}
-					}else if (line.contains(InternalSocket.NEW_PSEUDO)){
+					}else if (line.contains(Tools.Msg_Code.New_Pseudo.toString())){
 						System.out.println("UDPThreadReceiver: New_Pseudo received: " + message);
 						synchronized(this.connectedUserList) {
 							String new_pseudo = reader.readLine();
@@ -323,7 +330,7 @@ class UDPThreadReceiver extends Thread {
 							
 						}
 						
-					}else if(line.contains(InternalSocket.CON_ACK)) {
+					}else if(line.contains(Tools.Msg_Code.Con_Ack.toString())) {
 						System.out.println("UDPThreadReceiver: Connected_ACK received: " + message);
 						synchronized(this.connectedUserList) {
 							String Pseudo = reader.readLine();
@@ -351,7 +358,7 @@ class UDPThreadReceiver extends Thread {
 	}
 }
 	
-	class TCPThreadReceiver extends Thread {
+class TCPThreadReceiver extends Thread {
 		ServerSocket receiver;
 		DBLocale db;
 		ArrayList<Address> coUsers;
@@ -366,7 +373,7 @@ class UDPThreadReceiver extends Thread {
 			this.db = db_;
 			this.UI = _UI;
 			try {
-				receiver = new ServerSocket(InternalSocket.TCP_PORT_RCV);
+				receiver = new ServerSocket(Tools.Ports.TCP_RCV.getValue());
 			} catch (IOException e) {
 				System.out.println("TCPThreadReceiver: Error constructor ServSocket");
 				e.printStackTrace();
@@ -423,7 +430,7 @@ class UDPThreadReceiver extends Thread {
 	}
 	
 	
-	class ThreadSocketFils extends Thread{
+class ThreadSocketFils extends Thread{
 		Socket son;
 		int n;
 		DBLocale db;
@@ -454,13 +461,10 @@ class UDPThreadReceiver extends Thread {
 				Timestamp ts = null;
 				String temp = in.readLine();
 				while(temp !=null) {
-					if(temp.equals(InternalSocket.MESSAGE)){	
+					if(temp.equals(Tools.Msg_Code.Message.toString())){	
 						sender = in.readLine();
 						rcv = in.readLine();
 						ts = Timestamp.valueOf(in.readLine());
-
-;					}else if (temp.equals(InternalSocket.END_MESSAGE)) {
-						fin = true;
 					}else {
 		                message += temp+ "\n";
 					}
@@ -509,17 +513,41 @@ class UDPThreadReceiver extends Thread {
 			
 		}
 	
-	class Con implements Serializable{
-		private static final long serialVersionUID = 7732913674841021379L;
-		private Address addr;
-		public Con (Address adr) {
-			addr =adr;
+class HttpServer{
+	private static final String GET_URL = "http://localhost:8080/test/toto";
+	
+	
+	private void sendGET() throws IOException {
+		URL obj = new URL(GET_URL);
+		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+		con.setRequestMethod("GET");
+		con.setRequestProperty("testKEY", "testVALUE");
+		int responseCode = con.getResponseCode();
+		System.out.println("GET Response Code :: " + responseCode);
+		if (responseCode == HttpURLConnection.HTTP_OK) { // success
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					con.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+
+			// print result
+			System.out.println(response.toString());
+		} else {
+			System.out.println("GET request not worked");
 		}
-		
+
+	}
 	}
 	
+}
 	
-}	
-	
+
+
+
 	
 

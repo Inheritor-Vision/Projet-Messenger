@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app>
+
+    <servlet>
+        <servlet-name>MessengerServlet</servlet-name>
+        <servlet-class>Server.MessengerServlet</servlet-class>
+    </servlet>
+
+
+
+
+    <servlet-mapping>
+        <servlet-name>MessengerServlet</servlet-name>
+        <url-pattern>/PresenceServer</url-pattern>
+    </servlet-mapping>
+
+</web-app>

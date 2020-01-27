@@ -1,6 +1,8 @@
 package Application;
 import java.util.ArrayList;
 
+import Common.Address;
+
 public class Conversation {
 	private ArrayList<Message> conv = new ArrayList<Message>();
 	private Address destinataire;

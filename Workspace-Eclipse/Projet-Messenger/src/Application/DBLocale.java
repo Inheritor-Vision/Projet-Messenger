@@ -15,11 +15,14 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 
+import Common.Address;
+import Common.Tools;
+
 public class DBLocale {
 	//https://www.tutorialspoint.com/sqlite/sqlite_java.htm
 	//sqlite java
 	
-	private static final String CHEMIN =  "./Db_Locale_Files";
+	private static final String CHEMIN =  "Db_Locale_Files";
 	final static protected Connection coDB = connectionDB("DBMessenger");
 	public DBLocale() {
 		//this.coDB = connectionDB("DBMessenger");
@@ -290,7 +293,7 @@ public class DBLocale {
 				 un = rs.getString("username");
 				 ps = rs.getString("pseudo");
 				 pw = rs.getString("password");
-				 temp = new Address(InetAddress.getByAddress(DBLocale.getPcIP()),ps,un);
+				 temp = new Address(InetAddress.getByAddress(Tools.getPcIP()),ps,un);
 				 tempA = new Account(un,pw,ps,temp);	 
 			}
 			
@@ -367,32 +370,6 @@ public class DBLocale {
 	
 	}
 	
-	protected static byte[] getPcIP() {
-		Enumeration e;
-		byte[] res = null;
-		boolean fin = false;
-		try {
-			e = NetworkInterface.getNetworkInterfaces();
-			while(e.hasMoreElements())
-			{
-			    NetworkInterface n = (NetworkInterface) e.nextElement();
-			    Enumeration ee = n.getInetAddresses();
-			    while (ee.hasMoreElements() && !fin)
-			    {
-			        InetAddress i = (InetAddress) ee.nextElement();
-			        //if(i.getAddress()[0] == 10) {
-			        if(i.getAddress().length == 4 && !(i.getAddress()[0]==127 && i.getAddress()[1]==0 && i.getAddress()[2]==0 && i.getAddress()[3]==1)) {
-			        	res = i.getAddress();
-			        }
-			        
-			    }
-			}
-		} catch (SocketException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		return res;
-	}
 	
 	protected void TEMP() {
 		String sql = "SELECT MAX(timestamp) FROM conversations";

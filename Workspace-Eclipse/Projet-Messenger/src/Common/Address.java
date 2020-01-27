@@ -1,22 +1,24 @@
-package Application;
+package Common;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+
+
 
 public class Address {
  private InetAddress IP;
  private String Pseudo;
  private String Username;
  
-protected Address(InetAddress ip, String pseudo, String un) {
+public Address(InetAddress ip, String pseudo, String un) {
 	IP = ip;
 	setPseudo(pseudo);
 	setUsername(un);
 }
 
-protected Address(String pseudo, String un) {
+public Address(String pseudo, String un) {
 	try {
-		this.IP = InetAddress.getByAddress(DBLocale.getPcIP());
+		this.IP = InetAddress.getByAddress(Tools.getPcIP());
 	} catch (UnknownHostException e) {
 		this.IP = null;
 	}
@@ -27,31 +29,31 @@ protected Address(String pseudo, String un) {
 
 
 
-protected InetAddress getIP() {
+public InetAddress getIP() {
 	return IP;
 }
 
-protected void setIP(InetAddress iP) {
+public void setIP(InetAddress iP) {
 	IP = iP;
 }
 
 
-protected String getPseudo() {
+public String getPseudo() {
 	return Pseudo;
 }
 
 
-protected void setPseudo(String pseudo) {
+public void setPseudo(String pseudo) {
 	Pseudo = pseudo;
 }
 
 
-protected String getUsername() {
+public String getUsername() {
 	return Username;
 }
 
 
-protected void setUsername(String username) {
+public void setUsername(String username) {
 	Username = username;
 }
 

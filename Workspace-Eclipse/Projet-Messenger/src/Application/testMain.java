@@ -1,27 +1,88 @@
 package Application;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.URI;
 import java.net.UnknownHostException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
+import Common.Tools;
 
 public class testMain {
 
-	public static void main(String[] args) throws UnknownHostException, InterruptedException {
+	public static void main(String[] args) throws UnknownHostException, InterruptedException, IOException {
+		
+		
+		/*HttpClient httpClient = HttpClient.newBuilder()
+	            .version(HttpClient.Version.HTTP_2)
+	            .build();
+		
+		Map<Object, Object> data = new HashMap<>();
+        data.put("pseudo", "Zoe pseudo ");
+        data.put("username", "Zoe username");
+        data.put("addr1", "100");
+        data.put("addr2", "101");
+        data.put("addr3", "102");
+        data.put("addr4", "103");
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(Tools.buildFormDataFromMap(data))
+                .uri(URI.create("http://localhost:8080/test/PresenceServer"))
+                .setHeader("User-Agent", "MessengerApp") // add request header
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        // print status code
+        System.out.println(response.statusCode());
+
+        // print response body
+        System.out.println(response.body());*/
+
+
+		
+		
+		
+		/*HttpClient httpClient = HttpClient.newBuilder()
+	            .version(HttpClient.Version.HTTP_2)
+	            .build();
+		HttpRequest request = HttpRequest.newBuilder()
+				.GET()
+				.uri(URI.create("http://localhost:8080/test/PresenceServer"))
+				.setHeader("User-Agent", "MessengerApp")
+				.build();
+		 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+	        // print status code
+	        System.out.println(response.statusCode());
+
+	        // print response body
+	        System.out.println(response.body());*/
+		
+		
 		
 
-		DBLocale db = new DBLocale();
+		/*DBLocale db = new DBLocale();
 		db.setMessage(new Message(true,"Ceci est un test", true), "Alice", "Bob");
 		Thread.sleep(5000);
 		db.setMessage(new Message(true,"Ceci est une reponse test", true), "Bob", "Alice");
 		db.TEMP();
 		db.printAllTable();
-		System.out.println("fin");
+		System.out.println("fin");*/
 
 		// TODO Auto-generated method stub
 		/*DBLocale db = new DBLocale();
@@ -144,5 +205,6 @@ public class testMain {
 		}
 		
 	}
+	
 
 }

@@ -3,6 +3,9 @@ package Application;
 import java.net.SocketException;
 import java.util.ArrayList;
 
+import Common.Address;
+import Common.Tools;
+
 public class Controller {
 	
 	private Account loggedAccount;
@@ -73,10 +76,10 @@ public class Controller {
 		// TODO Auto-generated method stub
 		Controller co = new Controller();
 		
-		System.out.println(co.db.getPcIP()[0]);
-		System.out.println(co.db.getPcIP()[1]);
-		System.out.println(co.db.getPcIP()[2]);
-		System.out.println(co.db.getPcIP()[3]);
+		System.out.println(Tools.getPcIP()[0]);
+		System.out.println(Tools.getPcIP()[1]);
+		System.out.println(Tools.getPcIP()[2]);
+		System.out.println(Tools.getPcIP()[3]);
 		
 		co.db.printAllTable();
 		
