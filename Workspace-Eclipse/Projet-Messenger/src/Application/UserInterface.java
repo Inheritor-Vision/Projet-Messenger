@@ -55,6 +55,7 @@ class UserInterface extends JFrame{
 	
 	void initGUI() {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.addWindowListener(new FermetureApp());
 		this.setSize(new Dimension(500,500));
 		this.connexionpage = new connexionPage();
 		this.creationcomptepage = new creationcomptePage();
@@ -793,18 +794,61 @@ class UserInterface extends JFrame{
 		
 	}
 	
+	//
+	public void fermerapp() {
+		System.out.println("EXIT APP");
+		System.exit(0);
+	}
 	private class fermerappHandler implements ActionListener {
 
 		@Override
-		public void actionPerformed(ActionEvent e) {
-			
-			//(...) deconnexion//
-			
-			System.exit(0);
+		public void actionPerformed(ActionEvent e) {			
+			fermerapp();
 		}
 		
-		
 	}
+	private class FermetureApp implements WindowListener {
+		
+		public void windowClosing(WindowEvent e) {
+			fermerapp();
+		}
+
+		public void windowOpened(WindowEvent e) {
+			System.out.println("OPEN APP");
+			
+		}
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void windowIconified(WindowEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+	}
+	//
 	
 	private class changerconversationHandler implements ActionListener {
 

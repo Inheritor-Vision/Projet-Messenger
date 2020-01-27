@@ -24,12 +24,21 @@ public class DBCentrale {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			co = DriverManager.getConnection(URL,login,pswd);
-			
+			System.out.println("DBCentrale: Database opened successfully");
 		}catch(Exception e) {
 			System.out.println("Erreur de connection à la DB centrale : "+e.getMessage());
 			e.printStackTrace();
 		}
 		return co;
 	}
+	
+	void PullDBC(){
+		//récupère la infos de la db centrale et les ajoutes dans la db locale vide. Appelée à l'ouverture de l'application.
+	}
+	void PushToDBC(){
+		//récupère les infos de la db locale qui sont nouvelles depuis PullDBC() et les ajoutes dans la db centrale. Appelée à la fermeture de l'app.
+	}
+	
+
 	
 }
