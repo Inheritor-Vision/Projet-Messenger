@@ -6,13 +6,17 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.net.URI;
 import java.net.URL;
 import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -20,32 +24,28 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.lang.Thread;
+import java.lang.reflect.Constructor;
 import java.sql.Timestamp;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import Common.Tools;
+import java.util.concurrent.ConcurrentHashMap;
 
+import com.sun.net.httpserver.*;
+import Common.Tools;
 import Common.Address;
 
 
 /* MUST BE SYNCHRONIZED, EACH TIME YOU CALL an INTERNALSOCKET object
  * Peut etre source de pb -> deadlock : Essayer de conserver un unique synchronized*/
-public class InternalSocket implements NetworkSocketInterface {
-	ArrayList<Address> connectedUserList = new ArrayList<Address>(); // Need to be synchronized
-	/*protected static final int UDP_PORT_RCV = 6666;
-	protected static final int UDP_PORT_SEND = 6667;
-	protected static final int TCP_PORT_RCV= 6668;
-	protected static final int TCP_PORT_SEND = 6669;
+public class InternalSocket {
+	ConcurrentHashMap<String,Address> connectedUserList = new ConcurrentHashMap<String,Address>(); // Need to be synchronized
 	
-	protected static final String  CONNECTED =  "Connected";
-	protected static final String  DISCONNECTED =  "Disconnected";
-	protected static final String  MESSAGE =  "Message";
-	protected static final String NEW_PSEUDO = "New_Pseudo";
-	protected static final String CON_ACK = "Con_Ack";
-	protected static final String END_MESSAGE = "ef399b2d446bb37b7c32ad2cc1b6045b";*/
 	protected final Account UsernameLogged;
 	protected static final int MAX_CHAR = 256;
+	protected static final String PresenceServer = "https://srv-gei-tomcat.insa-toulouse.fr/Messenger/PresenceServer";
 	DatagramSocket UDP_SEND_Socket;
 	UDPThreadReceiver UDP_RCV_Thread;
 	TCPThreadReceiver TCP_RCV_Thread;
@@ -57,7 +57,7 @@ public class InternalSocket implements NetworkSocketInterface {
 	public InternalSocket(Account UsernameLoggedAccount_, UserInterface _UI){
 		
 		this.UsernameLogged = UsernameLoggedAccount_;
-		this.connectedUserList = new ArrayList<Address>();
+		this.connectedUserList = new ConcurrentHashMap<String,Address>();
 		this.db = new DBLocale();
 		this.UI = _UI;
 		try {
@@ -89,7 +89,7 @@ public class InternalSocket implements NetworkSocketInterface {
 	    return broadcastList;
 	}
 
-	@Override
+	
 	public void sendConnected(Account loggedAccount) {
 		while (!UDP_RCV_Thread.isAlive() ) {
 			
@@ -110,6 +110,60 @@ public class InternalSocket implements NetworkSocketInterface {
 			System.out.println("InternalSocket: Error dans sendConnected");
 			e.printStackTrace();
 		}
+		this.notifyConnexionServlet(loggedAccount);
+		
+	}
+	
+	private void notifyConnexionServlet(Account loggedAccount) {
+		HttpClient httpClient = HttpClient.newBuilder()
+	            .version(HttpClient.Version.HTTP_2)
+	            .build();
+		
+		Map<Object, Object> data = new HashMap<>();
+        data.put("pseudo", loggedAccount.getPseudo());
+        data.put("username", loggedAccount.getUsername());
+        data.put("addr1", loggedAccount.getAddress().getIP().getAddress()[0]);
+        data.put("addr2", loggedAccount.getAddress().getIP().getAddress()[1]);
+        data.put("addr3", loggedAccount.getAddress().getIP().getAddress()[2]);
+        data.put("addr4", loggedAccount.getAddress().getIP().getAddress()[3]);
+        data.put("add","1");
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(Tools.buildFormDataFromMap(data))
+                .uri(URI.create(InternalSocket.PresenceServer))
+                .setHeader("User-Agent", "MessengerApp") 
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .build();
+
+        try {
+			httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+		} catch (IOException e) {
+			System.out.println("InternalSocket: Error 1 dans notifyConnexionServlet");
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			System.out.println("InternalSocket: Error 2 dans notifyConnexionServlet");
+			e.printStackTrace();
+		}
+	}
+	
+	protected void getCoListfromServer() {
+		HttpClient httpClient = HttpClient.newBuilder()
+	            .version(HttpClient.Version.HTTP_2)
+	            .build();
+		HttpRequest request = HttpRequest.newBuilder()
+				.GET()
+				.uri(URI.create("http://localhost:8080/Messenger/PresenceServer"))
+				.setHeader("User-Agent", "MessengerApp")
+				.build();
+		 try {
+			HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+			
+		} catch (IOException e) {
+			System.out.println("InternalSocket: Error 1 dans getCoListfromServer");
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			System.out.println("InternalSocket: Error 2 dans getCoListfromServer");
+			e.printStackTrace();
+		}
 	}
 	
 	public void sendNewPseudo(String New_Pseudo, String oldPseudo) {
@@ -127,37 +181,62 @@ public class InternalSocket implements NetworkSocketInterface {
 	
 	public void termine() {
 		this.sendDisconnected(UsernameLogged);
+		this.notifyDiscoServer(UsernameLogged);
 		this.TCP_RCV_Thread.setStop();
 		this.UDP_RCV_Thread.setStop();
 	}
-
-	@Override
-	public void isServerUp() {
-		// TODO Auto-generated method stub
+	
+	private void notifyDiscoServer(Account loggedAccount) {
+		HttpClient httpClient = HttpClient.newBuilder()
+	            .version(HttpClient.Version.HTTP_2)
+	            .build();
 		
+		Map<Object, Object> data = new HashMap<>();
+        data.put("pseudo", loggedAccount.getPseudo());
+        data.put("username", loggedAccount.getUsername());
+        data.put("addr1", loggedAccount.getAddress().getIP().getAddress()[0]);
+        data.put("addr2", loggedAccount.getAddress().getIP().getAddress()[1]);
+        data.put("addr3", loggedAccount.getAddress().getIP().getAddress()[2]);
+        data.put("addr4", loggedAccount.getAddress().getIP().getAddress()[3]);
+        data.put("add","0");
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(Tools.buildFormDataFromMap(data))
+                .uri(URI.create("http://localhost:8080/Messenger/PresenceServer"))
+                .setHeader("User-Agent", "MessengerApp") 
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .build();
+
+        try {
+			httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+		} catch (IOException e) {
+			System.out.println("InternalSocket: Error 1 dans notifyConnexionServlet");
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			System.out.println("InternalSocket: Error 2 dans notifyConnexionServlet");
+			e.printStackTrace();
+		}
 	}
 
-	@Override
-	public ArrayList<Address> getUserList() {
+
+
+	public ConcurrentHashMap<String,Address> getUserList() {
 		// TODO Auto-generated method stub
 		return connectedUserList;
 	}
-	@Override
-	public synchronized void  setUserList(ArrayList<Address> ul) {
+
+	public synchronized void  setUserList(ConcurrentHashMap<String,Address> ul) {
 		// TODO Auto-generated method stub
 		this.connectedUserList = ul;
 	}
 
-	@Override
+
 	public void sendMessage(Message msg, String Username) {
 		// TODO Auto-generated method stub
 		Address res = null;
 		Boolean fin = false;
 		synchronized (connectedUserList) {
-			Iterator<Address> iter = connectedUserList.iterator();
-
-			while (iter.hasNext() && !fin) {
-			 res = iter.next();
+			for (Map.Entry<String,Address> entry : connectedUserList.entrySet()) {
+			 res = entry.getValue();
 			 if(res.getUsername().equals(Username)) {
 				 fin = true;
 			 }
@@ -179,7 +258,7 @@ public class InternalSocket implements NetworkSocketInterface {
 		
 	}
 
-	@Override
+	
 	public void startReceiverThread() {
 		// TODO Auto-generated method stub
 		System.out.println("InternalSocket: starting RECEIVER UDP AND TCP THREADS . . .");
@@ -187,13 +266,13 @@ public class InternalSocket implements NetworkSocketInterface {
 		this.UDP_RCV_Thread = new UDPThreadReceiver(this.connectedUserList, this.db, this.UDP_SEND_Socket, UsernameLogged);
 	}
 
-	@Override
+	
 	public ArrayList<Conversation> getHistorique() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
+	
 	public void sendHistorique(ArrayList<Conversation> lh) {
 		// TODO Auto-generated method stub
 
@@ -201,7 +280,7 @@ public class InternalSocket implements NetworkSocketInterface {
 	
 	
 
-	@Override
+	
 	public void sendDisconnected(Account loggedAccount) {
 		String message = Tools.Msg_Code.Disconnected.toString() + "\n" + loggedAccount.getUsername() + "\n" + loggedAccount.getPseudo() + "\n" + (new Timestamp(System.currentTimeMillis())).toString();;
 		try {
@@ -219,12 +298,12 @@ public class InternalSocket implements NetworkSocketInterface {
 class UDPThreadReceiver extends Thread {
 	DatagramSocket receiver;
 	DatagramSocket sender;
-	ArrayList<Address> connectedUserList;
+	ConcurrentHashMap<String,Address> connectedUserList;
 	DBLocale db;
 	boolean termine = false;
 	Account userLogged;
 	
-	public UDPThreadReceiver(ArrayList<Address> _connectedUserList, DBLocale _db, DatagramSocket _DS, Account _UN) {
+	public UDPThreadReceiver(ConcurrentHashMap<String,Address>_connectedUserList, DBLocale _db, DatagramSocket _DS, Account _UN) {
 		super();
 		this.sender = _DS;
 		this.userLogged = _UN;
@@ -284,7 +363,7 @@ class UDPThreadReceiver extends Thread {
 						if (!Username.equals(userLogged.getUsername())) {
 							synchronized(this.connectedUserList) {
 								
-								this.connectedUserList.add(new Address(clientAddress,Pseudo,Username ));
+								this.connectedUserList.put(Username,new Address(clientAddress,Pseudo,Username ));
 								
 								this.sendSpecificConnected(clientAddress, Pseudo, Username);
 							}
@@ -295,16 +374,9 @@ class UDPThreadReceiver extends Thread {
 						System.out.println("UDPThreadReceiver: Disconnected received: " + message);
 						synchronized(this.connectedUserList) {
 							String Username = reader.readLine();
-							Boolean fin = false;
-							Iterator<Address> iter = this.connectedUserList.iterator();
-							Address tempor;
-	;						while (!fin && iter.hasNext()) {
-								tempor = iter.next();
-								if(tempor.getUsername().equals(Username)) {
-									this.connectedUserList.remove(tempor);
-									fin = true;
-								}
-							}
+							this.connectedUserList.remove(Username);
+							
+							
 							
 						}
 					}else if (line.contains(Tools.Msg_Code.New_Pseudo.toString())){
@@ -314,17 +386,8 @@ class UDPThreadReceiver extends Thread {
 							String username = reader.readLine();
 							String old_pseudo = reader.readLine();
 							if (!username.equals(userLogged.getUsername())) {
-								this.connectedUserList.add(new Address(InetAddress.getByAddress(clientAddress.getAddress()),new_pseudo, username));
-								Boolean fin = false;
-								Iterator<Address> iter = this.connectedUserList.iterator();
-								Address tempor;
-		;						while (!fin && iter.hasNext()) {
-									tempor = iter.next();
-									if(tempor.getPseudo().equals(old_pseudo)) {
-										this.connectedUserList.remove(tempor);
-										fin = true;
-									}
-								}
+								this.connectedUserList.put(username,new Address(InetAddress.getByAddress(clientAddress.getAddress()),new_pseudo, username));
+								
 								this.db.updatePseudo(new_pseudo, old_pseudo, username, UsernameLogged.getUsername());
 							}
 							
@@ -335,7 +398,7 @@ class UDPThreadReceiver extends Thread {
 						synchronized(this.connectedUserList) {
 							String Pseudo = reader.readLine();
 							String Username = reader.readLine();
-							this.connectedUserList.add(new Address(clientAddress,Pseudo,Username ));
+							this.connectedUserList.put(Username,new Address(clientAddress,Pseudo,Username ));
 						}
 					}else {
 						System.out.println("UDPThreadReceiver: Unknown message received: " + message);
@@ -361,12 +424,12 @@ class UDPThreadReceiver extends Thread {
 class TCPThreadReceiver extends Thread {
 		ServerSocket receiver;
 		DBLocale db;
-		ArrayList<Address> coUsers;
+		ConcurrentHashMap<String,Address> coUsers;
 		int n;
 		String UsernameLogged;
 		UserInterface UI;
 		boolean termine = false;
-		public TCPThreadReceiver(DBLocale db_, String _UsernameLogged, ArrayList<Address> _coUsers, UserInterface _UI) {
+		public TCPThreadReceiver(DBLocale db_, String _UsernameLogged, ConcurrentHashMap<String,Address> _coUsers, UserInterface _UI) {
 			super();
 			this.coUsers = _coUsers;
 			this.UsernameLogged = _UsernameLogged;
@@ -434,10 +497,10 @@ class ThreadSocketFils extends Thread{
 		Socket son;
 		int n;
 		DBLocale db;
-		ArrayList<Address> coUsers;
+		ConcurrentHashMap<String,Address> coUsers;
 		String UsernameLogged;
 		UserInterface UI;
-		ThreadSocketFils(Socket chassot, int a, DBLocale db_, String _UsernameLogged, ArrayList<Address> _coUsers, UserInterface _UI){
+		ThreadSocketFils(Socket chassot, int a, DBLocale db_, String _UsernameLogged, ConcurrentHashMap<String,Address> _coUsers, UserInterface _UI){
 			this.UsernameLogged = _UsernameLogged;
 			//this.db= db_;
 			this.db = new DBLocale();
@@ -475,22 +538,12 @@ class ThreadSocketFils extends Thread{
 				if( UsernameLogged.equals(rcv)) {
 					Address temporary = this.db.getSpecificKnownUser(UsernameLogged, sender);
 					if (temporary == null) {
-						System.out.println("LOOOOOOOOOOLLLL2");
+						
 						synchronized(this.coUsers) {
-							boolean fin2 = false;
-							Iterator<Address> lol = this.coUsers.iterator();
-							Address tempor;
-							while(!fin2 && lol.hasNext()) {
-								tempor = lol.next();
-								System.out.println("lollolol" + tempor.getUsername() + ";" + sender);
-								
-								if (tempor.getUsername().equals(sender)) {
-									System.out.println("LOOOOOOOOOOLLLL");
-									fin2 = true;
-									temporary = new Address(tempor.getIP(),tempor.getPseudo(),tempor.getUsername());
-									this.db.setKnownUser(temporary, UsernameLogged);
-									
-								}
+							if (this.coUsers.containsKey(sender)) {
+								Address tempor = this.coUsers.get(sender);
+								temporary = new Address(tempor.getIP(),tempor.getPseudo(),tempor.getUsername());
+								this.db.setKnownUser(temporary, UsernameLogged);
 							}
 						}
 						
@@ -513,36 +566,16 @@ class ThreadSocketFils extends Thread{
 			
 		}
 	
-class HttpServer{
-	private static final String GET_URL = "http://localhost:8080/test/toto";
+class HttpThread extends Thread{
 	
-	
-	private void sendGET() throws IOException {
-		URL obj = new URL(GET_URL);
-		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-		con.setRequestMethod("GET");
-		con.setRequestProperty("testKEY", "testVALUE");
-		int responseCode = con.getResponseCode();
-		System.out.println("GET Response Code :: " + responseCode);
-		if (responseCode == HttpURLConnection.HTTP_OK) { // success
-			BufferedReader in = new BufferedReader(new InputStreamReader(
-					con.getInputStream()));
-			String inputLine;
-			StringBuffer response = new StringBuffer();
-
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
-			}
-			in.close();
-
-			// print result
-			System.out.println(response.toString());
-		} else {
-			System.out.println("GET request not worked");
-		}
-
+	public HttpThread() {
+		
 	}
+	@Override
+	public void run() {
+		//HttpServer server = HttpServer.create(new InetSocketAddress(8500), 0);
 	}
+}
 	
 }
 	

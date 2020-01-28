@@ -2,6 +2,7 @@ package Common;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.sql.Timestamp;
 
 
 
@@ -9,11 +10,13 @@ public class Address {
  private InetAddress IP;
  private String Pseudo;
  private String Username;
+ private Timestamp ts;
  
 public Address(InetAddress ip, String pseudo, String un) {
 	IP = ip;
 	setPseudo(pseudo);
 	setUsername(un);
+	setTs(new Timestamp(System.currentTimeMillis()));
 }
 
 public Address(String pseudo, String un) {
@@ -24,6 +27,7 @@ public Address(String pseudo, String un) {
 	}
 	setPseudo(pseudo);
 	setUsername(un);
+	setTs(new Timestamp(System.currentTimeMillis()));
 }
  
 
@@ -57,5 +61,15 @@ public void setUsername(String username) {
 	Username = username;
 }
 
+public String addrToString() {
+	return(((int)this.IP.getAddress()[0])& 0xff) + "." + (((int)this.IP.getAddress()[1])& 0xff) + "." + (((int)this.IP.getAddress()[2])& 0xff) + "." + (((int)this.IP.getAddress()[3])& 0xff);
+}
 
+public Timestamp getTs() {
+	return ts;
+}
+
+public void setTs(Timestamp ts) {
+	this.ts = ts;
+}
 }
