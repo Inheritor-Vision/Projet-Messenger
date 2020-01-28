@@ -8,6 +8,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 
 import Common.Address;
+import Common.Disco;
 import Common.Tools;
 
 import javax.servlet.ServletException;
@@ -19,6 +20,7 @@ import java.sql.Timestamp;
 
 public class MessengerServlet extends HttpServlet{
 	 static ArrayList<Address> coUsers = new ArrayList<Address>();
+	 static ArrayList<Disco> discoUsers = new ArrayList<Disco>();
 	 static boolean init = false;
 	
 	@Override
@@ -39,15 +41,40 @@ public class MessengerServlet extends HttpServlet{
 			    if(key.equals("type")) {
 			    	type = req.getParameter(key);
 			    }else {
-			    	 ts = Timestamp.valueOf(req.getParameter(key));
+			    	 ts = new Timestamp(Long.parseLong(req.getParameter(key)));
 			    }
 		}
+		
+		
 		resp.setContentType("text/html");
 		resp.setCharacterEncoding( "UTF-8" );
 		PrintWriter out = resp.getWriter();
 		Iterator<Address> it = coUsers.iterator();
 		Address temp;
-		if (type.equals(Tools.Msg_Code.CoList.toString())) {
+		
+		
+		if (type.equals(Tools.Msg_Code.CoSpecificList.toString())) {
+			out.println(Tools.Msg_Code.CoSpecificList.toString());
+			while (it.hasNext()) {
+				temp = it.next();
+				Timestamp tempTS = temp.getTs();
+				if(tempTS.after(ts)) {
+					out.println(temp.getPseudo());
+					out.println(temp.getUsername());
+					out.println(temp.getIP());
+				}
+			}
+			out.println("--rm--");
+			Iterator<Disco> iter = discoUsers.iterator();
+			Disco tempora;
+			while (iter.hasNext()) {
+				tempora = iter.next();
+				
+				if(ts.before(tempora.ts)) {
+					out.println(tempora.Username);
+				}
+			}
+		}else {
 			out.println(Tools.Msg_Code.CoList.toString());
 			while (it.hasNext()) {
 				temp = it.next();
@@ -55,20 +82,8 @@ public class MessengerServlet extends HttpServlet{
 				out.println(temp.getUsername());
 				out.println(temp.getIP());
 			}
-		}else if (type.equals(Tools.Msg_Code.CoSpecificList.toString())){
-			out.println(Tools.Msg_Code.CoSpecificList.toString());
 			
-			while (it.hasNext()) {
-				temp = it.next();
-				Timestamp tempTS = temp.getTs();
-				if(tempTS.after(ts)) {
-					
-					out.println(temp.getPseudo());
-					out.println(temp.getUsername());
-					out.println(temp.getIP());
-				}
-				
-			}
+			
 		}
 		
 		
@@ -111,9 +126,10 @@ public class MessengerServlet extends HttpServlet{
 			Boolean fin = false;
 			Iterator<Address> iter = coUsers.iterator();
 			Address tempor;
-;						while (!fin && iter.hasNext()) {
+;			while (!fin && iter.hasNext()) {
 				tempor = iter.next();
 				if(tempor.getUsername().equals(username)) {
+					discoUsers.add(new Disco(username, new Timestamp(System.currentTimeMillis())));
 					coUsers.remove(tempor);
 					fin = true;
 				}
@@ -124,4 +140,7 @@ public class MessengerServlet extends HttpServlet{
 		
 	}
 }
+	
+
+
 

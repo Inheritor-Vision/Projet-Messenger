@@ -31,7 +31,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import com.sun.net.httpserver.*;
 import Common.Tools;
@@ -265,6 +269,13 @@ public class InternalSocket {
 		this.TCP_RCV_Thread = new TCPThreadReceiver(this.db, UsernameLogged.getUsername(),this.connectedUserList, this.UI);
 		this.UDP_RCV_Thread = new UDPThreadReceiver(this.connectedUserList, this.db, this.UDP_SEND_Socket, UsernameLogged);
 	}
+	
+	public  void startExecutor() {
+		final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+	    executorService.scheduleWithFixedDelay(new myTask(), 0, 1, TimeUnit.SECONDS);
+	}
+	
+	
 
 	
 	public ArrayList<Conversation> getHistorique() {
@@ -447,6 +458,7 @@ class TCPThreadReceiver extends Thread {
 			
 		}
 		
+		
 		public void setStop() {
 			this.termine = true;
 		}
@@ -565,20 +577,19 @@ class ThreadSocketFils extends Thread{
 		}
 			
 		}
-	
-class HttpThread extends Thread{
-	
-	public HttpThread() {
-		
-	}
+
+class myTask extends TimerTask{
+
 	@Override
 	public void run() {
-		//HttpServer server = HttpServer.create(new InetSocketAddress(8500), 0);
+		
+		
 	}
-}
 	
 }
+}
 	
+
 
 
 
