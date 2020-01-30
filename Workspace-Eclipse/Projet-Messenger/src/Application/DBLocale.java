@@ -304,6 +304,30 @@ public class DBLocale {
 		return tempA;
 		
 	}
+	protected synchronized ArrayList<Address> getAllAccount(){
+		ArrayList<Address> temp = new ArrayList<Address>();
+		Statement stmt;
+		try {
+			stmt = coDB.createStatement();
+			ResultSet rs;
+			rs = stmt.executeQuery("SELECT * FROM account;");
+			while(rs.next()) {
+				String username = rs.getString("username");
+				String pseudo = rs.getString("pseudo");
+				temp.add(new Address(InetAddress.getByAddress(Tools.getPcIP()), pseudo, username));
+			}
+			rs.close();
+		    stmt.close();
+		} catch (SQLException e) {
+			System.out.println("DBlocal: Error getAllAccount, SQL ERROR");
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			System.out.println("DBlocal: Error getAllAccount, Unknown Host Error");
+			e.printStackTrace();
+		}
+		return temp;
+		
+	}
 	
 
 	//pour éviter l'erreur UnknownHostException (pour l'instant)//

@@ -112,20 +112,22 @@ class UserInterface extends JFrame{
 	}
 	
 	void setUtilisateursconnectesPage_same_frame() {
-		this.setVisible(false);
-		//on recrée la page pour màj
-		this.getContentPane().remove(this.scrollbar_uc);
-		this.utilisateursconnectespage = new utilisateursconnectesPage();
-		this.scrollbar_uc = new JScrollPane(this.utilisateursconnectespage);
-		this.scrollbar_uc.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		//
-		this.getContentPane().add(this.scrollbar_uc, BorderLayout.CENTER);
-		this.getContentPane().remove(this.connexionpage);
-		this.getContentPane().remove(this.changerpseudopage);
-		this.getContentPane().remove(this.creationcomptepage);
-		this.getContentPane().remove(this.scrollbar_conv);
-		this.getContentPane().remove(this.msgpage);
-		this.setVisible(true);
+		if(co.getLoggedAccount() != null) {
+			this.setVisible(false);
+			//on recrée la page pour màj
+			this.getContentPane().remove(this.scrollbar_uc);
+			this.utilisateursconnectespage = new utilisateursconnectesPage();
+			this.scrollbar_uc = new JScrollPane(this.utilisateursconnectespage);
+			this.scrollbar_uc.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+			//
+			this.getContentPane().add(this.scrollbar_uc, BorderLayout.CENTER);
+			this.getContentPane().remove(this.connexionpage);
+			this.getContentPane().remove(this.changerpseudopage);
+			this.getContentPane().remove(this.creationcomptepage);
+			this.getContentPane().remove(this.scrollbar_conv);
+			this.getContentPane().remove(this.msgpage);
+			this.setVisible(true);
+		}
 	}
 	
 	void setConversationPage() {
@@ -624,13 +626,14 @@ class UserInterface extends JFrame{
 			boolean unique=true;
 			try {
 				//users = db.getknownUsers(co.getLoggedAccount().getUsername());
-				users = db.getknownUsers(null);
+				//users = db.getknownUsers(null);
+				users = db.getAllAccount();
 			} catch (NullPointerException npe) {
 				System.out.println(npe);
 			}
 			if (!users.isEmpty()) {
 				for (int i=0;i<users.size();i++) {
-					if (users.get(i).getUsername().equals(username_)) {
+					if (users.get(i).getUsername().equals(username_) || users.get(i).getPseudo().equals(pseudo_)) {
 						unique=false;
 					}
 				}
@@ -703,7 +706,7 @@ class UserInterface extends JFrame{
 			if (!(getContentPane().getComponents()[1].equals(creationcomptepage) || getContentPane().getComponents()[1].equals(connexionpage))) { //on est pas connecté
 				//rzo
 				co.getSocket().termine();
-				//co.setLoggedAccount(null); //voir si ça bug pas
+				co.setLoggedAccount(null); //voir si ça bug pas
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e1) {
@@ -755,7 +758,8 @@ class UserInterface extends JFrame{
 			boolean unique=true;
 			try {
 				//users = db.getknownUsers(co.getLoggedAccount().getUsername());
-				users = db.getknownUsers(null); 
+				//users = db.getknownUsers(null); 
+				users = db.getAllAccount();
 			} catch (NullPointerException npe) {
 				System.out.println(npe);
 			}
