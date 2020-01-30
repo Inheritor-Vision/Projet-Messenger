@@ -2,7 +2,7 @@ package Application;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
+import java.io.StringReader;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -33,26 +34,30 @@ public class testMain {
 
 	public static void main(String[] args) throws UnknownHostException, InterruptedException, IOException {
 		
-		//InternalSocket is = new InternalSocket(new Account(), null);
 		
+	
+		Account tmp = new Account("Greg", "Greg" , "Greg", new Address(InetAddress.getLocalHost(),"Greg", "Greg"));
+		InternalSocket is = new InternalSocket(tmp, null);
+		is.startExecutor();
 	
 		//System.out.println(Tools.getPcIP()[0] + "." + Tools.getPcIP()[1] + "." +Tools.getPcIP()[2] + "." +Tools.getPcIP()[3] + "." );
 		/*Account Zoe = new Account("Zoe un", "Zoe pwd", "Zoe ps", new Address("Zoe ps","Zoe un"));
 		System.out.println(Zoe.getAddress().addrToString());
 		InternalSocket is = new InternalSocket(Zoe, null);
 		is.notifyDiscoServer(Zoe);*/
+		
 		/*HttpClient httpClient = HttpClient.newBuilder()
 	            .version(HttpClient.Version.HTTP_2)
 	            .build();
 		
 		Map<Object, Object> data = new HashMap<>();
-        data.put("pseudo", "Zoe pseudo ");
-        data.put("username", "Zoe username");
+        data.put("pseudo", "gfd pseudo ");
+        data.put("username", "gfdg username");
         data.put("addr1", "100");
         data.put("addr2", "101");
         data.put("addr3", "102");
         data.put("addr4", "103");
-        data.put("add","1");
+        data.put("add","0");
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(Tools.buildFormDataFromMap(data))
                 //.uri(URI.create("https://srv-gei-tomcat.insa-toulouse.fr/Messenger/PresenceServer"))
@@ -67,14 +72,14 @@ public class testMain {
         System.out.println(response.statusCode());
 
         // print response body
-        System.out.println(response.body());
+        System.out.println(response.body());*/
        
         
 		
-		*/
 		
 		
-		HttpClient httpClient = HttpClient.newBuilder()
+		
+		/*HttpClient httpClient = HttpClient.newBuilder()
 	            .version(HttpClient.Version.HTTP_2)
 	            .build();
 		HttpRequest request = HttpRequest.newBuilder()
@@ -88,7 +93,7 @@ public class testMain {
 	     //System.out.println(response.statusCode());
 
 	        // print response body
-	      System.out.println(response.body());
+	      System.out.println(response.body());*/
 	      
 		
 		

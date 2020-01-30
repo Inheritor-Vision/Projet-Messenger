@@ -55,23 +55,24 @@ public class InternalSocket {
 	TCPThreadReceiver TCP_RCV_Thread;
 	protected DBLocale db;
 	protected UserInterface UI;
+	protected static Long ts;
 	
 	
 	
 	public InternalSocket(Account UsernameLoggedAccount_, UserInterface _UI){
-		
+		this.ts = 0L;
 		this.UsernameLogged = UsernameLoggedAccount_;
 		this.connectedUserList = new ConcurrentHashMap<String,Address>();
-		this.db = new DBLocale();
-		this.UI = _UI;
-		try {
-			this.UDP_SEND_Socket = new DatagramSocket(Tools.Ports.UDP_SEND.getValue());
-		} catch (SocketException e) {
-			System.out.println("Internal Socket: Error init UDP socket in constructor");
-			e.printStackTrace();
-		}
-		this.startReceiverThread();
-		this.sendConnected(UsernameLogged);
+		//this.db = new DBLocale();
+		//this.UI = _UI;
+		//try {
+		//	this.UDP_SEND_Socket = new DatagramSocket(Tools.Ports.UDP_SEND.getValue());
+		//} catch (SocketException e) {
+		//	System.out.println("Internal Socket: Error init UDP socket in constructor");
+		//	e.printStackTrace();
+		//}
+		//this.startReceiverThread();
+		//this.sendConnected(UsernameLogged);
 	}
 	
 	List<InetAddress> listAllBroadcastAddresses() throws SocketException {
@@ -272,7 +273,7 @@ public class InternalSocket {
 	
 	public  void startExecutor() {
 		final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-	    executorService.scheduleWithFixedDelay(new myTask(), 0, 1, TimeUnit.SECONDS);
+	    executorService.scheduleWithFixedDelay(new myTask(this.connectedUserList , this.ts), 0, 5, TimeUnit.SECONDS);
 	}
 	
 	
@@ -579,10 +580,57 @@ class ThreadSocketFils extends Thread{
 		}
 
 class myTask extends TimerTask{
+	ConcurrentHashMap<String, Address> userCo;
+	Long ts;
+	myTask(ConcurrentHashMap<String, Address> _userCo, Long _ts){
+		this.userCo = _userCo;
+		this.ts = _ts;
+	}
 
 	@Override
 	public void run() {
+		HttpClient httpClient = HttpClient.newBuilder()
+	            .version(HttpClient.Version.HTTP_2)
+	            .build();
 		
+		HttpRequest request = HttpRequest.newBuilder()
+				.GET()
+				.uri(URI.create("http://localhost:8080/Messenger/PresenceServer?type="+Tools.Msg_Code.CoSpecificList+"&ts="+ this.ts))
+				.setHeader("User-Agent", "MessengerApp")
+				.build();
+		 HttpResponse<String> response;
+		try {
+			Long tmp = System.currentTimeMillis();
+			response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+			this.ts = tmp;
+			System.out.println(response.body());
+			BufferedReader out = new BufferedReader(new StringReader(response.body()));
+			String val = out.readLine();
+			val = out.readLine();
+			while(!val.equals("--rm--")){
+				String pseudo = val;
+				String username = out.readLine();
+				String addr = out.readLine();
+				this.userCo.put(username, new Address(InetAddress.getByName(addr.substring(1)), pseudo, username));
+				System.out.println("Ajout de " + username + " Taille de la liste " + this.userCo.size());
+				val = out.readLine();
+			}
+			val = out.readLine();
+			while(val != null) {
+				this.userCo.remove(val);
+				System.out.println("Rm de " + val + " Taille de la liste " + this.userCo.size());
+				val = out.readLine();
+			}
+						
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	       
 		
 	}
 	
