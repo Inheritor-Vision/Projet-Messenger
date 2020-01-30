@@ -2,6 +2,7 @@ package Application;
 
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import Common.Address;
 import Common.Tools;
@@ -86,6 +87,26 @@ public class Controller {
 		System.out.println(Tools.getPcIP()[3]);
 		
 		co.db.printAllTable();
+		
+		/*try {
+			Thread.sleep(20000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Address simeon = new Address(null,"simeon_p","simeon_u");
+		Address kevin = new Address(null,"kevin_p","kevin_u");
+		Address yuyuan = new Address(null,"yuyuan_p","yuyuan_u");
+		co.getSocket().getUserList().put("simeon_u", simeon);
+		co.getSocket().getUserList().put("kevin_u", kevin);
+		co.getSocket().getUserList().put("yuyuan_u", yuyuan);
+		
+		for (Map.Entry<String,Address> entry : co.getSocket().getUserList().entrySet()) {
+			 System.out.println(entry.getValue().getPseudo());
+			 
+		}
+		
+		System.out.println(co.getSocket().getUserList().size());*/
 		
 		
 		//test utililisateurs connectes//
