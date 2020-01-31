@@ -56,12 +56,13 @@ public class DBLocale {
 	protected synchronized Address getSpecificKnownUser(String UsernameLogged, String userToSearch) {
 		Address res = null;
 		try {
-			Statement stmt = this.coDB.createStatement();
+			Statement stmt = coDB.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM knownUsers where usernameLogged = '" + UsernameLogged + "' AND username = '" + userToSearch + "' ;");
-			if (!rs.isClosed()) {
+			if (rs.next()) {
 				res =  new Address(InetAddress.getByAddress(rs.getBytes("address")), rs.getString("pseudo"), rs.getString("username"));
 			}
-			
+			stmt.close();
+			rs.close();
 		}catch (SQLException e) {
 			System.out.println("DBlocal: Error getSpecificKnownUser, SQL ERROR");
 			e.printStackTrace();
@@ -179,7 +180,7 @@ public class DBLocale {
 			pstmt.setTimestamp(5, msg.getTimestamp());
 			pstmt.setString(6,msg.getMsg());
 			pstmt.executeUpdate();
-			
+			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println("DBLocal: Err	\n" + 
 					"or setMessage SQL");
@@ -197,6 +198,7 @@ public class DBLocale {
 			pstmt.setBytes(3, add.getIP().getAddress());
 			pstmt.setString(4,UsernameLogged);
 			pstmt.executeUpdate();
+			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println("DBLocale: Error setKnownUser, creation pstmt or execute");
 			e.printStackTrace();
@@ -296,7 +298,8 @@ public class DBLocale {
 				 temp = new Address(InetAddress.getByAddress(Tools.getPcIP()),ps,un);
 				 tempA = new Account(un,pw,ps,temp);	 
 			}
-			
+			pstmt.close();
+			rs.close();
 		} catch (SQLException | UnknownHostException e) {
 			System.out.println("DBLocal: Error getAccount creation or execute query");
 			e.printStackTrace();
@@ -350,6 +353,7 @@ public class DBLocale {
 			pstmt.setString(2, acc.getPassword());
 			pstmt.setString(3, acc.getPseudo());
 			System.out.println("Debug: " + pstmt.executeUpdate());
+			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println("DBLocal: Error setAccount");
 			e.printStackTrace();
@@ -379,6 +383,7 @@ public class DBLocale {
 			System.out.println(rs.next());
 			System.out.println(rs.getTimestamp(1));
 			stmt.close();
+			rs.close();
 		} catch (SQLException e) {
 			System.out.println("DBLocale: Error ,dsfdsftement or execute");
 			e.printStackTrace();
@@ -389,7 +394,7 @@ public class DBLocale {
 		String sql;
 		try {
 			sql = "SELECT * FROM account;";
-			Statement stmt = this.coDB.createStatement();
+			Statement stmt = coDB.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
 			if (rs.next() == false) {
 				System.out.println("\nDBLocal: account is EMPTY");
@@ -408,7 +413,7 @@ public class DBLocale {
 		    stmt.close();
 		    
 		    sql = "SELECT * FROM conversations";
-		    stmt = this.coDB.createStatement();
+		    stmt = coDB.createStatement();
 		    rs = stmt.executeQuery(sql);
 		    if (rs.next() == false) {
 				System.out.println("\nDBLocal: conversations is EMPTY");
@@ -426,7 +431,7 @@ public class DBLocale {
 		    stmt.close();
 		    
 		    sql = "SELECT * FROM knownUsers";
-		    stmt = this.coDB.createStatement();
+		    stmt = coDB.createStatement();
 		    rs = stmt.executeQuery(sql);
 		    if (rs.next() == false) {
 				System.out.println("\nDBLocal: knownUsers is EMPTY");
