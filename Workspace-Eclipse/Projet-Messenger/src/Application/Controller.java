@@ -38,7 +38,7 @@ public class Controller {
 		this.userInterface.co = this;
 		this.userInterface.db = this.db;
 		
-		this.dbc = new DBCentrale();
+		//this.dbc = new DBCentrale();
 		
 		
 		

@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -143,11 +144,14 @@ public class DBLocale {
 				System.out.println("DBLocal: Error getConv return empty set");
 			}else {
 				 do {
-					Boolean isSender = rs.getBoolean("isSender");
-					Boolean isNew = rs.getBoolean("isNew");
 					java.sql.Timestamp ts = rs.getTimestamp("timestamp");
 					String msg = rs.getString("message");
-					conv.addMessage(new Message(isSender,msg,isNew, ts));
+					if(rs.getString("sender").equals(userLogged)) {
+						conv.addMessage(new Message(true,msg, ts));
+					}else {
+						conv.addMessage(new Message(false,msg, ts));
+					}
+					
 				}while(rs.next());
 				 
 			}
@@ -171,14 +175,12 @@ public class DBLocale {
 	// id corres isSender isNew ts msg 
 	protected synchronized void setMessage(Message msg, String sender, String receiver) {
 		try {
-			String sql = "INSERT INTO conversations (sender,receiver, isSender, isNew, timestamp, message) VALUES (?,?,?,?,?,?)";
+			String sql = "INSERT INTO conversations (sender,receiver, timestamp, message) VALUES (?,?,?,?)";
 			PreparedStatement pstmt = this.coDB.prepareStatement(sql);
 			pstmt.setString(1, sender);
 			pstmt.setString(2, receiver);
-			pstmt.setInt(3,BoolToInt(msg.getIsEnvoyeur()));
-			pstmt.setInt(4,BoolToInt(msg.getIsNew()));
-			pstmt.setTimestamp(5, msg.getTimestamp());
-			pstmt.setString(6,msg.getMsg());
+			pstmt.setTimestamp(3, msg.getTimestamp());
+			pstmt.setString(4,msg.getMsg());
 			pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException e) {
@@ -190,13 +192,31 @@ public class DBLocale {
 	}
 	
 	protected synchronized void setKnownUser(Address add, String UsernameLogged) {
-		String sql = "INSERT INTO knownUsers (username,pseudo,address,usernameLogged) VALUES (?,?,?,?)";
+		String sql = "INSERT INTO knownUsers (username,pseudo,address,usernameLogged,timestamp) VALUES (?,?,?,?,?)";
 		try {
-			PreparedStatement pstmt = this.coDB.prepareStatement(sql);
+			PreparedStatement pstmt = coDB.prepareStatement(sql);
 			pstmt.setString(1, add.getUsername());
 			pstmt.setString(2, add.getPseudo());
 			pstmt.setBytes(3, add.getIP().getAddress());
 			pstmt.setString(4,UsernameLogged);
+			pstmt.setTimestamp(5,new Timestamp(System.currentTimeMillis()));
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException e) {
+			System.out.println("DBLocale: Error setKnownUser, creation pstmt or execute");
+			e.printStackTrace();
+		}
+	}
+	
+	protected synchronized void setKnownUser(Address add, String UsernameLogged, Timestamp ts) {
+		String sql = "INSERT INTO knownUsers (username,pseudo,address,usernameLogged,timestamp) VALUES (?,?,?,?,?)";
+		try {
+			PreparedStatement pstmt = coDB.prepareStatement(sql);
+			pstmt.setString(1, add.getUsername());
+			pstmt.setString(2, add.getPseudo());
+			pstmt.setBytes(3, add.getIP().getAddress());
+			pstmt.setString(4,UsernameLogged);
+			pstmt.setTimestamp(5,ts);
 			pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException e) {
@@ -207,14 +227,15 @@ public class DBLocale {
 	
 	protected synchronized void createTableKnownUsers() {
 		String sql = "CREATE TABLE IF NOT EXISTS knownUsers (\n"
-                + "    id integer PRIMARY KEY AUTOINCREMENT,\n"
-                + "    usernameLogged text NOT NULL,\n"
-                + "    username text NOT NULL,\n"
-                + "    pseudo text NOT NULL,\n"
-                + "    address blob NOT NULL\n"
+                + "    usernameLogged VARCHAR(255) NOT NULL,\n"
+                + "    username VARCHAR(255) NOT NULL,\n"
+                + "    pseudo VARCHAR(255) NOT NULL,\n"
+                + "    address blob NOT NULL,\n"
+                + "    timestamp date NOT NULL,\n"
+                + "    PRIMARY KEY(usernameLogged,username)"
                 + ");";
 		try {
-			Statement stmt = this.coDB.createStatement();
+			Statement stmt = coDB.createStatement();
 			stmt.execute(sql);
 			stmt.close();
 		} catch (SQLException e) {
@@ -227,14 +248,11 @@ public class DBLocale {
 	
 	protected synchronized void  createTableConversations() {
 		String sql = "CREATE TABLE IF NOT EXISTS conversations (\n"
-                + "    id integer PRIMARY KEY AUTOINCREMENT,\n"
-                + "    sender text NOT NULL,\n"
-                + "    receiver text NOT NULL,\n"
-                + "    isSender integer NOT	\n" + 
-                " NULL,\n"
-                + "    isNew integer NOT NULL,\n"
+                + "    sender VARCHAR(255) NOT NULL,\n"
+                + "    receiver VARCHAR(255) NOT NULL,\n"
                 + "    timestamp date NOT NULL,\n"
-                + "    message text NOT NULL\n"
+                + "    message VARCHAR(255) NOT NULL\n,"
+                + "    PRIMARY KEY(sender,receiver,timestamp,message)"
                 + ");";
 		try {
 			Statement stmt = this.coDB.createStatement();
@@ -250,9 +268,9 @@ public class DBLocale {
 	
 	protected synchronized void  createTableAccount() {
 		String sql = "CREATE TABLE IF NOT EXISTS account (\n"
-                + "    username text PRIMARY KEY,\n"
-                + "    password text NOT NULL,\n"
-                + "    pseudo text NOT NULL\n"
+                + "    username VARCHAR(255) PRIMARY KEY,\n"
+                + "    password VARCHAR(255) NOT NULL,\n"
+                + "    pseudo VARCHAR(255) NOT NULL\n"
                 + ");";
 		try {
 			Statement stmt = this.coDB.createStatement();
@@ -372,11 +390,11 @@ public class DBLocale {
 
 		String sql = "INSERT INTO account (username,password,pseudo) VALUES (?,?,?)";
 		try {
-			PreparedStatement pstmt = this.coDB.prepareStatement(sql);
+			PreparedStatement pstmt = coDB.prepareStatement(sql);
 			pstmt.setString(1, acc.getUsername());
 			pstmt.setString(2, acc.getPassword());
 			pstmt.setString(3, acc.getPseudo());
-			System.out.println("Debug: " + pstmt.executeUpdate());
+			pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println("DBLocal: Error setAccount");
@@ -388,7 +406,7 @@ public class DBLocale {
 	protected synchronized void updatePseudo(String new_Pseudo, String old_Pseudo, String username, String LoggedUsername) {
 		String sql = "UPDATE knownUsers SET pseudo = '" + new_Pseudo + "' where usernameLogged='" + LoggedUsername + "' AND pseudo='" + old_Pseudo + "' AND username='" + username + "';";
 		try {
-			Statement stmt = this.coDB.createStatement();
+			Statement stmt = coDB.createStatement();
 			stmt.executeUpdate(sql);
 			stmt.close();
 		} catch (SQLException e) {
@@ -399,19 +417,47 @@ public class DBLocale {
 	}
 	
 	
-	protected void TEMP() {
-		String sql = "SELECT MAX(timestamp) FROM conversations";
+	protected ResultSet getRSAllMessageAboveTS(Timestamp ts) {
+		ResultSet rs = null;
+		String sql = "SELECT * FROM conversations WHERE timestamp > ? ;";
 		try {
-			Statement stmt = DBLocale.coDB.createStatement();
-			ResultSet rs = stmt.executeQuery(sql);
-			System.out.println(rs.next());
-			System.out.println(rs.getTimestamp(1));
-			stmt.close();
-			rs.close();
+			PreparedStatement pstmt = coDB.prepareStatement(sql);
+			pstmt.setTimestamp(1, ts);
+			rs = pstmt.executeQuery();
 		} catch (SQLException e) {
-			System.out.println("DBLocale: Error ,dsfdsftement or execute");
+			System.out.println("DBLocale: Error getRSAllMessageAboveTS, create statement or execute");
 			e.printStackTrace();
 		}
+		return rs;
+	}
+	
+	protected ResultSet getRSAllKnownUsersAboveTS(String Userlogged, Timestamp ts) {
+		ResultSet rs = null;
+		String sql = "SELECT * FROM knownUsers WHERE usernameLogged = ? AND timestamp > ?;";
+		try {
+			PreparedStatement pstmt = coDB.prepareStatement(sql);
+			pstmt.setString(1, Userlogged);
+			pstmt.setTimestamp(2, ts);
+			rs = pstmt.executeQuery();
+		} catch (SQLException e) {
+			System.out.println("DBLocale: Error getRSAllKnownUsersAboveTS, create statement or execute");
+			e.printStackTrace();
+		}
+		return rs;
+	}
+	
+	protected ResultSet getRSSpecificAccount(String Userlogged) {
+		ResultSet rs = null;
+		String sql = "SELECT * FROM account WHERE username = ?;";
+		try {
+			PreparedStatement pstmt = coDB.prepareStatement(sql);
+			pstmt.setString(1, Userlogged);
+			rs = pstmt.executeQuery();
+		} catch (SQLException e) {
+			System.out.println("DBLocale: Error getRSSpecificAccount, create statement or execute");
+			e.printStackTrace();
+		}
+		return rs;
 	}
 	
 	protected void printAllTable() {
@@ -428,7 +474,7 @@ public class DBLocale {
 				System.out.println("| username | pseudo | password |");
 				System.out.println("--------------------------------\n");
 				do {
-					String tmp1;
+
 					System.out.println("|" + rs.getString("username") + " | " + rs.getString("pseudo") + " | " + rs.getString("password") + "|");
 				}while(rs.next());
 				 
@@ -443,11 +489,11 @@ public class DBLocale {
 				System.out.println("\nDBLocal: conversations is EMPTY");
 			}else {
 				System.out.println("\nDBLocal:Table conversations:\n");
-				System.out.println("--------------------------------------------------------------");
-				System.out.println("| sender | receiver | isSender | isNew | timestamp | message |");
-				System.out.println("--------------------------------------------------------------\n");
+				System.out.println("-------------------------------------------");
+				System.out.println("| sender | receiver | timestamp | message |");
+				System.out.println("-------------------------------------------\n");
 				do {
-					System.out.println("|" + rs.getString("sender") + " | " + rs.getString("receiver") + " | " + rs.getBoolean("isSender") + " | " + rs.getBoolean("isNew")+ " | " + rs.getTimestamp("timestamp") + " | " + rs.getString("message") + " |");
+					System.out.println("|" + rs.getString("sender") + " | " + rs.getString("receiver") + " | "  + rs.getTimestamp("timestamp") + " | " + rs.getString("message") + " |");
 				}while(rs.next());
 				 
 			}
@@ -461,11 +507,11 @@ public class DBLocale {
 				System.out.println("\nDBLocal: knownUsers is EMPTY");
 			}else {
 				System.out.println("\nDBLocal:Table knownUsers:\n");
-				System.out.println("------------------------------------------------");
-				System.out.println("| usernameLogged | username | pseudo | address |");
-				System.out.println("------------------------------------------------\n");
+				System.out.println("------------------------------------------------------------");
+				System.out.println("| usernameLogged | username | pseudo | address | timestamp |");
+				System.out.println("------------------------------------------------------------\n");
 				do {
-					System.out.println("|" + rs.getString("usernameLogged") + " | " + rs.getString("username") + " | " + rs.getString("pseudo") + " | " + rs.getBytes("address")[0] + "." + rs.getBytes("address")[1] + "." + rs.getBytes("address")[2] + "." + rs.getBytes("address")[3] + " |");
+					System.out.println("|" + rs.getString("usernameLogged") + " | " + rs.getString("username") + " | " + rs.getString("pseudo") + " | " + rs.getBytes("address")[0] + "." + rs.getBytes("address")[1] + "." + rs.getBytes("address")[2] + "." + rs.getBytes("address")[3] + " | " + rs.getTimestamp("timestamp") + " |");
 				}while(rs.next());
 				 
 			}

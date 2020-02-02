@@ -35,11 +35,17 @@ public class testMain {
 	public static void main(String[] args) throws UnknownHostException, InterruptedException, IOException {
 		
 		
+		System.out.println(System.currentTimeMillis());
+		System.out.println(System.currentTimeMillis());
+		/*DBLocale temp = new DBLocale();
+		temp.setMessage(new Message(true, "test",  new Timestamp(0L)), "Alice" , "Bob");
+		temp.setMessage(new Message(true, "test",  new Timestamp(0L)), "Alice" , "Eve");
+		temp.printAllTable();*/
 	
-		Account tmp = new Account("Greg", "Greg" , "Greg", new Address(InetAddress.getLocalHost(),"Greg", "Greg"));
+		/*Account tmp = new Account("Greg", "Greg" , "Greg", new Address(InetAddress.getLocalHost(),"Greg", "Greg"));
 		InternalSocket is = new InternalSocket(tmp, null);
 		is.startExecutor();
-	
+	*/
 		//System.out.println(Tools.getPcIP()[0] + "." + Tools.getPcIP()[1] + "." +Tools.getPcIP()[2] + "." +Tools.getPcIP()[3] + "." );
 		/*Account Zoe = new Account("Zoe un", "Zoe pwd", "Zoe ps", new Address("Zoe ps","Zoe un"));
 		System.out.println(Zoe.getAddress().addrToString());

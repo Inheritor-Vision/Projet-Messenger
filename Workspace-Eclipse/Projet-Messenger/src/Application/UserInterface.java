@@ -977,7 +977,7 @@ class UserInterface extends JFrame{
 		public void actionPerformed(ActionEvent e) {
 			
 			//maj conv
-			Message msg = new Message(true,msgpage.message.getText(),true);
+			Message msg = new Message(true,msgpage.message.getText());
 			co.getConversation().addMessage(msg);
 			//rzo
 			co.getSocket().sendMessage(msg, corresp);

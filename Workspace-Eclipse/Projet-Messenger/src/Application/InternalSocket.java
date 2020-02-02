@@ -561,7 +561,7 @@ class ThreadSocketFils extends Thread{
 						}
 						
 					}
-					Message ephemere = new Message(false,message,true,ts);
+					Message ephemere = new Message(false,message,ts);
 					this.db.setMessage(ephemere,sender,rcv);
 					this.UI.recevoirmessageUI(ephemere,temporary);
 				}else {

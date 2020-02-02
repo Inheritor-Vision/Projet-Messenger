@@ -5,19 +5,19 @@ public class Message {
 	Boolean isEnvoyeur; // 1=envoyeur / 0=receveur
 	String msg;
 	Timestamp date;
-	Boolean isNew;
+
 	
-	protected Message(Boolean isSender , String msgs, Boolean _isNew) {
-		this.isEnvoyeur = isSender;
+	protected Message(Boolean isSender , String msgs) {
+		
 		this.msg = msgs;
 		this.date = new Timestamp(System.currentTimeMillis());
-		this.isNew = _isNew;
+		
 	}
-	protected Message(Boolean isSender , String msgs, Boolean _isNew, Timestamp ts) {
-		this.isEnvoyeur = isSender;
+	protected Message(Boolean isSender , String msgs, Timestamp ts) {
+		
 		this.msg = msgs;
 		this.date = ts;
-		this.isNew = _isNew;
+		
 	}
 	
 	protected String getMsg() {
@@ -31,8 +31,8 @@ public class Message {
 	protected Boolean getIsEnvoyeur() {
 		return isEnvoyeur;
 	}
-	protected Boolean getIsNew() {
-		return isNew;
+	protected Boolean isEnvoyeur() {
+		return isEnvoyeur;
 	}
 	
 	
