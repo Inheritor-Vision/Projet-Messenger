@@ -8,6 +8,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 
 import Common.Address;
+import Common.Disco;
 import Common.Tools;
 
 import javax.servlet.ServletException;
@@ -15,19 +16,34 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.sql.Timestamp;
+
 public class MessengerServlet extends HttpServlet{
 	 static ArrayList<Address> coUsers = new ArrayList<Address>();
+	 static ArrayList<Disco> discoUsers = new ArrayList<Disco>();
 	 static boolean init = false;
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		if(MessengerServlet.init == false) {
+		/*if(MessengerServlet.init == false) {
 			MessengerServlet.init=true;
 			coUsers.add(new Address("Alice Pseudo", "Alice Username"));
 			coUsers.add(new Address("Bob Pseudo", "Bob Username"));
 			coUsers.add(new Address("Eve Pseudo", "Eve Username"));
-		}
+		}*/
 		
+		
+		Enumeration<String> parameterNames = req.getParameterNames();
+		String type ="";
+		Timestamp ts = null;
+		while (parameterNames.hasMoreElements()) {
+			 String key = parameterNames.nextElement();
+			    if(key.equals("type")) {
+			    	type = req.getParameter(key);
+			    }else {
+			    	 ts = new Timestamp(Long.parseLong(req.getParameter(key)));
+			    }
+		}
 		
 		
 		resp.setContentType("text/html");
@@ -36,13 +52,42 @@ public class MessengerServlet extends HttpServlet{
 		Iterator<Address> it = coUsers.iterator();
 		Address temp;
 		
-		out.println(Tools.Msg_Code.CoList.toString());
-		while (it.hasNext()) {
-			temp = it.next();
-			out.println(temp.getPseudo());
-			out.println(temp.getUsername());
-			out.println(temp.getIP());
+		
+		if (type.equals(Tools.Msg_Code.CoSpecificList.toString())) {
+			out.println(Tools.Msg_Code.CoSpecificList.toString());
+			while (it.hasNext()) {
+				temp = it.next();
+				Timestamp tempTS = temp.getTs();
+				if(tempTS.after(ts)) {
+					out.println(temp.getPseudo());
+					out.println(temp.getUsername());
+					out.println(temp.getIP());
+				}
+			}
+			out.println("--rm--");
+			Iterator<Disco> iter = discoUsers.iterator();
+			Disco tempora;
+			while (iter.hasNext()) {
+				tempora = iter.next();
+				
+				if(ts.before(tempora.ts)) {
+					out.println(tempora.Username);
+				}
+			}
+		}else {
+			out.println(Tools.Msg_Code.CoList.toString());
+			while (it.hasNext()) {
+				temp = it.next();
+				out.println(temp.getPseudo());
+				out.println(temp.getUsername());
+				out.println(temp.getIP());
+			}
+			
+			
 		}
+		
+		
+		
 	}
 	
 	@Override
@@ -81,9 +126,10 @@ public class MessengerServlet extends HttpServlet{
 			Boolean fin = false;
 			Iterator<Address> iter = coUsers.iterator();
 			Address tempor;
-;						while (!fin && iter.hasNext()) {
+;			while (!fin && iter.hasNext()) {
 				tempor = iter.next();
 				if(tempor.getUsername().equals(username)) {
+					discoUsers.add(new Disco(username, new Timestamp(System.currentTimeMillis())));
 					coUsers.remove(tempor);
 					fin = true;
 				}
@@ -94,4 +140,7 @@ public class MessengerServlet extends HttpServlet{
 		
 	}
 }
+	
+
+
 

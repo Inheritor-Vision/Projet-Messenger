@@ -13,9 +13,10 @@ public class serverTCP {
             boolean fin =false;
             BufferedReader in = new BufferedReader(new InputStreamReader(link.getInputStream()));
             while(!fin){
-                
+                System.out.println("NewLine:");
                 String temp = in.readLine();
                 if(temp != null){
+		    
                     System.out.println(temp);
                         
                         

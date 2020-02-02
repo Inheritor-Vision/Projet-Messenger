@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.*;
 //import java.util.EventObject;
 import java.util.ArrayList;
+import java.util.Map;
 import java.sql.Timestamp;
 
 @SuppressWarnings("serial")
@@ -386,12 +387,17 @@ class UserInterface extends JFrame{
 		String[] pseudo_uc() { //recup une liste de pseudo des uc
 						
 			String[] uc;
+			int i=0;
 			nb_uc = co.getSocket().getUserList().size(); //avec socket
 			//nb_uc = connectedUserList.size(); //sans socket
 			uc = new String[nb_uc];
-			for (int i=0;i<nb_uc;i++) {
+			/*for (i=0;i<nb_uc;i++) {
 				uc[i] = co.getSocket().getUserList().get(i).getPseudo(); //avec socket
 				//uc[i] = connectedUserList.get(i).getPseudo(); //sans socket
+			}*/
+			for (Map.Entry<String,Address> entry : co.getSocket().getUserList().entrySet()) { //ConcurrentHashMap
+				 uc[i]=entry.getValue().getPseudo();
+				 i++;
 			}
 			
 			return uc;
@@ -405,7 +411,7 @@ class UserInterface extends JFrame{
 			int test=0;
 			if (nb_uc != 0) {
 				for (int j=0;j<cnc.size();j++) {
-					for (int k=0;k<nb_uc;k++) {
+					/*for (int k=0;k<nb_uc;k++) {
 					
 						if (!cnc.get(j).getPseudo().equals(co.getSocket().getUserList().get(k).getPseudo())) { //avec socket
 						//if (!cnc.get(j).getPseudo().equals(connectedUserList.get(k).getPseudo())) { //sans socket
@@ -415,6 +421,14 @@ class UserInterface extends JFrame{
 							co_nc.add(cnc.get(j));
 						}
 						
+					}*/
+					for (Map.Entry<String,Address> entry : co.getSocket().getUserList().entrySet()) { //ConcurrentHashMap
+						 if(!cnc.get(j).getPseudo().equals(entry.getValue().getPseudo())){
+							 test++;
+						 }
+						 if (test==nb_uc) {
+							 co_nc.add(cnc.get(j));
+						 }
 					}
 				test=0;
 				}
@@ -915,12 +929,19 @@ class UserInterface extends JFrame{
 				}
 				if (corresp == null) {
 					Address add=null;
+					//ConcurrentHashMap
+					for (Map.Entry<String,Address> entry : co.getSocket().getUserList().entrySet()) { //ConcurrentHashMap
+						 if(entry.getValue().getPseudo().equals(correspsdo)) {
+							 add = entry.getValue();
+						 }
+						 
+					}
 					//avec socket
-					for (int j=0;j<co.getSocket().getUserList().size();j++) {
+					/*for (int j=0;j<co.getSocket().getUserList().size();j++) {
 						if (co.getSocket().getUserList().get(j).getPseudo().equals(correspsdo)) {
 							add = co.getSocket().getUserList().get(j);
 						}
-					}
+					}*/
 					//
 					//sans socket
 					/*for (int j=0;j<connectedUserList.size();j++) { 

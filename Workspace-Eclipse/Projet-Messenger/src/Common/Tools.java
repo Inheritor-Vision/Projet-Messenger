@@ -6,20 +6,23 @@ import java.net.SocketException;
 import java.net.URLEncoder;
 import java.net.http.HttpRequest;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.util.Enumeration;
 import java.util.Map;
 
 public class Tools {
+	
 	public static enum Msg_Code{
 		Connected,
 		Disconnected,
 		Message,
 		New_Pseudo,
 		Con_Ack,
-		CoList
+		CoList,
+		CoSpecificList
 	}
 	public static enum Ports{
-		UDP_RCV(6666),UDP_SEND(6667),TCP_RCV(6668),TCP_SEND(6669);
+		UDP_RCV(6666),UDP_SEND(6667),TCP_RCV(6668),TCP_SEND(6669),HTTP_RCV(6670);
 		int value;
 		private Ports(int val){
 			this.value = val;
@@ -41,7 +44,7 @@ public class Tools {
             builder.append("=");
             builder.append(URLEncoder.encode(entry.getValue().toString(), StandardCharsets.UTF_8));
         }
-        System.out.println(builder.toString());
+        
         return HttpRequest.BodyPublishers.ofString(builder.toString());
     }
 	
@@ -61,6 +64,7 @@ public class Tools {
 			        //if(i.getAddress()[0] == 10) {
 			        if(i.getAddress().length == 4 && !(i.getAddress()[0]==127 && i.getAddress()[1]==0 && i.getAddress()[2]==0 && i.getAddress()[3]==1)) {
 			        	res = i.getAddress();
+			        	fin = true;
 			        }
 			        
 			    }

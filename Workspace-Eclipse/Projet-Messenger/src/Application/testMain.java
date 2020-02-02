@@ -2,7 +2,7 @@ package Application;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
+import java.io.StringReader;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -13,50 +13,69 @@ import java.net.UnknownHostException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
+
+import Common.Address;
 import Common.Tools;
 
 public class testMain {
 
 	public static void main(String[] args) throws UnknownHostException, InterruptedException, IOException {
-		System.out.println("TEST1");
 		
 		
-		HttpClient httpClient = HttpClient.newBuilder()
+	
+		Account tmp = new Account("Greg", "Greg" , "Greg", new Address(InetAddress.getLocalHost(),"Greg", "Greg"));
+		InternalSocket is = new InternalSocket(tmp, null);
+		is.startExecutor();
+	
+		//System.out.println(Tools.getPcIP()[0] + "." + Tools.getPcIP()[1] + "." +Tools.getPcIP()[2] + "." +Tools.getPcIP()[3] + "." );
+		/*Account Zoe = new Account("Zoe un", "Zoe pwd", "Zoe ps", new Address("Zoe ps","Zoe un"));
+		System.out.println(Zoe.getAddress().addrToString());
+		InternalSocket is = new InternalSocket(Zoe, null);
+		is.notifyDiscoServer(Zoe);*/
+		
+		/*HttpClient httpClient = HttpClient.newBuilder()
 	            .version(HttpClient.Version.HTTP_2)
 	            .build();
-		
+		how to put head on a branch
 		Map<Object, Object> data = new HashMap<>();
-        data.put("pseudo", "Zoe pseudo ");
-        data.put("username", "Zoe username");
+        data.put("pseudo", "gfd pseudo ");
+        data.put("username", "gfdg username");
         data.put("addr1", "100");
         data.put("addr2", "101");
         data.put("addr3", "102");
         data.put("addr4", "103");
-        data.put("add","1");
+        data.put("add","0");
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(Tools.buildFormDataFromMap(data))
-                .uri(URI.create("https://srv-gei-tomcat.insa-toulouse.fr/Messenger/PresenceServer"))
+                //.uri(URI.create("https://srv-gei-tomcat.insa-toulouse.fr/Messenger/PresenceServer"))
+                .uri(URI.create("http://localhost:8080/Messenger/PresenceServer"))
                 .setHeader("User-Agent", "MessengerApp") // add request header
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .build();
-
+       
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
         // print status code
         System.out.println(response.statusCode());
 
         // print response body
-        System.out.println(response.body());
-
-        System.out.println("TEST2");
-
+        System.out.println(response.body());*/
+       
+        
+		
 		
 		
 		
@@ -65,17 +84,17 @@ public class testMain {
 	            .build();
 		HttpRequest request = HttpRequest.newBuilder()
 				.GET()
-				.uri(URI.create("http://localhost:8080/test/PresenceServer"))
+				.uri(URI.create("http://localhost:8080/Messenger/PresenceServer?type="+Tools.Msg_Code.CoSpecificList+"&ts=1580242516778"))
 				.setHeader("User-Agent", "MessengerApp")
 				.build();
 		 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
 	        // print status code
-	        System.out.println(response.statusCode());
+	     //System.out.println(response.statusCode());
 
 	        // print response body
-	        System.out.println(response.body());*/
-		
+	      System.out.println(response.body());*/
+	      
 		
 		
 
@@ -211,3 +230,4 @@ public class testMain {
 	
 
 }
+
