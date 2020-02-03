@@ -63,16 +63,16 @@ public class InternalSocket {
 		this.ts = 0L;
 		this.UsernameLogged = UsernameLoggedAccount_;
 		this.connectedUserList = new ConcurrentHashMap<String,Address>();
-		//this.db = new DBLocale();
-		//this.UI = _UI;
-		//try {
-		//	this.UDP_SEND_Socket = new DatagramSocket(Tools.Ports.UDP_SEND.getValue());
-		//} catch (SocketException e) {
-		//	System.out.println("Internal Socket: Error init UDP socket in constructor");
-		//	e.printStackTrace();
-		//}
-		//this.startReceiverThread();
-		//this.sendConnected(UsernameLogged);
+		this.db = new DBLocale();
+		this.UI = _UI;
+		try {
+			this.UDP_SEND_Socket = new DatagramSocket(Tools.Ports.UDP_SEND.getValue());
+		} catch (SocketException e) {
+			System.out.println("Internal Socket: Error init UDP socket in constructor");
+			e.printStackTrace();
+		}
+		this.startReceiverThread();
+		this.sendConnected(UsernameLogged);
 	}
 	
 	List<InetAddress> listAllBroadcastAddresses() throws SocketException {
@@ -156,7 +156,7 @@ public class InternalSocket {
 	            .build();
 		HttpRequest request = HttpRequest.newBuilder()
 				.GET()
-				.uri(URI.create("http://localhost:8080/Messenger/PresenceServer"))
+				.uri(URI.create(InternalSocket.PresenceServer))
 				.setHeader("User-Agent", "MessengerApp")
 				.build();
 		 try {
@@ -189,9 +189,11 @@ public class InternalSocket {
 		this.notifyDiscoServer(UsernameLogged);
 		this.TCP_RCV_Thread.setStop();
 		this.UDP_RCV_Thread.setStop();
+		DBCentrale dbCentrale = new DBCentrale(UsernameLogged.getUsername());
+		dbCentrale.PushToDBC();
 	}
 	
-	private void notifyDiscoServer(Account loggedAccount) {
+	public void notifyDiscoServer(Account loggedAccount) {
 		HttpClient httpClient = HttpClient.newBuilder()
 	            .version(HttpClient.Version.HTTP_2)
 	            .build();
@@ -206,7 +208,7 @@ public class InternalSocket {
         data.put("add","0");
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(Tools.buildFormDataFromMap(data))
-                .uri(URI.create("http://localhost:8080/Messenger/PresenceServer"))
+                .uri(URI.create(InternalSocket.PresenceServer))
                 .setHeader("User-Agent", "MessengerApp") 
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .build();
@@ -595,7 +597,7 @@ class myTask extends TimerTask{
 		
 		HttpRequest request = HttpRequest.newBuilder()
 				.GET()
-				.uri(URI.create("http://localhost:8080/Messenger/PresenceServer?type="+Tools.Msg_Code.CoSpecificList+"&ts="+ this.ts))
+				.uri(URI.create(InternalSocket.PresenceServer +"?type="+Tools.Msg_Code.CoSpecificList+"&ts="+ this.ts))
 				.setHeader("User-Agent", "MessengerApp")
 				.build();
 		 HttpResponse<String> response;

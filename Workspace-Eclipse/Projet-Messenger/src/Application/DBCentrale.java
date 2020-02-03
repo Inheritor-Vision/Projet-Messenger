@@ -12,7 +12,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 
-/*ACCES VIA TERMINAL : mysql -h srv-bdens.insa-toulouse.fr -D tp_servlet13 -u tp_servlet13 -p
+/*ACCES VIA TERMINAL : mysql -h srv-bdens.insa-toulouse.fr -D tpservlet_13 -u tpservlet_13 -p
  * puis mdp : La1yah4k
  */
 
@@ -50,8 +50,8 @@ public class DBCentrale {
                 + "    usernameLogged VARCHAR(255) NOT NULL,\n"
                 + "    username VARCHAR(255) NOT NULL,\n"
                 + "    pseudo VARCHAR(255) NOT NULL,\n"
-                + "    address blob NOT NULL\n"
-                + "    timestamp date NOT NULL,\n"
+                + "    address blob NOT NULL,\n"
+                + "    timestamp DATE NOT NULL,\n"
                 + "    PRIMARY KEY(usernameLogged,username)"
                 + ");";
 		try {
@@ -70,7 +70,7 @@ public class DBCentrale {
 		String sql = "CREATE TABLE IF NOT EXISTS conversations (\n"
                 + "    sender VARCHAR(255) NOT NULL,\n"
                 + "    receiver VARCHAR(255) NOT NULL,\n"
-                + "    timestamp date NOT NULL,\n"
+                + "    timestamp DATE NOT NULL,\n"
                 + "    message VARCHAR(255) NOT NULL,\n"
                 + "    PRIMARY KEY(sender,receiver,timestamp,message)"
                 + ");";
@@ -114,7 +114,7 @@ public class DBCentrale {
 			}
 			rs.close();
 			ps.close();
-			DBCentrale.coDBc.close();
+			//DBCentrale.coDBc.close();
 		}catch(SQLException e){
 			System.out.println("DBCentrale: Error InitPullAccount");
 			e.printStackTrace();
@@ -127,7 +127,7 @@ public class DBCentrale {
 		//récupère la infos de la db centrale et les ajoutes dans la db locale vide. Appelé apres connection de l'user dadns le constructeur.
 		try{
 			this.ts = new Timestamp(System.currentTimeMillis());
-			DBCentrale.coDBc = connectionDBCentrale();
+			//DBCentrale.coDBc = connectionDBCentrale();
 			Statement stmt = DBCentrale.coDBc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM knownUsers where usernameLogged = '" + this.UsernameLogged +"';");
 			while(rs.next()){
@@ -137,22 +137,22 @@ public class DBCentrale {
 			rs.close();
 			
 			
-			String sql = "SELECT * FROM conversations WHERE sender = ? OR receiver = ?;";
+			String sql = "SELECT * FROM conversations WHERE (sender = ?) OR (receiver = ?) ;";
 			PreparedStatement pstmt = DBCentrale.coDBc.prepareStatement(sql);
 			pstmt.setString(1, this.UsernameLogged);
 			pstmt.setString(2, this.UsernameLogged);
-			rs = pstmt.executeQuery();
-			while(rs.next()){
-				String sender = rs.getString("sender");
+			ResultSet rs2 = pstmt.executeQuery();
+			while(rs2.next()){
+				String sender = rs2.getString("sender");
 				if(this.UsernameLogged.equals(sender)) {
-					DBl.setMessage(new Message(true, sender, rs.getTimestamp("timestamp")), sender, rs.getString("receiver"));
+					DBl.setMessage(new Message(true, rs2.getString("message"), rs2.getTimestamp("timestamp")), sender, rs2.getString("receiver"));
 				}else {
-					DBl.setMessage(new Message(false, sender, rs.getTimestamp("timestamp")), sender, rs.getString("receiver"));
+					DBl.setMessage(new Message(false, rs2.getString("message"), rs2.getTimestamp("timestamp")), sender, rs2.getString("receiver"));
 				}
 				
 			}
 			
-			rs.close();
+			rs2.close();
 			pstmt.close();
 			DBCentrale.coDBc.close();
 
@@ -208,7 +208,9 @@ public class DBCentrale {
 			rs.close();
 			
 			
-			DBCentrale.coDBc.close();
+			
+			
+			//DBCentrale.coDBc.close();
 			} catch (SQLException e) {
 			System.out.println("DBCentrale: Error PushToDBC");
 			e.printStackTrace();

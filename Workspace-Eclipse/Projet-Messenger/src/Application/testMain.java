@@ -34,9 +34,19 @@ public class testMain {
 
 	public static void main(String[] args) throws UnknownHostException, InterruptedException, IOException {
 		
+		/*DBCentrale.InitPullAccount();
+		DBCentrale dbCentrale = new DBCentrale("Alice");
+		DBLocale dbl = new DBLocale();
+		dbl.setKnownUser(new Address("Zeus un", "Zeus ps"), "Alice");
+		dbl.setKnownUser(new Address("Hera un", "Hera ps"), "Alice");
+		dbl.updatePseudoAccount("Alice", "IHATEBOB");
+		dbCentrale.PushToDBC();
+		dbCentrale.PullDB();
 		
-		System.out.println(System.currentTimeMillis());
-		System.out.println(System.currentTimeMillis());
+		Thread.sleep(1000);
+		dbl.printAllTable();*/
+		/*System.out.println(System.currentTimeMillis());
+		System.out.println(System.currentTimeMillis());*/
 		/*DBLocale temp = new DBLocale();
 		temp.setMessage(new Message(true, "test",  new Timestamp(0L)), "Alice" , "Bob");
 		temp.setMessage(new Message(true, "test",  new Timestamp(0L)), "Alice" , "Eve");
@@ -47,18 +57,18 @@ public class testMain {
 		is.startExecutor();
 	*/
 		//System.out.println(Tools.getPcIP()[0] + "." + Tools.getPcIP()[1] + "." +Tools.getPcIP()[2] + "." +Tools.getPcIP()[3] + "." );
-		/*Account Zoe = new Account("Zoe un", "Zoe pwd", "Zoe ps", new Address("Zoe ps","Zoe un"));
+		Account Zoe = new Account("Zoe un", "Zoe pwd", "Zoe ps", new Address("Zoe ps","Zoe un"));
 		System.out.println(Zoe.getAddress().addrToString());
 		InternalSocket is = new InternalSocket(Zoe, null);
-		is.notifyDiscoServer(Zoe);*/
-		
+		is.notifyDiscoServer(Zoe);
+		is.startExecutor();
 		/*HttpClient httpClient = HttpClient.newBuilder()
 	            .version(HttpClient.Version.HTTP_2)
 	            .build();
-		how to put head on a branch
+		
 		Map<Object, Object> data = new HashMap<>();
-        data.put("pseudo", "gfd pseudo ");
-        data.put("username", "gfdg username");
+        data.put("pseudo", "Eve pseudo ");
+        data.put("username", "Eve username");
         data.put("addr1", "100");
         data.put("addr2", "101");
         data.put("addr3", "102");
@@ -67,7 +77,7 @@ public class testMain {
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(Tools.buildFormDataFromMap(data))
                 //.uri(URI.create("https://srv-gei-tomcat.insa-toulouse.fr/Messenger/PresenceServer"))
-                .uri(URI.create("http://localhost:8080/Messenger/PresenceServer"))
+                .uri(URI.create(InternalSocket.PresenceServer))
                 .setHeader("User-Agent", "MessengerApp") // add request header
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .build();
@@ -79,7 +89,7 @@ public class testMain {
 
         // print response body
         System.out.println(response.body());*/
-       
+      
         
 		
 		

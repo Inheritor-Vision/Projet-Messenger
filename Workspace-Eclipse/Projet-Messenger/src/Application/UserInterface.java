@@ -697,7 +697,8 @@ class UserInterface extends JFrame{
 				acc.setAddress(new Address(acc.getPseudo(),acc.getUsername())); //si on utilise getAccount2()
 				System.out.println(acc.getAddress().getIP()); //test
 				co.setLoggedAccount(acc);
-				
+				DBCentrale DBc  = new DBCentrale(acc.getUsername());
+				DBc.PullDB();
 				//rzo
 				co.setSocket(new InternalSocket(acc,co.getUI()));
 				//
@@ -815,6 +816,11 @@ class UserInterface extends JFrame{
 	//
 	public void fermerapp() {
 		System.out.println("EXIT APP");
+		if(co.getLoggedAccount()==null) {
+			DBCentrale dbCentrale = new DBCentrale(co.getLoggedAccount().getUsername());
+			dbCentrale.PushToDBC();
+		}
+		
 		System.exit(0);
 	}
 	private class fermerappHandler implements ActionListener {

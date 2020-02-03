@@ -21,7 +21,7 @@ public class Controller {
 	
 	private DBLocale db;
 	
-	private DBCentrale dbc;
+	//private DBCentrale dbc;
 	
 	public Controller() {
 		/*//test utililisateurs connectes//
@@ -37,7 +37,7 @@ public class Controller {
 		this.userInterface = new UserInterface(/*this,this.db*/);
 		this.userInterface.co = this;
 		this.userInterface.db = this.db;
-		
+		DBCentrale.InitPullAccount();
 		//this.dbc = new DBCentrale();
 		
 		
