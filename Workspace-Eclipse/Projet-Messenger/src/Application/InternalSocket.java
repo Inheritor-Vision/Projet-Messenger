@@ -382,7 +382,7 @@ class UDPThreadReceiver extends Thread {
 								this.sendSpecificConnected(clientAddress, Pseudo, Username);
 							}
 						}
-						
+						UI.refreshPageUserCo();
 	
 					}else if (line.contains(Tools.Msg_Code.Disconnected.toString())) {
 						System.out.println("UDPThreadReceiver: Disconnected received: " + message);
@@ -393,8 +393,10 @@ class UDPThreadReceiver extends Thread {
 							
 							
 						}
+						UI.refreshPageUserCo();
 					}else if (line.contains(Tools.Msg_Code.New_Pseudo.toString())){
 						System.out.println("UDPThreadReceiver: New_Pseudo received: " + message);
+						
 						synchronized(this.connectedUserList) {
 							String new_pseudo = reader.readLine();
 							String username = reader.readLine();
@@ -406,7 +408,7 @@ class UDPThreadReceiver extends Thread {
 							}
 							
 						}
-						
+						UI.refreshPageUserCo();
 					}else if(line.contains(Tools.Msg_Code.Con_Ack.toString())) {
 						System.out.println("UDPThreadReceiver: Connected_ACK received: " + message);
 						synchronized(this.connectedUserList) {
@@ -414,6 +416,7 @@ class UDPThreadReceiver extends Thread {
 							String Username = reader.readLine();
 							this.connectedUserList.put(Username,new Address(clientAddress,Pseudo,Username ));
 						}
+						UI.refreshPageUserCo();
 					}else {
 						System.out.println("UDPThreadReceiver: Unknown message received: " + message);
 					}
