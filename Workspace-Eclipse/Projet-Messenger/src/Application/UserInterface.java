@@ -751,6 +751,10 @@ class UserInterface extends JFrame{
 			
 			//(...)//
 			if (!(getContentPane().getComponents()[1].equals(creationcomptepage) || getContentPane().getComponents()[1].equals(connexionpage))) { //on est pas connecté
+				//db
+				DBCentrale dbCentrale = new DBCentrale(co.getLoggedAccount().getUsername());
+				dbCentrale.PushToDBC();
+				dbCentrale.close();
 				//rzo
 				co.getSocket().termine();
 				co.setLoggedAccount(null); //voir si ça bug pas

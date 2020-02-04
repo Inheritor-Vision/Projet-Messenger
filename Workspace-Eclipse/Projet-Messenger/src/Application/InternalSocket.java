@@ -189,8 +189,6 @@ public class InternalSocket {
 		this.notifyDiscoServer(UsernameLogged);
 		this.TCP_RCV_Thread.setStop();
 		this.UDP_RCV_Thread.setStop();
-		DBCentrale dbCentrale = new DBCentrale(UsernameLogged.getUsername());
-		dbCentrale.PushToDBC();
 	}
 	
 	public void notifyDiscoServer(Account loggedAccount) {
