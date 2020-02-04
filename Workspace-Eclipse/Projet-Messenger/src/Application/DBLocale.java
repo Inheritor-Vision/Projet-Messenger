@@ -25,6 +25,7 @@ public class DBLocale {
 	
 	private static final String CHEMIN =  "Db_Locale_Files";
 	final static protected Connection coDB = connectionDB("DBMessenger");
+	private static int init = 0;
 	public DBLocale() {
 		//this.coDB = connectionDB("DBMessenger");
 		this.createTableKnownUsers();
