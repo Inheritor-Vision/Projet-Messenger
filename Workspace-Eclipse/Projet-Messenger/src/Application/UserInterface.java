@@ -480,6 +480,7 @@ class UserInterface extends JFrame{
 					this.discussion = new JLabel[1];
 					this.discussion[0] = new JLabel("pas de conversation");
 					this.discussion[0].setForeground(Color.RED);
+					System.out.println("\n\n\n\n JE SUIS LA ");
 				}
 				else {
 					//this.discussion = new JTextArea[co.getConversation().getConvSize()];
@@ -961,6 +962,7 @@ class UserInterface extends JFrame{
 					}
 				}
 				if (corresp == null) {
+					
 					Address add=null;
 					//ConcurrentHashMap
 					for (Map.Entry<String,Address> entry : co.getSocket().getUserList().entrySet()) { //ConcurrentHashMap
@@ -993,6 +995,7 @@ class UserInterface extends JFrame{
 					corresp=add.getUsername();
 				}
 				else {
+					
 					co.setConversation(db.getConversation(co.getLoggedAccount().getUsername(), corresp));
 					System.out.println("conversation "+co.getConversation().getDestinataire()+" "+co.getConversation().getConvSize());
 				}

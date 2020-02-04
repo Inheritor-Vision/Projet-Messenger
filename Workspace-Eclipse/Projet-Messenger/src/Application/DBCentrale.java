@@ -24,7 +24,7 @@ public class DBCentrale {
 	static protected Connection coDBc = connectionDBCentrale();
 	final static protected DBLocale DBl = new DBLocale();
 	private String UsernameLogged;
-	private Timestamp ts;
+	private static Timestamp ts = new Timestamp(0L);
 	
 	public DBCentrale(String _UsernameLogged) {
 		this.createTableKnownUsers();
@@ -154,7 +154,7 @@ public class DBCentrale {
 			
 			rs2.close();
 			pstmt.close();
-			DBCentrale.coDBc.close();
+			
 
 		}catch(SQLException | UnknownHostException e){
 		System.out.println("DBCentrale: Error PullDB");
@@ -182,13 +182,15 @@ public class DBCentrale {
 			
 			rs = DBl.getRSAllKnownUsersAboveTS(this.UsernameLogged, this.ts);
 			while(rs.next()) {
+				
 				pseudo = rs.getString("pseudo");
-				sql = "INSERT INTO knownUsers (username,pseudo,address,usernameLogged) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE pseudo='"+pseudo+"';";
+				sql = "INSERT INTO knownUsers (username,pseudo,address,usernameLogged,timestamp) VALUES (?,?,?,?,?) ON DUPLICATE KEY UPDATE pseudo='"+pseudo+"';";
 				pstmt = DBCentrale.coDBc.prepareStatement(sql);
 				pstmt.setString(1, rs.getString("username"));
 				pstmt.setString(2, pseudo);
 				pstmt.setBytes(3, rs.getBytes("address"));
 				pstmt.setString(4,this.UsernameLogged);
+				pstmt.setTimestamp(5,rs.getTimestamp("timestamp"));
 				pstmt.executeUpdate();
 				pstmt.close();
 			}
@@ -202,6 +204,7 @@ public class DBCentrale {
 				pstmt.setString(2, rs.getString("receiver"));
 				pstmt.setTimestamp(3, rs.getTimestamp("timestamp"));
 				pstmt.setString(4,rs.getString("message"));
+				System.out.println("\n" + rs.getString("message"));
 				pstmt.executeUpdate();
 				pstmt.close();
 			}
@@ -210,7 +213,7 @@ public class DBCentrale {
 			
 			
 			
-			//DBCentrale.coDBc.close();
+			DBCentrale.coDBc.close();
 			} catch (SQLException e) {
 			System.out.println("DBCentrale: Error PushToDBC");
 			e.printStackTrace();

@@ -25,6 +25,7 @@ public class DBLocale {
 	
 	private static final String CHEMIN =  "Db_Locale_Files";
 	final static protected Connection coDB = connectionDB("DBMessenger");
+	private static int init = 0;
 	public DBLocale() {
 		//this.coDB = connectionDB("DBMessenger");
 		this.createTableKnownUsers();
@@ -145,6 +146,7 @@ public class DBLocale {
 			}else {
 				 do {
 					java.sql.Timestamp ts = rs.getTimestamp("timestamp");
+					System.out.println(ts);
 					String msg = rs.getString("message");
 					if(rs.getString("sender").equals(userLogged)) {
 						conv.addMessage(new Message(true,msg, ts));
@@ -424,6 +426,7 @@ public class DBLocale {
 			PreparedStatement pstmt = coDB.prepareStatement(sql);
 			pstmt.setTimestamp(1, ts);
 			rs = pstmt.executeQuery();
+			
 		} catch (SQLException e) {
 			System.out.println("DBLocale: Error getRSAllMessageAboveTS, create statement or execute");
 			e.printStackTrace();

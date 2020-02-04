@@ -57,11 +57,16 @@ public class testMain {
 		is.startExecutor();
 	*/
 		//System.out.println(Tools.getPcIP()[0] + "." + Tools.getPcIP()[1] + "." +Tools.getPcIP()[2] + "." +Tools.getPcIP()[3] + "." );
-		Account Zoe = new Account("Zoe un", "Zoe pwd", "Zoe ps", new Address("Zoe ps","Zoe un"));
+		/*Account Zoe = new Account("Zoe un", "Zoe pwd", "Zoe ps", new Address("Zoe ps","Zoe un"));
 		System.out.println(Zoe.getAddress().addrToString());
 		InternalSocket is = new InternalSocket(Zoe, null);
 		is.notifyDiscoServer(Zoe);
-		is.startExecutor();
+		is.startExecutor();*/
+		
+		DBLocale dbl = new DBLocale();
+		dbl.printAllTable();
+		System.out.println(dbl.getConversation("val", "Alice").getMessage(0).getMsg());
+		
 		/*HttpClient httpClient = HttpClient.newBuilder()
 	            .version(HttpClient.Version.HTTP_2)
 	            .build();
