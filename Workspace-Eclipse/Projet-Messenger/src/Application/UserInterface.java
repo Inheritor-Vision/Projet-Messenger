@@ -1083,9 +1083,7 @@ class UserInterface extends JFrame{
 		//*/
 		
 		
-		if (getContentPane().getComponents()[1].equals(scrollbar_uc)) { //on est sur la page utilisateur connectes
-			setUtilisateursconnectesPage_same_frame();
-		}			
+			
 			
 		if(co.getConversation().getDestinataire().getUsername().equals(sender.getUsername()) && getContentPane().getComponents()[1].equals(scrollbar_conv)) { //on est sur la page conversation avec celui qui envoie le message
 			//maj conv
@@ -1102,6 +1100,10 @@ class UserInterface extends JFrame{
 			if(inMsgNonLu(sender.getUsername())==-1) {
 				UserMsgNonLu.add(sender);
 			}
+		}
+		
+		if (getContentPane().getComponents()[1].equals(scrollbar_uc)) { //on est sur la page utilisateur connectes
+			setUtilisateursconnectesPage_same_frame();
 		}		
 		
 	}
