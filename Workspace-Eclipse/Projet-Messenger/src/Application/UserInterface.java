@@ -1101,9 +1101,14 @@ class UserInterface extends JFrame{
 			if(inMsgNonLu(sender.getUsername())==-1) {
 				UserMsgNonLu.add(sender);
 			}
+		}		
+		
+	}
+	
+	public void refreshPageUserCo() {
+		if (getContentPane().getComponents()[1].equals(scrollbar_uc)) {
+			setUtilisateursconnectesPage_same_frame();
 		}
-		
-		
 	}
 	
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
