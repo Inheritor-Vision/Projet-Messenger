@@ -51,7 +51,7 @@ public class DBCentrale {
                 + "    username VARCHAR(255) NOT NULL,\n"
                 + "    pseudo VARCHAR(255) NOT NULL,\n"
                 + "    address blob NOT NULL,\n"
-                + "    timestamp TIMESTAMP NOT NULL,\n"
+                + "    timestamp TIMESTAMP(3) NOT NULL,\n"
                 + "    PRIMARY KEY(usernameLogged,username)"
                 + ");";
 		try {
@@ -70,7 +70,7 @@ public class DBCentrale {
 		String sql = "CREATE TABLE IF NOT EXISTS conversations (\n"
                 + "    sender VARCHAR(255) NOT NULL,\n"
                 + "    receiver VARCHAR(255) NOT NULL,\n"
-                + "    timestamp TIMESTAMP NOT NULL,\n"
+                + "    timestamp TIMESTAMP(3) NOT NULL,\n"
                 + "    message VARCHAR(255) NOT NULL,\n"
                 + "    PRIMARY KEY(sender,receiver,timestamp,message)"
                 + ");";
