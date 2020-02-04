@@ -51,7 +51,7 @@ public class DBCentrale {
                 + "    username VARCHAR(255) NOT NULL,\n"
                 + "    pseudo VARCHAR(255) NOT NULL,\n"
                 + "    address blob NOT NULL,\n"
-                + "    timestamp TIMESTAMP(3) NOT NULL,\n"
+                + "    timestamp VARCHAR(255) NOT NULL,\n"
                 + "    PRIMARY KEY(usernameLogged,username)"
                 + ");";
 		try {
@@ -70,7 +70,7 @@ public class DBCentrale {
 		String sql = "CREATE TABLE IF NOT EXISTS conversations (\n"
                 + "    sender VARCHAR(255) NOT NULL,\n"
                 + "    receiver VARCHAR(255) NOT NULL,\n"
-                + "    timestamp TIMESTAMP(3) NOT NULL,\n"
+                + "    timestamp VARCHAR(255) NOT NULL,\n"
                 + "    message VARCHAR(255) NOT NULL,\n"
                 + "    PRIMARY KEY(sender,receiver,timestamp,message)"
                 + ");";
@@ -131,7 +131,7 @@ public class DBCentrale {
 			Statement stmt = DBCentrale.coDBc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM knownUsers where usernameLogged = '" + this.UsernameLogged +"';");
 			while(rs.next()){
-				DBl.setKnownUser(new Address(InetAddress.getByAddress(rs.getBytes("address")), rs.getString("pseudo"), rs.getString("username")), UsernameLogged, rs.getTimestamp("timestamp"));
+				DBl.setKnownUser(new Address(InetAddress.getByAddress(rs.getBytes("address")), rs.getString("pseudo"), rs.getString("username")), UsernameLogged, Timestamp.valueOf(rs.getString("timestamp")));
 			}
 			stmt.close();
 			rs.close();
@@ -145,11 +145,11 @@ public class DBCentrale {
 			while(rs2.next()){
 				String sender = rs2.getString("sender");
 				if(this.UsernameLogged.equals(sender)) {
-
-					DBl.setMessage(new Message(true, rs2.getString("message"), rs2.getTimestamp("timestamp")), sender, rs2.getString("receiver"));
+					System.out.println(" zaeaze " + Timestamp.valueOf(rs2.getString("timestamp")));
+					DBl.setMessage(new Message(true, rs2.getString("message"),  Timestamp.valueOf(rs2.getString("timestamp"))), sender, rs2.getString("receiver"));
 				}else {
-
-					DBl.setMessage(new Message(false, rs2.getString("message"), rs2.getTimestamp("timestamp")), sender, rs2.getString("receiver"));
+					System.out.println(" zaeaze " + Timestamp.valueOf(rs2.getString("timestamp")));
+					DBl.setMessage(new Message(false, rs2.getString("message"), Timestamp.valueOf(rs2.getString("timestamp"))), sender, rs2.getString("receiver"));
 				}
 				
 			}
