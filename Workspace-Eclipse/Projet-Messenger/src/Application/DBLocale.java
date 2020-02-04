@@ -133,7 +133,7 @@ public class DBLocale {
 			e1.printStackTrace();
 		}
 		try {
-			String sql = "SELECT * FROM conversations WHERE (sender = ? AND receiver = ?) OR (sender = ? AND receiver = ?);";
+			String sql = "SELECT * FROM conversations WHERE (sender = ? AND receiver = ?) OR (sender = ? AND receiver = ?) ORDER BY timestamp ASC;";
 			PreparedStatement stmt = this.coDB.prepareStatement(sql);
 			stmt.setString(1, userLogged);
 			stmt.setString(2, corresp);
@@ -146,6 +146,7 @@ public class DBLocale {
 			}else {
 				 do {
 					java.sql.Timestamp ts = rs.getTimestamp("timestamp");
+					System.out.println(ts);
 					String msg = rs.getString("message");
 					if(rs.getString("sender").equals(userLogged)) {
 						conv.addMessage(new Message(true,msg, ts));
@@ -425,6 +426,7 @@ public class DBLocale {
 			PreparedStatement pstmt = coDB.prepareStatement(sql);
 			pstmt.setTimestamp(1, ts);
 			rs = pstmt.executeQuery();
+			
 		} catch (SQLException e) {
 			System.out.println("DBLocale: Error getRSAllMessageAboveTS, create statement or execute");
 			e.printStackTrace();

@@ -478,6 +478,7 @@ class UserInterface extends JFrame{
 					this.discussion = new JLabel[1];
 					this.discussion[0] = new JLabel("pas de conversation");
 					this.discussion[0].setForeground(Color.RED);
+					System.out.println("\n\n\n\n JE SUIS LA ");
 				}
 				else {
 					//this.discussion = new JTextArea[co.getConversation().getConvSize()];
@@ -621,7 +622,7 @@ class UserInterface extends JFrame{
 			this.mconversation.add(this.userco);
 			this.userco.addActionListener(new utilisateursconnectesHandler());
 			this.mconversation.add(this.debug);
-			this.userco.addActionListener(new debughandler());
+			this.debug.addActionListener(new debughandler());
 		}
 		
 		
@@ -948,6 +949,7 @@ class UserInterface extends JFrame{
 					}
 				}
 				if (corresp == null) {
+					
 					Address add=null;
 					//ConcurrentHashMap
 					for (Map.Entry<String,Address> entry : co.getSocket().getUserList().entrySet()) { //ConcurrentHashMap
@@ -980,6 +982,7 @@ class UserInterface extends JFrame{
 					corresp=add.getUsername();
 				}
 				else {
+					
 					co.setConversation(db.getConversation(co.getLoggedAccount().getUsername(), corresp));
 				}
 				setConversationPage();
