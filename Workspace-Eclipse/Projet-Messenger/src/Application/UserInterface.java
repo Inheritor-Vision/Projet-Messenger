@@ -585,6 +585,7 @@ class UserInterface extends JFrame{
 		private JMenuItem creercompte;
 		private JMenuItem changerconversation;
 		private JMenuItem userco;
+		private JMenuItem debug;
 		
 		
 		public MenuBar() {
@@ -599,6 +600,7 @@ class UserInterface extends JFrame{
 			this.creercompte = new JMenuItem("créer un compte");
 			this.changerconversation = new JMenuItem("changer de conversation");
 			this.userco = new JMenuItem("utilisateurs connectés");
+			this.debug = new JMenuItem("debug");
 			
 			this.add(this.msysteme);
 			this.add(this.mconversation);
@@ -618,7 +620,8 @@ class UserInterface extends JFrame{
 			this.changerconversation.addActionListener(new changerconversationHandler());
 			this.mconversation.add(this.userco);
 			this.userco.addActionListener(new utilisateursconnectesHandler());
-			
+			this.mconversation.add(this.debug);
+			this.userco.addActionListener(new debughandler());
 		}
 		
 		
@@ -1120,4 +1123,16 @@ class UserInterface extends JFrame{
 		return "<html><font color=0x000000 size=1>"+date + "</font> : <br>" + str_rtl+"</html>";
 	}
 ////////////////////////////
+	
+////debug
+	private class debughandler implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			db.printAllTable();
+			
+		}
+		
+		
+	}
 }
