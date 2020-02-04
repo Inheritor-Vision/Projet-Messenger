@@ -762,7 +762,7 @@ class UserInterface extends JFrame{
 				//db
 				DBCentrale dbCentrale = new DBCentrale(co.getLoggedAccount().getUsername());
 				dbCentrale.PushToDBC();
-				dbCentrale.close();
+				//dbCentrale.close();
 				//rzo
 				co.getSocket().termine();
 				co.setLoggedAccount(null); //voir si ça bug pas
@@ -862,7 +862,9 @@ class UserInterface extends JFrame{
 		System.out.println("EXIT APP");
 		if(co.getLoggedAccount()!=null) {
 			//db
+			
 			DBCentrale dbCentrale = new DBCentrale(co.getLoggedAccount().getUsername());
+			System.out.println("FERMER");
 			dbCentrale.PushToDBC();
 			dbCentrale.close();
 			//rzo
