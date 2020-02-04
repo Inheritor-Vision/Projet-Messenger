@@ -8,13 +8,13 @@ public class Message {
 
 	
 	protected Message(Boolean isSender , String msgs) {
-		
+		this.isEnvoyeur = isSender;
 		this.msg = msgs;
 		this.date = new Timestamp(System.currentTimeMillis());
 		
 	}
 	protected Message(Boolean isSender , String msgs, Timestamp ts) {
-		
+		this.isEnvoyeur = isSender;
 		this.msg = msgs;
 		this.date = ts;
 		

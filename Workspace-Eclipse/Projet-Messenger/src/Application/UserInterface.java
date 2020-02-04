@@ -326,6 +326,7 @@ class UserInterface extends JFrame{
 					this.utilisateurs = new JButton[nb_uc];
 					for (int i=0;i<nb_uc;i++) {
 						this.utilisateurs[i]= new JButton("connecté - "+ psdo[i]);
+						//this.utilisateurs[i].setBackground(new Color(0xA4CBDF));
 						if(inMsgNonLuPsdo(psdo[i])==-1) {
 							this.utilisateurs[i].setBackground(new Color(0xA4CBDF));
 						}
@@ -378,6 +379,7 @@ class UserInterface extends JFrame{
 					this.utilisateursnc = new JButton[nb_nc];
 					for (int i=0;i<nb_nc;i++) {
 						this.utilisateursnc[i]= new JButton("déconnecté - "+ psdonc[i]);
+						//this.utilisateursnc[i].setBackground(new Color(0xD4DADD));
 						if(inMsgNonLuPsdo(psdonc[i])==-1) {
 							this.utilisateursnc[i].setBackground(new Color(0xD4DADD));
 						}
@@ -483,6 +485,7 @@ class UserInterface extends JFrame{
 					//this.discussion = new JTextArea[co.getConversation().getConvSize()];
 					this.discussion = new JLabel[co.getConversation().getConvSize()];
 					Message[] m = co.getConversation().getAllMessages();
+					System.out.println("message[] "+m[0].getMsg());//
 					for (int i=0;i<co.getConversation().getConvSize();i++) {
 						this.discussion[i] = new JLabel(retour_ligne(m[i].getMsg(),m[i].getTimestamp()));
 						if (m[i].getIsEnvoyeur()) {
@@ -621,7 +624,7 @@ class UserInterface extends JFrame{
 			this.mconversation.add(this.userco);
 			this.userco.addActionListener(new utilisateursconnectesHandler());
 			this.mconversation.add(this.debug);
-			this.userco.addActionListener(new debughandler());
+			this.debug.addActionListener(new debughandler());
 		}
 		
 		
@@ -831,8 +834,18 @@ class UserInterface extends JFrame{
 	public void fermerapp() {
 		System.out.println("EXIT APP");
 		if(co.getLoggedAccount()!=null) {
+			//db
 			DBCentrale dbCentrale = new DBCentrale(co.getLoggedAccount().getUsername());
 			dbCentrale.PushToDBC();
+			//rzo
+			co.getSocket().termine();
+			co.setLoggedAccount(null);
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+			//
 		}
 		
 		System.exit(0);
@@ -981,6 +994,7 @@ class UserInterface extends JFrame{
 				}
 				else {
 					co.setConversation(db.getConversation(co.getLoggedAccount().getUsername(), corresp));
+					System.out.println("conversation "+co.getConversation().getDestinataire()+" "+co.getConversation().getConvSize());
 				}
 				setConversationPage();
 			}

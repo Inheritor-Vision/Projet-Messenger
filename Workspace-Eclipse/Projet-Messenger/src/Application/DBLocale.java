@@ -132,7 +132,7 @@ public class DBLocale {
 			e1.printStackTrace();
 		}
 		try {
-			String sql = "SELECT * FROM conversations WHERE (sender = ? AND receiver = ?) OR (sender = ? AND receiver = ?);";
+			String sql = "SELECT * FROM conversations WHERE (sender = ? AND receiver = ?) OR (sender = ? AND receiver = ?) ORDER BY timestamp ASC;";
 			PreparedStatement stmt = this.coDB.prepareStatement(sql);
 			stmt.setString(1, userLogged);
 			stmt.setString(2, corresp);
