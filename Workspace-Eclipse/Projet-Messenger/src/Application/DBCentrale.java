@@ -176,7 +176,7 @@ public class DBCentrale {
 	}
 	protected void PushToDBC(){
 		//récupère les infos de la db locale qui sont nouvelles depuis PullDBC() et les ajoutes dans la db centrale. Appelée à la fermeture de l'app.
-		DBCentrale.coDBc = connectionDBCentrale();
+		//DBCentrale.coDBc = connectionDBCentrale();
 		
 		try {
 			ResultSet rs = DBl.getRSSpecificAccount(this.UsernameLogged);
