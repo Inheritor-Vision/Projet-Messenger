@@ -18,6 +18,7 @@ class UserInterface extends JFrame{
 	ArrayList<Address> connectedUserList = new ArrayList<Address>();
 	//
 	ArrayList<Address> conversation_nc = new ArrayList<Address>();
+	ArrayList<Address> UserMsgNonLu = new ArrayList<Address>();
 	
 	Controller co;
 	DBLocale db;
@@ -325,7 +326,12 @@ class UserInterface extends JFrame{
 					this.utilisateurs = new JButton[nb_uc];
 					for (int i=0;i<nb_uc;i++) {
 						this.utilisateurs[i]= new JButton("connecté - "+ psdo[i]);
-						this.utilisateurs[i].setBackground(new Color(0xA4CBDF));
+						if(inMsgNonLuPsdo(psdo[i])==-1) {
+							this.utilisateurs[i].setBackground(new Color(0xA4CBDF));
+						}
+						else {
+							this.utilisateurs[i].setBackground(new Color(0x86F5BA));
+						}
 						//this.utilisateurs[i].setMinimumSize(new Dimension(4000,4000));
 						this.add(this.utilisateurs[i]);
 						this.utilisateurs[i].addActionListener(this.acH);
@@ -372,7 +378,12 @@ class UserInterface extends JFrame{
 					this.utilisateursnc = new JButton[nb_nc];
 					for (int i=0;i<nb_nc;i++) {
 						this.utilisateursnc[i]= new JButton("déconnecté - "+ psdonc[i]);
-						this.utilisateursnc[i].setBackground(new Color(0xD4DADD));
+						if(inMsgNonLuPsdo(psdonc[i])==-1) {
+							this.utilisateursnc[i].setBackground(new Color(0xD4DADD));
+						}
+						else {
+							this.utilisateurs[i].setBackground(new Color(0x86F5BA));
+						}
 						//this.utilisateurs[i].setMinimumSize(new Dimension(4000,4000));
 						this.add(this.utilisateursnc[i]);
 						this.utilisateursnc[i].addActionListener(this.acH);
@@ -796,7 +807,7 @@ class UserInterface extends JFrame{
 				co.setLoggedAccount(acc);
 				//db
 				//db.updatePseudo(pseudo_, old_psdo, co.getLoggedAccount().getUsername(), co.getLoggedAccount().getUsername()); //modifier le pseudo de son compte dans knownUsers (car on se connait soi-meme)
-				db.updatePseudoAccount(co.getLoggedAccount().getUsername(), pseudo_); 
+				db.updatePseudoAccount(co.getLoggedAccount().getUsername(), pseudo_);
 				
 				
 				changerpseudopage.erreur_cp.setText("changement du pseudo réussi");
@@ -816,7 +827,7 @@ class UserInterface extends JFrame{
 	//
 	public void fermerapp() {
 		System.out.println("EXIT APP");
-		if(co.getLoggedAccount()==null) {
+		if(co.getLoggedAccount()!=null) {
 			DBCentrale dbCentrale = new DBCentrale(co.getLoggedAccount().getUsername());
 			dbCentrale.PushToDBC();
 		}
@@ -970,8 +981,12 @@ class UserInterface extends JFrame{
 				}
 				setConversationPage();
 			}
-			
-			
+			//on enleve corresp de UserMsgNonLu
+			int in = inMsgNonLu(corresp);
+			if(in!=-1) {
+				UserMsgNonLu.remove(in);
+			}
+			//
 		}
 		
 		
@@ -1048,6 +1063,11 @@ class UserInterface extends JFrame{
 			//rafraichissement
 			conversationpage.updateUI();
 		}
+		else {
+			if(inMsgNonLu(sender.getUsername())==-1) {
+				UserMsgNonLu.add(sender);
+			}
+		}
 		
 		
 	}
@@ -1055,6 +1075,29 @@ class UserInterface extends JFrame{
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 //////UTILITAIRE///////
+	public int inMsgNonLu(String username) { //-1 si username pas dans UserMsgNonLu, rang de username sinon
+		int in = -1;
+		if(!UserMsgNonLu.isEmpty() && username!=null) {
+			for(int i=0;i<UserMsgNonLu.size();i++) {
+				if(UserMsgNonLu.get(i).getUsername().equals(username)) {
+					in = i;
+				}
+			}
+		}
+		return in;
+	}
+	public int inMsgNonLuPsdo(String psdo) { //-1 si psdo pas dans UserMsgNonLu, rang de psdo sinon
+		int in = -1;
+		if(!UserMsgNonLu.isEmpty() && psdo!=null) {
+			for(int i=0;i<UserMsgNonLu.size();i++) {
+				if(UserMsgNonLu.get(i).getPseudo().equals(psdo)) {
+					in = i;
+				}
+			}
+		}
+		return in;
+	}
+	
 	public String retour_ligne(String str, Timestamp date) {
 		String str_rtl;
 		boolean saut_l = false;
