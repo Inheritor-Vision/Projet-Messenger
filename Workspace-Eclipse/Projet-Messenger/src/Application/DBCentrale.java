@@ -24,6 +24,7 @@ public class DBCentrale {
 	static protected Connection coDBc = connectionDBCentrale();
 	final static protected DBLocale DBl = new DBLocale();
 	private String UsernameLogged;
+	public static boolean finPullDB = false;
 	private static Timestamp ts = new Timestamp(0L);
 	
 	public DBCentrale(String _UsernameLogged) {
@@ -88,7 +89,7 @@ public class DBCentrale {
 			stmt.execute(sql);
 			stmt.close();
 		} catch (SQLException e) {
-			System.out.println("DBCentrale: Error createTableKnownUsers, create statement or execute");
+			System.out.println("DBCentrale: Error createTableConversations, create statement or execute");
 			e.printStackTrace();
 		}
 		
@@ -106,7 +107,7 @@ public class DBCentrale {
 			stmt.execute(sql);
 			stmt.close();
 		} catch (SQLException e) {
-			System.out.println("DBCentrale: Error createTableKnownUsers, create statement or execute");
+			System.out.println("DBCentrale: Error createTableAccount, create statement or execute");
 			e.printStackTrace();
 		}
 	}
@@ -165,7 +166,7 @@ public class DBCentrale {
 			
 			rs2.close();
 			pstmt.close();
-			
+			DBCentrale.finPullDB = true;
 
 		}catch(SQLException | UnknownHostException e){
 		System.out.println("DBCentrale: Error PullDB");

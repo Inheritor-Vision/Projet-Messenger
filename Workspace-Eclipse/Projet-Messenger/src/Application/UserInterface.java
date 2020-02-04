@@ -731,6 +731,14 @@ class UserInterface extends JFrame{
 				co.setLoggedAccount(acc);
 				DBCentrale DBc  = new DBCentrale(acc.getUsername());
 				DBc.PullDB();
+				while (!DBCentrale.finPullDB) {
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e1) {
+						
+						e1.printStackTrace();
+					}
+				}
 				//rzo
 				co.setSocket(new InternalSocket(acc,co.getUI()));
 				//
