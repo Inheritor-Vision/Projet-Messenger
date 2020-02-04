@@ -639,6 +639,20 @@ class UserInterface extends JFrame{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			if(co.getLoggedAccount()!=null) {
+				//db
+				DBCentrale dbCentrale = new DBCentrale(co.getLoggedAccount().getUsername());
+				dbCentrale.PushToDBC();
+				//rzo
+				co.getSocket().termine();
+				co.setLoggedAccount(null);
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+				//
+			}
 			setCreationcomptePage();
 			
 		}
