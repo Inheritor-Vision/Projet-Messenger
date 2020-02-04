@@ -45,6 +45,15 @@ public class DBCentrale {
 		}
 		return co;
 	}
+	
+	public void close() {
+		try {
+			DBCentrale.coDBc.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	protected synchronized void createTableKnownUsers() {
 		String sql = "CREATE TABLE IF NOT EXISTS knownUsers (\n"
                 + "    usernameLogged VARCHAR(255) NOT NULL,\n"
@@ -216,7 +225,7 @@ public class DBCentrale {
 			
 			
 			
-			DBCentrale.coDBc.close();
+			
 			} catch (SQLException e) {
 			System.out.println("DBCentrale: Error PushToDBC");
 			e.printStackTrace();
