@@ -145,10 +145,10 @@ public class DBCentrale {
 			while(rs2.next()){
 				String sender = rs2.getString("sender");
 				if(this.UsernameLogged.equals(sender)) {
-					System.out.println("YO " + rs2.getTimestamp("timestamp"));
+
 					DBl.setMessage(new Message(true, rs2.getString("message"), rs2.getTimestamp("timestamp")), sender, rs2.getString("receiver"));
 				}else {
-					System.out.println("YO " +rs2.getTimestamp("timestamp"));
+
 					DBl.setMessage(new Message(false, rs2.getString("message"), rs2.getTimestamp("timestamp")), sender, rs2.getString("receiver"));
 				}
 				
@@ -192,7 +192,8 @@ public class DBCentrale {
 				pstmt.setString(2, pseudo);
 				pstmt.setBytes(3, rs.getBytes("address"));
 				pstmt.setString(4,this.UsernameLogged);
-				pstmt.setTimestamp(5,rs.getTimestamp("timestamp"));
+				pstmt.setString(5, rs.getTimestamp("timestamp").toString());
+				//pstmt.setTimestamp(5,rs.getTimestamp("timestamp"));
 				pstmt.executeUpdate();
 				pstmt.close();
 			}
@@ -204,9 +205,9 @@ public class DBCentrale {
 				pstmt = DBCentrale.coDBc.prepareStatement(sql);
 				pstmt.setString(1, rs.getString("sender"));
 				pstmt.setString(2, rs.getString("receiver"));
-				pstmt.setTimestamp(3, rs.getTimestamp("timestamp"));
+				pstmt.setString(3, rs.getTimestamp("timestamp").toString());
+				//pstmt.setTimestamp(3, rs.getTimestamp("timestamp"));
 				pstmt.setString(4,rs.getString("message"));
-				System.out.println("\n" + rs.getString("message"));
 				pstmt.executeUpdate();
 				pstmt.close();
 			}

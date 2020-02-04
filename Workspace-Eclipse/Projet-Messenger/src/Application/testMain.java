@@ -13,6 +13,8 @@ import java.net.UnknownHostException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -32,7 +34,7 @@ import Common.Tools;
 
 public class testMain {
 
-	public static void main(String[] args) throws UnknownHostException, InterruptedException, IOException {
+	public static void main(String[] args) throws UnknownHostException, InterruptedException, IOException, SQLException {
 		
 		/*DBCentrale.InitPullAccount();
 		DBCentrale dbCentrale = new DBCentrale("Alice");
@@ -64,8 +66,12 @@ public class testMain {
 		is.startExecutor();*/
 		
 		DBLocale dbl = new DBLocale();
+		dbl.setMessage(new Message(true , "sdfe"), "fdf", "fdsf");
 		dbl.printAllTable();
-		System.out.println(dbl.getConversation("val", "Alice").getMessage(0).getMsg());
+		ResultSet rs = dbl.getRSAllMessageAboveTS(new Timestamp(0L));
+		rs.next();
+		System.out.println(" A "  + rs.getTimestamp("timestamp"));
+		//System.out.println(dbl.getConversation("val", "Alice").getMessage(0).getMsg());
 		
 		/*HttpClient httpClient = HttpClient.newBuilder()
 	            .version(HttpClient.Version.HTTP_2)
