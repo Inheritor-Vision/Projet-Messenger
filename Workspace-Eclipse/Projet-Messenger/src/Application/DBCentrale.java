@@ -51,7 +51,7 @@ public class DBCentrale {
                 + "    username VARCHAR(255) NOT NULL,\n"
                 + "    pseudo VARCHAR(255) NOT NULL,\n"
                 + "    address blob NOT NULL,\n"
-                + "    timestamp DATE NOT NULL,\n"
+                + "    timestamp TIMESTAMP NOT NULL,\n"
                 + "    PRIMARY KEY(usernameLogged,username)"
                 + ");";
 		try {
@@ -70,7 +70,7 @@ public class DBCentrale {
 		String sql = "CREATE TABLE IF NOT EXISTS conversations (\n"
                 + "    sender VARCHAR(255) NOT NULL,\n"
                 + "    receiver VARCHAR(255) NOT NULL,\n"
-                + "    timestamp DATE NOT NULL,\n"
+                + "    timestamp TIMESTAMP NOT NULL,\n"
                 + "    message VARCHAR(255) NOT NULL,\n"
                 + "    PRIMARY KEY(sender,receiver,timestamp,message)"
                 + ");";
@@ -145,8 +145,10 @@ public class DBCentrale {
 			while(rs2.next()){
 				String sender = rs2.getString("sender");
 				if(this.UsernameLogged.equals(sender)) {
+					System.out.println("YO " + rs2.getTimestamp("timestamp"));
 					DBl.setMessage(new Message(true, rs2.getString("message"), rs2.getTimestamp("timestamp")), sender, rs2.getString("receiver"));
 				}else {
+					System.out.println("YO " +rs2.getTimestamp("timestamp"));
 					DBl.setMessage(new Message(false, rs2.getString("message"), rs2.getTimestamp("timestamp")), sender, rs2.getString("receiver"));
 				}
 				
@@ -160,7 +162,7 @@ public class DBCentrale {
 		System.out.println("DBCentrale: Error PullDB");
 		e.printStackTrace();
 		}
-		ts = new Timestamp(System.currentTimeMillis());
+		
 
 	}
 	protected void PushToDBC(){
