@@ -393,7 +393,9 @@ class UDPThreadReceiver extends Thread {
 							
 							
 						}
+						UI.decoSpontannee();
 						UI.refreshPageUserCo();
+						//UI.decoSpontannee();
 					}else if (line.contains(Tools.Msg_Code.New_Pseudo.toString())){
 						System.out.println("UDPThreadReceiver: New_Pseudo received: " + message);
 						

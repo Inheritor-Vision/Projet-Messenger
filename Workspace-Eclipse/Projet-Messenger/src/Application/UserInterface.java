@@ -1114,6 +1114,12 @@ class UserInterface extends JFrame{
 		}
 	}
 	
+	public void decoSpontannee() {
+		if(getContentPane().getComponents()[1].equals(scrollbar_conv)) {
+			setConversationPage_nc();
+		}
+	}
+	
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 //////UTILITAIRE///////
