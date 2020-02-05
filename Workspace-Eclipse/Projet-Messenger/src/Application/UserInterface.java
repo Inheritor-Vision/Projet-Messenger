@@ -667,9 +667,11 @@ class UserInterface extends JFrame{
 			String username_ = creationcomptepage.username.getText();
 			String password_ = creationcomptepage.password.getText();
 			String pseudo_ = creationcomptepage.pseudo.getText();
-			ArrayList<Address> users = new ArrayList<Address>();
+			//ArrayList<Address> users = new ArrayList<Address>();
 			
-			boolean unique=true;
+			boolean unique_u = DBCentrale.checkUsername(username_);
+			boolean unique_p = DBCentrale.checkPseudo(pseudo_);
+			/*boolean unique=true;
 			try {
 				//users = db.getknownUsers(co.getLoggedAccount().getUsername());
 				//users = db.getknownUsers(null);
@@ -683,8 +685,8 @@ class UserInterface extends JFrame{
 						unique=false;
 					}
 				}
-			}
-			if (unique) {
+			}*/
+			if (unique_u && unique_p) {
 				Address add = new Address(pseudo_,username_);
 				Account acc =  new Account(username_,password_,pseudo_,add);
 				db.setAccount(acc);
@@ -697,8 +699,18 @@ class UserInterface extends JFrame{
 				setConnexionPage();
 			}
 			else {
-				creationcomptepage.entete.setText("erreur: compte déjà existant");
-				creationcomptepage.entete.setForeground(Color.RED);
+				if (!unique_u && !unique_p) {
+					creationcomptepage.entete.setText("erreur: compte déjà existant");
+					creationcomptepage.entete.setForeground(Color.RED);
+				}
+				if (!unique_u) {
+					creationcomptepage.entete.setText("erreur: username déjà existant");
+					creationcomptepage.entete.setForeground(Color.RED);
+				}
+				if (!unique_p) {
+					creationcomptepage.entete.setText("erreur: pseudo déjà existant");
+					creationcomptepage.entete.setForeground(Color.RED);
+				}
 
 			}
 			
@@ -812,9 +824,9 @@ class UserInterface extends JFrame{
 			// TODO Auto-generated method stub
 			String pseudo_ = changerpseudopage.pseudo.getText();
 			
-			
+			boolean unique = DBCentrale.checkPseudo(pseudo_);
 			//unicité sans serveur central (pas optimal)
-			ArrayList<Address> users = new ArrayList<Address>();
+			/*ArrayList<Address> users = new ArrayList<Address>();
 			boolean unique=true;
 			try {
 				//users = db.getknownUsers(co.getLoggedAccount().getUsername());
@@ -829,7 +841,7 @@ class UserInterface extends JFrame{
 						unique=false;
 					}
 				}
-			}
+			}*/
 			//
 			if (unique) {
 				String old_psdo = co.getLoggedAccount().getPseudo();
