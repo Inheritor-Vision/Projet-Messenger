@@ -1,3 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">&#x0A;<refactoring comment="Delete 3 resources" deleteContents="false" description="Delete 3 resources" element1="/messenger/Connexion Interne.di" element2="/messenger/Connexion Interne.notation" element3="/messenger/Connexion Interne.uml" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="3" stamp="1574323103767"/>&#x0A;<refactoring comment="Delete 3 resources" deleteContents="false" description="Delete 3 resources" element1="/messenger/Connexion Externe.di" element2="/messenger/Connexion Externe.notation" element3="/messenger/Connexion Externe.uml" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="3" stamp="1574323155289"/>
-</session>
