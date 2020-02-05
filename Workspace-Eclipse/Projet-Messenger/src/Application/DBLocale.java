@@ -519,5 +519,29 @@ public class DBLocale {
 		}
 		
 	}
+	
+	protected void vanishDB() {
+		String sql;
+		Statement stmt;
+		try {
+			sql = "DROP TABLE account;";
+			stmt = coDB.createStatement();
+			stmt.executeUpdate(sql);
+			
+			sql = "DROP TABLE conversations;";
+			stmt = coDB.createStatement();
+			stmt.executeUpdate(sql);
+			
+			sql = "DROP TABLE knownUsers";
+			stmt = coDB.createStatement();
+			stmt.executeUpdate(sql);
+			coDB.close();
+		} catch (SQLException e) {
+			System.out.println("DBLocal: Error vanishDB creation or execute query");
+			e.printStackTrace();
+		}
+;
+		
+	}
 
 }

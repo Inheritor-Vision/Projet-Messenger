@@ -48,7 +48,7 @@ public class InternalSocket {
 	ConcurrentHashMap<String,Address> connectedUserList = new ConcurrentHashMap<String,Address>(); // Need to be synchronized
 	
 	protected final Account UsernameLogged;
-	protected static final int MAX_CHAR = 256;
+	protected static final int MAX_CHAR = 300;
 	protected static final String PresenceServer = "https://srv-gei-tomcat.insa-toulouse.fr/Messenger/PresenceServer";
 	DatagramSocket UDP_SEND_Socket;
 	UDPThreadReceiver UDP_RCV_Thread;
