@@ -155,10 +155,8 @@ public class DBCentrale {
 			while(rs2.next()){
 				String sender = rs2.getString("sender");
 				if(this.UsernameLogged.equals(sender)) {
-					System.out.println(" zaeaze " + Timestamp.valueOf(rs2.getString("timestamp")));
 					DBl.setMessage(new Message(true, rs2.getString("message"),  Timestamp.valueOf(rs2.getString("timestamp"))), sender, rs2.getString("receiver"));
 				}else {
-					System.out.println(" zaeaze " + Timestamp.valueOf(rs2.getString("timestamp")));
 					DBl.setMessage(new Message(false, rs2.getString("message"), Timestamp.valueOf(rs2.getString("timestamp"))), sender, rs2.getString("receiver"));
 				}
 				

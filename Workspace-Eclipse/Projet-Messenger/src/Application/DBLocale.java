@@ -22,7 +22,7 @@ public class DBLocale {
 	//https://www.tutorialspoint.com/sqlite/sqlite_java.htm
 	//sqlite java
 	
-	private static final String CHEMIN =  "Db_Locale_Files";
+	private static final String CHEMIN =  "./";
 	final static protected Connection coDB = connectionDB("DBMessenger");
 	public DBLocale() {
 		//this.coDB = connectionDB("DBMessenger");
@@ -42,7 +42,7 @@ public class DBLocale {
 		Connection c = null;
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:" + CHEMIN + "/"+nomDB);
+			c = DriverManager.getConnection("jdbc:sqlite:" + CHEMIN +nomDB);
 			System.out.println("DBLocale: Database opened successfully");
 		} catch (ClassNotFoundException e) {
 			System.out.println("DBLocale: Error connectionDB, class not Found");
@@ -177,8 +177,7 @@ public class DBLocale {
 			pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException e) {
-			System.out.println("DBLocal: Err	\n" + 
-					"or setMessage SQL");
+			System.out.println("DBLocal: Error setMessage SQL");
 			e.printStackTrace();
 		}
 		
@@ -302,7 +301,6 @@ public class DBLocale {
 			rs = pstmt.executeQuery();
 			rs.next();
 			if ( true) {
-				System.out.println("YA");
 				 un = rs.getString("username");
 				 ps = rs.getString("pseudo");
 				 pw = rs.getString("password");

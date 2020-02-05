@@ -44,8 +44,11 @@ import Common.Address;
 
 /* MUST BE SYNCHRONIZED, EACH TIME YOU CALL an INTERNALSOCKET object
  * Peut etre source de pb -> deadlock : Essayer de conserver un unique synchronized*/
+
+
 public class InternalSocket {
 	protected static final String PresenceServer = "https://srv-gei-tomcat.insa-toulouse.fr/Messenger/PresenceServer";
+	
 	ConcurrentHashMap<String,Address> connectedUserList = new ConcurrentHashMap<String,Address>(); // Need to be synchronized
 	
 	protected final Account UsernameLogged;
@@ -247,9 +250,8 @@ public class InternalSocket {
 			 }
 			}
 		}
-		System.out.println("InternalSocket: addr find " + res.getIP());
 		String message = Tools.Msg_Code.Message.toString() + "\n" +  UsernameLogged.getUsername() + "\n" + Username + "\n" + msg.getTimestamp().toString() + "\n" + msg.getMsg();
-		System.out.println("InternalSocket: msg : " + message);
+		//System.out.println("InternalSocket: Message envoyé : \n" + message + "\n InternalSocket: Fin du message");
 		InetAddress addrRcv = res.getIP();
 		try {
 			Socket TCP_SEND_Socket = new Socket(addrRcv, Tools.Ports.TCP_RCV.getValue());
@@ -328,7 +330,7 @@ class UDPThreadReceiver extends Thread {
 	private void sendSpecificConnected(InetAddress addr, String Pseudo, String Username) {
 		
 		String message = Tools.Msg_Code.Con_Ack + "\n" + userLogged.getPseudo() + "\n" + userLogged.getUsername() + "\n" + (new Timestamp(System.currentTimeMillis())).toString();
-		System.out.println("UDPThreadReceiver: sendSpecificConnected " + message + "\n\n" + addr.getAddress()[0] + + addr.getAddress()[1] + + addr.getAddress()[2] + addr.getAddress()[3]);
+		//System.out.println("UDPThreadReceiver: sendSpecificConnected " + message + "\n\n" + addr.getAddress()[0] + + addr.getAddress()[1] + + addr.getAddress()[2] + addr.getAddress()[3]);
 		try {
 			DatagramPacket outPacket = new DatagramPacket(message.getBytes(),message.length(),addr, Tools.Ports.UDP_RCV.getValue());
 			this.sender.send(outPacket);
@@ -353,13 +355,13 @@ class UDPThreadReceiver extends Thread {
 				
 				receiver.receive(inPacket);
 				if (inPacket != null) {
-					System.out.println("UUDPThreadReceiver: msg recu");
+					//System.out.println("UDPThreadReceiver: msg recu");
 					InetAddress clientAddress = inPacket.getAddress();
 					String message = new String (inPacket.getData(), 0, inPacket.getLength());
 					BufferedReader reader = new BufferedReader(new StringReader(message));
 					String line = reader.readLine();
 					if (line.contains(Tools.Msg_Code.Connected.toString())) {
-						System.out.println("UDPThreadReceiver: Connected received: " + message +" from " + clientAddress.getAddress()[0] + "." + clientAddress.getAddress()[1] + "." + clientAddress.getAddress()[2] + "." + clientAddress.getAddress()[3]);
+						//System.out.println("UDPThreadReceiver: Connected received: " + message +" from " + clientAddress.getAddress()[0] + "." + clientAddress.getAddress()[1] + "." + clientAddress.getAddress()[2] + "." + clientAddress.getAddress()[3]);
 						String Pseudo = reader.readLine();
 						String Username = reader.readLine();
 						if (!Username.equals(userLogged.getUsername())) {
@@ -373,7 +375,7 @@ class UDPThreadReceiver extends Thread {
 						UI.refreshPageUserCo();
 	
 					}else if (line.contains(Tools.Msg_Code.Disconnected.toString())) {
-						System.out.println("UDPThreadReceiver: Disconnected received: " + message);
+						//System.out.println("UDPThreadReceiver: Disconnected received: " + message);
 						synchronized(this.connectedUserList) {
 							String Username = reader.readLine();
 							this.connectedUserList.remove(Username);
@@ -385,7 +387,7 @@ class UDPThreadReceiver extends Thread {
 						UI.refreshPageUserCo();
 						//UI.decoSpontannee();
 					}else if (line.contains(Tools.Msg_Code.New_Pseudo.toString())){
-						System.out.println("UDPThreadReceiver: New_Pseudo received: " + message);
+						//System.out.println("UDPThreadReceiver: New_Pseudo received: " + message);
 						
 						synchronized(this.connectedUserList) {
 							String new_pseudo = reader.readLine();
@@ -400,7 +402,7 @@ class UDPThreadReceiver extends Thread {
 						}
 						UI.refreshPageUserCo();
 					}else if(line.contains(Tools.Msg_Code.Con_Ack.toString())) {
-						System.out.println("UDPThreadReceiver: Connected_ACK received: " + message);
+						//System.out.println("UDPThreadReceiver: Connected_ACK received: " + message);
 						synchronized(this.connectedUserList) {
 							String Pseudo = reader.readLine();
 							String Username = reader.readLine();
@@ -475,7 +477,7 @@ class TCPThreadReceiver extends Thread {
 						clientSocket = receiver.accept();
 						if (clientSocket != null) {
 							n++;
-							System.out.println("TCPThreadReceiver: Creation Socket fils en cours . . .");
+							//System.out.println("TCPThreadReceiver: Creation Socket fils en cours . . .");
 							new ThreadSocketFils(clientSocket, n, db,UsernameLogged, this.coUsers, this.UI);
 						}
 					} catch(SocketTimeoutException a) {
@@ -516,14 +518,14 @@ class ThreadSocketFils extends Thread{
 			son = chassot;
 			n =a;
 			this.UI = _UI;
-			System.out.println("ThreadSocketFils" + n + ": creation ThreadSocketfils . . .");
+			//System.out.println("ThreadSocketFils" + n + ": creation ThreadSocketfils . . .");
 			this.start();
 		}
 		
 		@Override
 		public void run(){
 			try {
-				System.out.println("ThreadSocketFils" + n + ": Succesfully created");
+				//System.out.println("ThreadSocketFils" + n + ": Succesfully created");
 				BufferedReader in = new BufferedReader(new InputStreamReader(son.getInputStream()));
 				String message = "";
 				String sender = "";
@@ -540,8 +542,8 @@ class ThreadSocketFils extends Thread{
 					}
 					temp = in.readLine();
 				}
-				System.out.println("ThreadSocketFils" + n + ": msg received: " + sender + ";\n"+ rcv + ";\n"+ message);
-				System.out.println("ThreadSocketFils" + n +":" + UsernameLogged +";");
+				//System.out.println("ThreadSocketFils" + n + ": msg received: " + sender + ";\n"+ rcv + ";\n"+ message);
+				//System.out.println("ThreadSocketFils" + n +":" + UsernameLogged +";");
 				if( UsernameLogged.equals(rcv)) {
 					Address temporary = this.db.getSpecificKnownUser(UsernameLogged, sender);
 					if (temporary == null) {
@@ -562,7 +564,7 @@ class ThreadSocketFils extends Thread{
 					System.out.println("ThreadSocketFils" + n +": Msg rejeté car mauvais destinataire");
 				}
 				
-				System.out.println("ThreadSocketFils" + n +": Closing . . .");
+				//System.out.println("ThreadSocketFils" + n +": Closing . . .");
 				son.close();
 				
 			}catch(IOException e) {
@@ -597,7 +599,7 @@ class myTask extends TimerTask{
 			Long tmp = System.currentTimeMillis();
 			response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 			this.ts = tmp;
-			System.out.println(response.body());
+			//System.out.println(response.body());
 			BufferedReader out = new BufferedReader(new StringReader(response.body()));
 			String val = out.readLine();
 			val = out.readLine();
@@ -606,13 +608,13 @@ class myTask extends TimerTask{
 				String username = out.readLine();
 				String addr = out.readLine();
 				this.userCo.put(username, new Address(InetAddress.getByName(addr.substring(1)), pseudo, username));
-				System.out.println("Ajout de " + username + " Taille de la liste " + this.userCo.size());
+				//System.out.println("Ajout de " + username + " Taille de la liste " + this.userCo.size());
 				val = out.readLine();
 			}
 			val = out.readLine();
 			while(val != null) {
 				this.userCo.remove(val);
-				System.out.println("Rm de " + val + " Taille de la liste " + this.userCo.size());
+				//System.out.println("Rm de " + val + " Taille de la liste " + this.userCo.size());
 				val = out.readLine();
 			}
 						
