@@ -350,7 +350,7 @@ class UserInterface extends JFrame{
 				}//test*/
 			}catch(NullPointerException e) {
 				//System.out.println("knownusers vide");
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 			//conversation_nc = db.getknownUsers();
 			//if(conversation_nc.isEmpty()) {
@@ -640,6 +640,8 @@ class UserInterface extends JFrame{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			creationcomptepage.entete.setText("créer un compte");
+			creationcomptepage.entete.setForeground(Color.BLACK);
 			if(co.getLoggedAccount()!=null) {
 				//db
 				DBCentrale dbCentrale = new DBCentrale(co.getLoggedAccount().getUsername());
