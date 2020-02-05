@@ -2,7 +2,7 @@
 [TOC]
 ## Guide d'administration
 Cette partie décrit comment déployer et installer l'application. 
-###Spécification de l'application : 
+### Spécification de l'application : 
  - **Nom** : MessengerApp.jar
  - **Taille** : 7,5 Mo 
  - **Ports utilisés** : [6666-6669] 
@@ -12,7 +12,7 @@ Cette partie décrit comment déployer et installer l'application.
 	* mysql-connector.jar 
 	* sqlite-jdbc-3.21.0.jar  
 
-###Spécification de la base de données centrale :
+### Spécification de la base de données centrale :
 - **Nom du serveur** : srv-bdens.insa-toulouse.fr 
 - ** IP du serveur (Dernier accès : 05/01/20) **: 10.10.40.6 
 - ** Nom de la base de donnée**s : tpservlet_13 
@@ -21,7 +21,7 @@ Cette partie décrit comment déployer et installer l'application.
 - **Version du client mySQL** : Ver 14.14 Distrib 5.7.29, for Linux (x86_64) using  EditLine wrapper 
 - **Version du serveur** : 5.7.29-0ubuntu0.16.04.1 
 - **Database engine** : innoDB version 5.7.29 
-###Spécification du serveur de présence : 
+### Spécification du serveur de présence : 
 - **Nom du serveur** : srv-bdens.insa-toulouse.fr 
 - ** IP du serveur (Dernier accès : 05/01/20)** : 10.1.5.2 
 - ** Version du serveur** : Apache Tomcat/9.0.16 (Ubuntu) 
@@ -31,7 +31,7 @@ Cette partie décrit comment déployer et installer l'application.
 	- servlet-api-tomcat9.jar 
 	- Common.jar (librairie créée pour ce projet) 
 	
-##Guide de déploiement de la base de données centrale :
+## Guide de déploiement de la base de données centrale :
 Une fois le serveur mySQL déployé, il faut créer une base de données du nom de tpservlet_13 et un compte éponyme avec le code La1yah4k.  
 Si vous désirez changer l'un de ces paramètres, vous devrez modifier les champs suivants dans le fichier Application.DBCentrale: 
 ```java
@@ -44,7 +44,7 @@ public class DBCentrale{
 Il n'y a aucune manipulation à faire ensuite. Les tables sont gérées automatiquement par les différents agents. 
 Pour voir si le serveur fonctionne, simplement se connecter via un client SQL avec la commande ci-dessus. 
 
-##Guide de déploiement du serveur de présence :  
+## Guide de déploiement du serveur de présence :  
 Une fois le serveur TOMCAT9 déployé, il suffit d'insérer le fichier Messenger.war fournit par l'interface manager de TOMCAT. Si celle-ci n'est pas installé, il suffit d'insérer le fichier Messenger dans le répertoire WEB racine de TOMCAT. Il faudra alors relancer TOMCAT pour que la modification soit prise en compte. 
 Si vous désirez changer l'adresse du serveur, vous devrez modifier le champ suivant dans le fichier Application.InternalSocket : 
 
@@ -58,6 +58,6 @@ Pour voir si le servlet fonctionne, taper l'URL suivant :
 https://srv-gei-tomcat.insa-toulouse.fr/Messenger/PresenceServer 
 Il retourne la liste des utilisateurs connectés. 
 
-##Guide de déploiement de l'application : 
+## Guide de déploiement de l'application : 
 Pour déployer l’application, il faut que la machine sur laquelle est exécuté le fichier MessengerApp.jar possède au moins l'environnement JRE 11, disponible sur le site d'ORACLE. 
 Un fois installé, il suffit de lancer la commande java -jar MessengerApp.jar et l'application se lance. Il est possible de copier le fichier jar n'importe où. 
