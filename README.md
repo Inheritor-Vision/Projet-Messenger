@@ -1,5 +1,4 @@
 # Rapport POO : Projet Messenger
-[TOC]
 ## Guide d'administration
 Cette partie décrit comment déployer et installer l'application. 
 ### Spécification de l'application : 
