@@ -19,7 +19,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.sql.Timestamp;
 
 public class MessengerServlet extends HttpServlet{
-	 static ArrayList<Address> coUsers = new ArrayList<Address>();
+	 /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	static ArrayList<Address> coUsers = new ArrayList<Address>();
 	 static ArrayList<Disco> discoUsers = new ArrayList<Disco>();
 	 static boolean init = false;
 	
