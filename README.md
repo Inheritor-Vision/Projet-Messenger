@@ -1,3 +1,4 @@
+![](https://cdn.iconscout.com/icon/free/png-256/java-23-225999.png)![](https://3.bp.blogspot.com/--IDvjPRCaic/Vs9FDDfvHOI/AAAAAAAABDU/5umla_6QjBI/s1600/Eclipse-luna.png)
 # Rapport POO : Projet Messenger
 ## Guide d'administration
 Cette partie décrit comment déployer et installer l'application. 
