@@ -45,11 +45,12 @@ import Common.Address;
 /* MUST BE SYNCHRONIZED, EACH TIME YOU CALL an INTERNALSOCKET object
  * Peut etre source de pb -> deadlock : Essayer de conserver un unique synchronized*/
 public class InternalSocket {
+	protected static final String PresenceServer = "https://srv-gei-tomcat.insa-toulouse.fr/Messenger/PresenceServer";
 	ConcurrentHashMap<String,Address> connectedUserList = new ConcurrentHashMap<String,Address>(); // Need to be synchronized
 	
 	protected final Account UsernameLogged;
 	protected static final int MAX_CHAR = 300;
-	protected static final String PresenceServer = "https://srv-gei-tomcat.insa-toulouse.fr/Messenger/PresenceServer";
+	
 	DatagramSocket UDP_SEND_Socket;
 	UDPThreadReceiver UDP_RCV_Thread;
 	TCPThreadReceiver TCP_RCV_Thread;
