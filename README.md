@@ -16,8 +16,8 @@ Cette partie décrit comment déployer et installer l'application.
 
 ### Spécification de la base de données centrale :
 - **Nom du serveur** : srv-bdens.insa-toulouse.fr 
-- ** IP du serveur (Dernier accès : 05/01/20) **: 10.10.40.6 
-- ** Nom de la base de donnée**s : tpservlet_13 
+- **IP du serveur (Dernier accès : 05/01/20)**: 10.10.40.6 
+- **Nom de la base de données** : tpservlet_13 
 - **Mot de passe** : La1yah4k 
 - **Commande de connexion** : mysql -h srv-bdens.insa-toulouse.fr -D tpservlet_13 -u tpservlet_13 –p 
 - **Version du client mySQL** : Ver 14.14 Distrib 5.7.29, for Linux (x86_64) using  EditLine wrapper 
@@ -25,8 +25,8 @@ Cette partie décrit comment déployer et installer l'application.
 - **Database engine** : innoDB version 5.7.29 
 ### Spécification du serveur de présence : 
 - **Nom du serveur** : srv-bdens.insa-toulouse.fr 
-- ** IP du serveur (Dernier accès : 05/01/20)** : 10.1.5.2 
-- ** Version du serveur** : Apache Tomcat/9.0.16 (Ubuntu) 
+- **IP du serveur (Dernier accès : 05/01/20)** : 10.1.5.2 
+- **Version du serveur** : Apache Tomcat/9.0.16 (Ubuntu) 
 - **Version de la JVM** : 11.0.4+11-post-Ubuntu-1ubuntu218.04.3 
 - **Adresse du servlet** : hrv-gei-tomcat.insa-toulouse.fr/Messenger/ 
 - **Librairie utilisée pour générer le servlet** :  
