@@ -350,7 +350,7 @@ class UserInterface extends JFrame{
 				}//test*/
 			}catch(NullPointerException e) {
 				//System.out.println("knownusers vide");
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 			//conversation_nc = db.getknownUsers();
 			//if(conversation_nc.isEmpty()) {
