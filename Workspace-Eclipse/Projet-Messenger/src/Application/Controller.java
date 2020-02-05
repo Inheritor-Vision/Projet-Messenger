@@ -75,16 +75,17 @@ public class Controller {
 	}
 	
 
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Controller co = new Controller();
 		
-		System.out.println(Tools.getPcIP()[0]);
+		/*System.out.println(Tools.getPcIP()[0]);
 		System.out.println(Tools.getPcIP()[1]);
 		System.out.println(Tools.getPcIP()[2]);
 		System.out.println(Tools.getPcIP()[3]);
 		
-		co.db.printAllTable();
+		co.db.printAllTable();*/
 		
 		/*java.util.ArrayList<String> m = co.getUI().cutMsg("aa aa dsf sd fsd fsdfsdfds sdfs df sdfsdfs sdfs dsdfs sdfsd fsdfs dfsdfsd sdfsdf sdfsdf sdfsdfs fsdfsd fsdf sdfsdf sdfsdfs dfsdfsd fsdf sfs dfs dfs dfs dfsd aa aa dsf sd fsd fsdfsdfds sdfs df sdfsdfs sdfs dsdfs sdfsd fsdfs dfsdfsd sdfsdf sdfsdf sdfsdfs fsdfsd fsdf sdfsdf sdfsdfs dfsdfsd fsdf sfs dfs dfs dfs dfsd aa aa dsf sd fsd fsdfsdfds sdfs df sdfsdfs sdfs dsdfs sdfsd fsdfs dfsdfsd sdfsdf sdfsdf sdfsdfs fsdfsd fsdf sdfsdf sdfsdfs dfsdfsd fsdf sfs dfs dfs dfs dfsd aa aa dsf sd fsd fsdfsdfds sdfs df sdfsdfs sdfs dsdfs sdfsd fsdfs dfsdfsd sdfsdf sdfsdf sdfsdfs fsdfsd fsdf sdfsdf sdfsdfs dfsdfsd fsdf sfs dfs dfs dfs dfsd ");
 		for (int i=0;i<m.size();i++) {
@@ -244,6 +245,55 @@ public class Controller {
 		co.userInterface.recevoirmessageUI(msg,aaa);
 		//co.db.setMessage(msg, "aaa_u", "123");
 		co.userInterface.connectedUserList.remove(aaa);*/
+		/*try {
+			Thread.sleep(20000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		Address valentin = new Address("Valentin","Valentin_u");
+		Address simeon = new Address("simeon","simeon_u");
+		Address kevin = new Address("kevin","kevin_u");
+		Address yuyuan = new Address("yuyuan","yuyuan_u");
+		Address ds = new Address("D4rk-Sasuk3","ds_u");
+		Address j = new Address("jean","jean_u");
+		Address t = new Address("tom","tom_u");
+		Address l = new Address("leo","leo_u");
+		Address y = new Address("yan","yan_u");
+		Address le = new Address("lea","lea_u");
+		Address em = new Address("emma","emma_u");
+		Address bot = new Address("LeBotlan","bot");
+		Address ia = new Address("iop","iop_u");
+		Address st = new Address("steak","steak_u");
+		Address fl = new Address("flop","flop_u");
+		
+		co.getSocket().connectedUserList.put("Valentin_u",valentin);
+		co.getSocket().connectedUserList.put("simeon_u",simeon);
+		//co.getSocket().connectedUserList.put("bot",bot);
+		co.getSocket().connectedUserList.put("kevin_u",kevin);
+		co.getSocket().connectedUserList.put("yuyuan_u",yuyuan);
+		co.getSocket().connectedUserList.put("ds_u",ds);
+		co.getSocket().connectedUserList.put("bot",bot);
+		co.db.setKnownUser(j, "sim");
+		co.db.setMessage(new Message(true,"r"), "sim", j.getUsername());
+		co.db.setKnownUser(t, "sim");
+		co.db.setMessage(new Message(true,"r"), "sim", t.getUsername());
+		co.db.setKnownUser(l, "sim");
+		co.db.setMessage(new Message(true,"r"), "sim", l.getUsername());
+		co.db.setKnownUser(y, "sim");
+		co.db.setMessage(new Message(true,"r"), "sim", y.getUsername());
+		co.db.setKnownUser(le, "sim");
+		co.db.setMessage(new Message(true,"r"), "sim", le.getUsername());
+		co.db.setKnownUser(em, "sim");
+		co.db.setMessage(new Message(true,"r"), "sim", em.getUsername());
+		co.db.setKnownUser(ia, "sim");
+		co.db.setMessage(new Message(true,"r"), "sim", ia.getUsername());
+		co.db.setKnownUser(st, "sim");
+		co.db.setMessage(new Message(true,"r"), "sim", st.getUsername());
+		co.db.setKnownUser(fl, "sim");
+		co.db.setMessage(new Message(true,"r"), "sim", fl.getUsername());
+		co.getUI().UserMsgNonLu.add(ds);*/
 		while(true) {}
 	}
 
