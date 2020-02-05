@@ -60,7 +60,7 @@ public class InternalSocket {
 	
 	
 	public InternalSocket(Account UsernameLoggedAccount_, UserInterface _UI){
-		this.ts = 0L;
+		ts = 0L;
 		this.UsernameLogged = UsernameLoggedAccount_;
 		this.connectedUserList = new ConcurrentHashMap<String,Address>();
 		this.db = new DBLocale();
@@ -160,7 +160,7 @@ public class InternalSocket {
 				.setHeader("User-Agent", "MessengerApp")
 				.build();
 		 try {
-			HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+			 httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 			
 		} catch (IOException e) {
 			System.out.println("InternalSocket: Error 1 dans getCoListfromServer");
@@ -225,25 +225,24 @@ public class InternalSocket {
 
 
 	public ConcurrentHashMap<String,Address> getUserList() {
-		// TODO Auto-generated method stub
+
 		return connectedUserList;
 	}
 
 	public synchronized void  setUserList(ConcurrentHashMap<String,Address> ul) {
-		// TODO Auto-generated method stub
+	
 		this.connectedUserList = ul;
 	}
 
 
 	public void sendMessage(Message msg, String Username) {
-		// TODO Auto-generated method stub
 		Address res = null;
-		Boolean fin = false;
+
 		synchronized (connectedUserList) {
 			for (Map.Entry<String,Address> entry : connectedUserList.entrySet()) {
 			 res = entry.getValue();
 			 if(res.getUsername().equals(Username)) {
-				 fin = true;
+
 			 }
 			}
 		}
@@ -265,7 +264,6 @@ public class InternalSocket {
 
 	
 	public void startReceiverThread() {
-		// TODO Auto-generated method stub
 		System.out.println("InternalSocket: starting RECEIVER UDP AND TCP THREADS . . .");
 		this.TCP_RCV_Thread = new TCPThreadReceiver(this.db, UsernameLogged.getUsername(),this.connectedUserList, this.UI);
 		this.UDP_RCV_Thread = new UDPThreadReceiver(this.connectedUserList, this.db, this.UDP_SEND_Socket, UsernameLogged);
@@ -273,22 +271,13 @@ public class InternalSocket {
 	
 	public  void startExecutor() {
 		final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-	    executorService.scheduleWithFixedDelay(new myTask(this.connectedUserList , this.ts), 0, 5, TimeUnit.SECONDS);
+	    executorService.scheduleWithFixedDelay(new myTask(this.connectedUserList , ts), 0, 5, TimeUnit.SECONDS);
 	}
 	
 	
 
 	
-	public ArrayList<Conversation> getHistorique() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	
-	public void sendHistorique(ArrayList<Conversation> lh) {
-		// TODO Auto-generated method stub
-
-	}
 	
 	
 
@@ -400,11 +389,11 @@ class UDPThreadReceiver extends Thread {
 						synchronized(this.connectedUserList) {
 							String new_pseudo = reader.readLine();
 							String username = reader.readLine();
-							String old_pseudo = reader.readLine();
+							reader.readLine();
 							if (!username.equals(userLogged.getUsername())) {
 								this.connectedUserList.put(username,new Address(InetAddress.getByAddress(clientAddress.getAddress()),new_pseudo, username));
 								
-								this.db.updatePseudo(new_pseudo, old_pseudo, username, UsernameLogged.getUsername());
+								this.db.updatePseudo(new_pseudo, username);
 							}
 							
 						}
@@ -486,7 +475,7 @@ class TCPThreadReceiver extends Thread {
 						if (clientSocket != null) {
 							n++;
 							System.out.println("TCPThreadReceiver: Creation Socket fils en cours . . .");
-							ThreadSocketFils temp = new ThreadSocketFils(clientSocket, n, db,UsernameLogged, this.coUsers, this.UI);
+							new ThreadSocketFils(clientSocket, n, db,UsernameLogged, this.coUsers, this.UI);
 						}
 					} catch(SocketTimeoutException a) {
 						
@@ -535,7 +524,6 @@ class ThreadSocketFils extends Thread{
 			try {
 				System.out.println("ThreadSocketFils" + n + ": Succesfully created");
 				BufferedReader in = new BufferedReader(new InputStreamReader(son.getInputStream()));
-				Boolean fin = false;
 				String message = "";
 				String sender = "";
 				String rcv = "";

@@ -2,8 +2,7 @@ package Application;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
+
 import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,7 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Enumeration;
+
 import java.util.Iterator;
 
 import Common.Address;
@@ -25,7 +24,6 @@ public class DBLocale {
 	
 	private static final String CHEMIN =  "Db_Locale_Files";
 	final static protected Connection coDB = connectionDB("DBMessenger");
-	private static int init = 0;
 	public DBLocale() {
 		//this.coDB = connectionDB("DBMessenger");
 		this.createTableKnownUsers();
@@ -134,7 +132,7 @@ public class DBLocale {
 		}
 		try {
 			String sql = "SELECT * FROM conversations WHERE (sender = ? AND receiver = ?) OR (sender = ? AND receiver = ?) ORDER BY timestamp ASC;";
-			PreparedStatement stmt = this.coDB.prepareStatement(sql);
+			PreparedStatement stmt =coDB.prepareStatement(sql);
 			stmt.setString(1, userLogged);
 			stmt.setString(2, corresp);
 			stmt.setString(3, corresp);
@@ -167,18 +165,11 @@ public class DBLocale {
 		return conv;
 	}
 	
-	private synchronized int BoolToInt(boolean a) {
-		if (a == true) {
-			return 1;
-		}else {
-			return 0;
-		}
-	}
 	// id corres isSender isNew ts msg 
 	protected synchronized void setMessage(Message msg, String sender, String receiver) {
 		try {
 			String sql = "INSERT INTO conversations (sender,receiver, timestamp, message) VALUES (?,?,?,?)";
-			PreparedStatement pstmt = this.coDB.prepareStatement(sql);
+			PreparedStatement pstmt = coDB.prepareStatement(sql);
 			pstmt.setString(1, sender);
 			pstmt.setString(2, receiver);
 			pstmt.setTimestamp(3, msg.getTimestamp());
@@ -257,7 +248,7 @@ public class DBLocale {
                 + "    PRIMARY KEY(sender,receiver,timestamp,message)"
                 + ");";
 		try {
-			Statement stmt = this.coDB.createStatement();
+			Statement stmt = coDB.createStatement();
 			stmt.execute(sql);
 			stmt.close();
 		} catch (SQLException e) {
@@ -275,7 +266,7 @@ public class DBLocale {
                 + "    pseudo VARCHAR(255) NOT NULL\n"
                 + ");";
 		try {
-			Statement stmt = this.coDB.createStatement();
+			Statement stmt = coDB.createStatement();
 			stmt.execute(sql);
 			stmt.close();
 		} catch (SQLException e) {
@@ -287,7 +278,7 @@ public class DBLocale {
 	protected synchronized void updatePseudoAccount(String username, String new_pseudo) {
 		String sql = "UPDATE account SET pseudo = '" + new_pseudo + "' where username='" + username + "';";
 		try {
-			Statement stmt = this.coDB.createStatement();
+			Statement stmt = coDB.createStatement();
 			stmt.executeUpdate(sql);
 			stmt.close();
 		} catch (SQLException e) {
@@ -305,7 +296,7 @@ public class DBLocale {
 		Address temp;
 		Account tempA = null;
 		try {
-			PreparedStatement pstmt = this.coDB.prepareStatement(sql);
+			PreparedStatement pstmt = coDB.prepareStatement(sql);
 			pstmt.setString(1,username);
 			pstmt.setString(2,password);
 			rs = pstmt.executeQuery();
@@ -405,8 +396,8 @@ public class DBLocale {
 		
 	}
 	
-	protected synchronized void updatePseudo(String new_Pseudo, String old_Pseudo, String username, String LoggedUsername) {
-		String sql = "UPDATE knownUsers SET pseudo = '" + new_Pseudo + "' where usernameLogged='" + LoggedUsername + "' AND pseudo='" + old_Pseudo + "' AND username='" + username + "';";
+	protected synchronized void updatePseudo(String new_Pseudo, String username) {
+		String sql = "UPDATE knownUsers SET pseudo = '" + new_Pseudo + "' where username='" + username + "';";
 		try {
 			Statement stmt = coDB.createStatement();
 			stmt.executeUpdate(sql);

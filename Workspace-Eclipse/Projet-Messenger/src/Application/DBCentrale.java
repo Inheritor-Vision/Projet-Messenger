@@ -132,11 +132,11 @@ public class DBCentrale {
 		
 		
 	}
-
+	
 	protected  void  PullDB(){
 		//récupère la infos de la db centrale et les ajoutes dans la db locale vide. Appelé apres connection de l'user dadns le constructeur.
 		try{
-			this.ts = new Timestamp(System.currentTimeMillis());
+			ts = new Timestamp(System.currentTimeMillis());
 			//DBCentrale.coDBc = connectionDBCentrale();
 			Statement stmt = DBCentrale.coDBc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM knownUsers where usernameLogged = '" + this.UsernameLogged +"';");
@@ -192,7 +192,7 @@ public class DBCentrale {
 			pstmt.close();
 			rs.close();
 			
-			rs = DBl.getRSAllKnownUsersAboveTS(this.UsernameLogged, this.ts);
+			rs = DBl.getRSAllKnownUsersAboveTS(this.UsernameLogged, ts);
 			while(rs.next()) {
 				
 				pseudo = rs.getString("pseudo");
@@ -209,7 +209,7 @@ public class DBCentrale {
 			}
 			rs.close();
 			
-			rs = DBl.getRSAllMessageAboveTS(this.ts);
+			rs = DBl.getRSAllMessageAboveTS(ts);
 			while(rs.next()) {
 				sql = "INSERT INTO conversations (sender,receiver, timestamp, message) VALUES (?,?,?,?)";
 				pstmt = DBCentrale.coDBc.prepareStatement(sql);
@@ -232,6 +232,96 @@ public class DBCentrale {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	protected void changePseudo(String Username, String newPseudo) {
+		
+		
+		String sql = "UPDATE account SET pseudo = '" + newPseudo + "' where username='" + Username + "';";
+		try {
+			Statement stmt = coDBc.createStatement();
+			stmt.executeUpdate(sql);
+			stmt.close();
+				
+				
+				
+		} catch (SQLException e) {
+			System.out.println("DBLocale: Error changePseudo, create statement or execute");				
+			e.printStackTrace();
+		}
+		sql = "UPDATE knownUsers SET pseudo = '" + newPseudo + "' where username='" + Username + "';";
+		try {
+			Statement stmt = coDBc.createStatement();
+			stmt.executeUpdate(sql);
+			stmt.close();
+		} catch (SQLException e) {
+			System.out.println("DBLocale: Error changePseudo, create statement or execute");
+			e.printStackTrace();
+		}
+		
+		
+		
+	}
+	//return false when pseudo is not available
+	protected static boolean checkPseudo(String pseudo) {
+		String sql = "SELECT * FROM account WHERE pseudo = '" + pseudo + "';";
+		boolean res = false;
+		try {
+			Statement stmt = coDBc.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			if (rs.next()) {
+				res = false;
+			}else {
+				res =true;
+			}
+			rs.close();
+			stmt.close();
+			
+			
+			
+		} catch (SQLException e) {
+			System.out.println("DBLocale: Error checkPseudo, create statement or execute");
+			e.printStackTrace();
+		}
+		return res;
+	}
+	//return false when username is not available
+	protected static boolean checkUsername(String username) {
+		String sql = "SELECT * FROM account WHERE username = '" + username + "';";
+		boolean res = false;
+		try {
+			Statement stmt = coDBc.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			if (rs.next()) {
+				res = false;
+			}else {
+				res =true;
+			}
+			rs.close();
+			stmt.close();
+			
+			
+			
+		} catch (SQLException e) {
+			System.out.println("DBLocale: Error checkUsername, create statement or execute");
+			e.printStackTrace();
+		}
+		return res;
+	}
+	
+	protected static void addAccount(Account acc) {
+		String sql = "INSERT INTO account (username,password,pseudo) VALUES (?,?,?)";
+		try {
+			PreparedStatement pstmt = coDBc.prepareStatement(sql);
+			pstmt.setString(1, acc.getUsername());
+			pstmt.setString(2, acc.getPassword());
+			pstmt.setString(3, acc.getPseudo());
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException e) {
+			System.out.println("DBLocal: Error addAccount");
+			e.printStackTrace();
+		}
 	}
 	
 

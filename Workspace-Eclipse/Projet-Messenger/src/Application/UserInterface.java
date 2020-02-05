@@ -688,6 +688,7 @@ class UserInterface extends JFrame{
 				Address add = new Address(pseudo_,username_);
 				Account acc =  new Account(username_,password_,pseudo_,add);
 				db.setAccount(acc);
+				DBCentrale.addAccount(acc);
 				//db.setKnownUser(add,co.getLoggedAccount().getUsername());
 				db.setKnownUser(add,acc.getUsername()); //il se connait lui-même
 				
@@ -839,7 +840,9 @@ class UserInterface extends JFrame{
 				Account acc=new Account(co.getLoggedAccount().getUsername(),co.getLoggedAccount().getPassword(),pseudo_,add);
 				co.setLoggedAccount(acc);
 				//db
-				//db.updatePseudo(pseudo_, old_psdo, co.getLoggedAccount().getUsername(), co.getLoggedAccount().getUsername()); //modifier le pseudo de son compte dans knownUsers (car on se connait soi-meme)
+				db.updatePseudo(pseudo_, co.getLoggedAccount().getUsername()); //modifier le pseudo de son compte dans knownUsers (car on se connait soi-meme)
+				DBCentrale dbc = new DBCentrale(co.getLoggedAccount().getUsername());
+				dbc.changePseudo(co.getLoggedAccount().getUsername(), pseudo_);
 				db.updatePseudoAccount(co.getLoggedAccount().getUsername(), pseudo_);
 				
 				
