@@ -35,7 +35,14 @@ import Common.Tools;
 public class testMain {
 
 	public static void main(String[] args) throws UnknownHostException, InterruptedException, IOException, SQLException {
+		System.out.println(System.getProperty("java.runtime.version"));
 		
+		/*long c = System.currentTimeMillis();
+		Timestamp a = new Timestamp(c);
+		 c +=1;
+		Timestamp b = new Timestamp(c);
+		System.out.println(a);
+		System.out.println(b);*/
 		/*DBCentrale.InitPullAccount();
 		DBCentrale dbCentrale = new DBCentrale("Alice");
 		DBLocale dbl = new DBLocale();
@@ -65,12 +72,12 @@ public class testMain {
 		is.notifyDiscoServer(Zoe);
 		is.startExecutor();*/
 		
-		DBLocale dbl = new DBLocale();
+		/*DBLocale dbl = new DBLocale();
 		dbl.setMessage(new Message(true , "sdfe"), "fdf", "fdsf");
 		dbl.printAllTable();
 		ResultSet rs = dbl.getRSAllMessageAboveTS(new Timestamp(0L));
 		rs.next();
-		System.out.println(" A "  + rs.getTimestamp("timestamp"));
+		System.out.println(" A "  + rs.getTimestamp("timestamp"));*/
 		//System.out.println(dbl.getConversation("val", "Alice").getMessage(0).getMsg());
 		
 		/*HttpClient httpClient = HttpClient.newBuilder()

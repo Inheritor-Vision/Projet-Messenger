@@ -892,7 +892,7 @@ class UserInterface extends JFrame{
 			}
 			//
 		}
-		
+		db.vanishDB();
 		System.exit(0);
 	}
 	private class fermerappHandler implements ActionListener {
