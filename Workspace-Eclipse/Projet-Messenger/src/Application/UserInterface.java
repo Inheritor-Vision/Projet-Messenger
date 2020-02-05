@@ -345,11 +345,12 @@ class UserInterface extends JFrame{
 			
 			try {
 				cnc = db.getknownUsers(co.getLoggedAccount().getUsername());
-				for (int i=0;i<cnc.size();i++) {
+				/*for (int i=0;i<cnc.size();i++) {
 					System.out.println("ui "+cnc.get(i).getPseudo());
-				}//test
+				}//test*/
 			}catch(NullPointerException e) {
-				System.out.println("knownusers vide");
+				//System.out.println("knownusers vide");
+				e.printStackTrace();
 			}
 			//conversation_nc = db.getknownUsers();
 			//if(conversation_nc.isEmpty()) {
@@ -370,7 +371,7 @@ class UserInterface extends JFrame{
 				//
 				
 				String[] psdonc = pseudo_nc(); 
-				System.out.println(psdonc+" "+psdonc.length);//test
+				//System.out.println(psdonc+" "+psdonc.length);//test
 				if (psdonc.length == 0) {
 					this.erreurnc = new JLabel("Pas d'historique de conversation à afficher");
 					this.add(erreurnc);
@@ -480,13 +481,13 @@ class UserInterface extends JFrame{
 					this.discussion = new JLabel[1];
 					this.discussion[0] = new JLabel("pas de conversation");
 					this.discussion[0].setForeground(Color.RED);
-					System.out.println("\n\n\n\n JE SUIS LA ");
+					//System.out.println("\n\n\n\n JE SUIS LA ");
 				}
 				else {
 					//this.discussion = new JTextArea[co.getConversation().getConvSize()];
 					this.discussion = new JLabel[co.getConversation().getConvSize()];
 					Message[] m = co.getConversation().getAllMessages();
-					System.out.println("message[] "+m[0].getMsg());//
+					//System.out.println("message[] "+m[0].getMsg());//
 					for (int i=0;i<co.getConversation().getConvSize();i++) {
 						this.discussion[i] = new JLabel(retour_ligne(m[i].getMsg(),m[i].getTimestamp()));
 						if (m[i].getIsEnvoyeur()) {
@@ -740,7 +741,7 @@ class UserInterface extends JFrame{
 				connexionpage.erreur.setForeground(Color.BLACK);
 				
 				acc.setAddress(new Address(acc.getPseudo(),acc.getUsername())); //si on utilise getAccount2()
-				System.out.println(acc.getAddress().getIP()); //test
+				//System.out.println(acc.getAddress().getIP()); //test
 				co.setLoggedAccount(acc);
 				DBCentrale DBc  = new DBCentrale(acc.getUsername());
 				DBc.PullDB();
@@ -874,12 +875,12 @@ class UserInterface extends JFrame{
 	
 	//
 	public void fermerapp() {
-		System.out.println("EXIT APP");
+		
 		if(co.getLoggedAccount()!=null) {
 			//db
 			
 			DBCentrale dbCentrale = new DBCentrale(co.getLoggedAccount().getUsername());
-			System.out.println("FERMER");
+			//System.out.println("FERMER");
 			dbCentrale.PushToDBC();
 			dbCentrale.close();
 			//rzo
@@ -893,6 +894,7 @@ class UserInterface extends JFrame{
 			//
 		}
 		db.vanishDB();
+		System.out.println("EXIT APP");
 		System.exit(0);
 	}
 	private class fermerappHandler implements ActionListener {
@@ -992,8 +994,8 @@ class UserInterface extends JFrame{
 					System.out.println("ERREUR: cas impossible -> un utilisateur déconnecté est forcément dans knownusers");
 				}
 				else {
-					System.out.println("UI "+corresp); //test
-					System.out.println("UI "+co.getLoggedAccount().getUsername()); //test
+					//System.out.println("UI "+corresp); //test
+					//System.out.println("UI "+co.getLoggedAccount().getUsername()); //test
 					co.setConversation(db.getConversation(co.getLoggedAccount().getUsername(), corresp));
 				}
 				setConversationPage_nc();
@@ -1041,7 +1043,7 @@ class UserInterface extends JFrame{
 				else {
 					
 					co.setConversation(db.getConversation(co.getLoggedAccount().getUsername(), corresp));
-					System.out.println("conversation "+co.getConversation().getDestinataire()+" "+co.getConversation().getConvSize());
+					//System.out.println("conversation "+co.getConversation().getDestinataire()+" "+co.getConversation().getConvSize());
 				}
 				setConversationPage();
 			}
@@ -1094,7 +1096,7 @@ class UserInterface extends JFrame{
 	public void recevoirmessageUI(Message msg, Address sender){ //a utiliser uniquement si le message reçu vient de la conversation chargée
 		
 		//test
-		System.out.println(co.getConversation().getDestinataire().getUsername());
+		//System.out.println(co.getConversation().getDestinataire().getUsername());
 
 		/*
 		//maj db
