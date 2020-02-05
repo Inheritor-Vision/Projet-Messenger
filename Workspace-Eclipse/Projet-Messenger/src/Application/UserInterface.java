@@ -640,6 +640,8 @@ class UserInterface extends JFrame{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			creationcomptepage.entete.setText("créer un compte");
+			creationcomptepage.entete.setForeground(Color.BLACK);
 			if(co.getLoggedAccount()!=null) {
 				//db
 				DBCentrale dbCentrale = new DBCentrale(co.getLoggedAccount().getUsername());
