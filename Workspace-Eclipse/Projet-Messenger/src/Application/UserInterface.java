@@ -1062,20 +1062,25 @@ class UserInterface extends JFrame{
 		public void actionPerformed(ActionEvent e) {
 			
 			//maj conv
-			Message msg = new Message(true,msgpage.message.getText());
-			co.getConversation().addMessage(msg);
-			//rzo
-			co.getSocket().sendMessage(msg, corresp);
-			//
-			//maj db	
-			db.setMessage(msg, co.getLoggedAccount().getUsername(), corresp);
-			//afficher new message
-			JLabel newm =new JLabel(retour_ligne(msg.getMsg(),msg.getTimestamp()));
-			newm.setHorizontalAlignment(SwingConstants.RIGHT);
-			newm.setForeground(Color.BLUE);
-			conversationpage.add(newm);
-			//rafraichissement
-			conversationpage.updateUI();
+			//Message msg = new Message(true,msgpage.message.getText());
+			ArrayList<Message> msg= cutMsg(msgpage.message.getText()); //plusieurs msg si taille du msg>253
+			//System.out.println("UI + "+msg.size());
+			for (int i=0;i<msg.size();i++) {
+				//System.out.println("UI + "+msg.get(i).getMsg());
+				co.getConversation().addMessage(msg.get(i));
+				//rzo
+				co.getSocket().sendMessage(msg.get(i), corresp);
+				//
+				//maj db	
+				db.setMessage(msg.get(i), co.getLoggedAccount().getUsername(), corresp);
+				//afficher new message
+				JLabel newm =new JLabel(retour_ligne(msg.get(i).getMsg(),msg.get(i).getTimestamp()));
+				newm.setHorizontalAlignment(SwingConstants.RIGHT);
+				newm.setForeground(Color.BLUE);
+				conversationpage.add(newm);
+				//rafraichissement
+				conversationpage.updateUI();
+			}
 			
 			msgpage.message.setText("");
 			
@@ -1196,6 +1201,30 @@ class UserInterface extends JFrame{
 		
 		return "<html><font color=0x000000 size=1>"+date + "</font> : <br>" + str_rtl+"</html>";
 	}
+	
+	public ArrayList<Message> cutMsg(String m){
+		ArrayList<Message> msg = new ArrayList<Message>();
+		boolean cutmsg = false;
+		int n=0;
+		long t=System.currentTimeMillis();
+		
+		if(m.length()>253) {
+			for (int i=0;i<m.length();i++) {
+				
+				if((i-n)==240) {
+					cutmsg=true;
+				}
+				if((cutmsg && m.charAt(i)==' ') || (i-n)==253) {
+					msg.add(new Message(true,m.substring(n, i),new Timestamp(t++)));
+					cutmsg=false;
+					n=i;
+				}
+			}
+		}
+		msg.add(new Message(true,m.substring(n),new Timestamp(t++)));
+		
+		return msg;
+	}
 ////////////////////////////
 	
 ////debug
@@ -1203,7 +1232,9 @@ class UserInterface extends JFrame{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			db.printAllTable();
+			if(co.getLoggedAccount().getUsername().equals("admin")) {
+				db.printAllTable();
+			}
 			
 		}
 		

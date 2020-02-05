@@ -86,6 +86,11 @@ public class Controller {
 		
 		co.db.printAllTable();
 		
+		/*java.util.ArrayList<String> m = co.getUI().cutMsg("aa aa dsf sd fsd fsdfsdfds sdfs df sdfsdfs sdfs dsdfs sdfsd fsdfs dfsdfsd sdfsdf sdfsdf sdfsdfs fsdfsd fsdf sdfsdf sdfsdfs dfsdfsd fsdf sfs dfs dfs dfs dfsd aa aa dsf sd fsd fsdfsdfds sdfs df sdfsdfs sdfs dsdfs sdfsd fsdfs dfsdfsd sdfsdf sdfsdf sdfsdfs fsdfsd fsdf sdfsdf sdfsdfs dfsdfsd fsdf sfs dfs dfs dfs dfsd aa aa dsf sd fsd fsdfsdfds sdfs df sdfsdfs sdfs dsdfs sdfsd fsdfs dfsdfsd sdfsdf sdfsdf sdfsdfs fsdfsd fsdf sdfsdf sdfsdfs dfsdfsd fsdf sfs dfs dfs dfs dfsd aa aa dsf sd fsd fsdfsdfds sdfs df sdfsdfs sdfs dsdfs sdfsd fsdfs dfsdfsd sdfsdf sdfsdf sdfsdfs fsdfsd fsdf sdfsdf sdfsdfs dfsdfsd fsdf sfs dfs dfs dfs dfsd ");
+		for (int i=0;i<m.size();i++) {
+			System.out.println(m.get(i));
+		}*/
+		
 		/*try {
 			Thread.sleep(20000);
 		} catch (InterruptedException e) {
