@@ -6,7 +6,6 @@ import java.net.SocketException;
 import java.net.URLEncoder;
 import java.net.http.HttpRequest;
 import java.nio.charset.StandardCharsets;
-import java.sql.Timestamp;
 import java.util.Enumeration;
 import java.util.Map;
 
@@ -49,7 +48,7 @@ public class Tools {
     }
 	
 	public static byte[] getPcIP() {
-		Enumeration e;
+		Enumeration<NetworkInterface> e;
 		byte[] res = null;
 		boolean fin = false;
 		try {
@@ -57,7 +56,7 @@ public class Tools {
 			while(e.hasMoreElements())
 			{
 			    NetworkInterface n = (NetworkInterface) e.nextElement();
-			    Enumeration ee = n.getInetAddresses();
+			    Enumeration<InetAddress> ee = n.getInetAddresses();
 			    while (ee.hasMoreElements() && !fin)
 			    {
 			        InetAddress i = (InetAddress) ee.nextElement();

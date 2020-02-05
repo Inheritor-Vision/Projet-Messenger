@@ -1,19 +1,19 @@
 package Application;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.HttpURLConnection;
+
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
+
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
-import java.net.URL;
+
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -21,10 +21,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.io.Serializable;
+
 import java.io.StringReader;
 import java.lang.Thread;
-import java.lang.reflect.Constructor;
+
 import java.sql.Timestamp;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -37,7 +37,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import com.sun.net.httpserver.*;
+
 import Common.Tools;
 import Common.Address;
 
